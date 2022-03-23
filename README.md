@@ -20,7 +20,10 @@ Uses React Native and MySQL
   
   
 ### Clone this rePhrase directory
-
+  In rePhrase directory
+  
+    > npm install
+    
 ### Run Project
     
     > npm start
