@@ -20,6 +20,9 @@ Uses React Native and MySQL
   
   
 ### Clone this rePhrase directory
+  
+    > git clone https://github.com/hp-all/rePhrase.git
+  
   In rePhrase directory
   
     > npm install
