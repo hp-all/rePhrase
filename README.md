@@ -4,11 +4,15 @@ Music Learning App for Databases CS 4750
 
 
 To Get Running
-  Install\n
+  Install
+  
     Node.js
+  
       https://nodejs.org/en/
+    
     Expo
       https://docs.expo.dev/get-started/installation/
+  
   On phone, donwload App
     Expo Go
   
