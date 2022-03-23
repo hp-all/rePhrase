@@ -1,0 +1,31 @@
+--------------- Task List ----------------
+
+
+---- UI Design ----
+> Draw
+    - 
+    - 
+
+---- User Functionality ----
+> Library Screen
+> Play Music
+> Section Assignment Screen
+    -> Make an option for no Snapping when moving fingie cursor
+        - Loop setting is a little delayed
+    -> When setting loop ends, it stays editing start/finish
+    -> Make Add Block Area come up
+    - Allow Changing Section Ends
+    - Allow Adding
+        * Sections
+        * Loops
+
+SCHEDULER
+> Create a JSON format for a track
+> Create a Stack List that will contain a history of changes
+    > undo -> moves back to last state of track
+    > redo -> moves forward a state in the Stack
+    > addChange -> overwrites all states after the current one with the new state
+
+
+---- Database Shnits ----
+

@@ -22,6 +22,28 @@ export function useThemeColor(
   }
 }
 
+export function getTheme() {
+  const theme = useColorScheme();
+  var stuff = Colors[theme];
+  return stuff;
+}
+export function getThemeName() {
+  return useColorScheme();
+}
+export function getOppositeThemeName() {
+  var theme = useColorScheme();
+  if(theme == 'dark')
+    theme = 'light'
+  return theme;
+}
+export function getOppositeTheme() {
+  const theme = useColorScheme();
+  var stuff = Colors['dark'];
+  if(theme == 'dark')
+    stuff = Colors['light'];
+  return stuff;
+}
+
 type ThemeProps = {
   lightColor?: string;
   darkColor?: string;
@@ -39,7 +61,7 @@ export function Text(props: TextProps) {
 
 export function View(props: ViewProps) {
   const { style, lightColor, darkColor, ...otherProps } = props;
-  const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'background');
+  const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'bg');
 
   return <DefaultView style={[{ backgroundColor }, style]} {...otherProps} />;
 }

@@ -8,14 +8,19 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as React from 'react';
-import { ColorSchemeName, Pressable } from 'react-native';
+import { ColorSchemeName, Pressable, Image, Text, View} from 'react-native';
 
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
+import { appStyles, colorTheme } from '../components/AppStyles';
+
 import ModalScreen from '../screens/ModalScreen';
 import NotFoundScreen from '../screens/NotFoundScreen';
-import TabOneScreen from '../screens/TabOneScreen';
-import TabTwoScreen from '../screens/TabTwoScreen';
+import MusicLibraryScreen from '../screens/MusicLibraryScreen';
+import PlayMusicScreen from '../screens/PlayMusicScreen';
+import AssignSectionScreen from '../screens/AssignSectionScreen';
+import TestWhateverScreen from '../screens/TestWhateverScreen';
+
 import { RootStackParamList, RootTabParamList, RootTabScreenProps } from '../types';
 import LinkingConfiguration from './LinkingConfiguration';
 
@@ -23,7 +28,9 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
   return (
     <NavigationContainer
       linking={LinkingConfiguration}
-      theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+      // theme={DefaultTheme}
+      theme={DarkTheme}
+    >
       <RootNavigator />
     </NavigationContainer>
   );
@@ -58,16 +65,18 @@ function BottomTabNavigator() {
 
   return (
     <BottomTab.Navigator
-      initialRouteName="TabOne"
+      initialRouteName="AssignSection"
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme].tint,
+        tabBarInactiveBackgroundColor: colorTheme['t_white'],
+        tabBarActiveBackgroundColor: colorTheme['t_dark'],
+        tabBarActiveTintColor: colorTheme['t_oppdark'],
       }}>
       <BottomTab.Screen
-        name="TabOne"
-        component={TabOneScreen}
-        options={({ navigation }: RootTabScreenProps<'TabOne'>) => ({
-          title: 'Tab One',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+        name="MusicLibrary"
+        component={MusicLibraryScreen}
+        options={({ navigation }: RootTabScreenProps<'MusicLibrary'>) => ({
+          title: '',
+          tabBarIcon: ({ color, focused }) => <TabBarImg icon='library' color={color} focused={focused} />,
           headerRight: () => (
             <Pressable
               onPress={() => navigation.navigate('Modal')}
@@ -82,14 +91,47 @@ function BottomTabNavigator() {
               />
             </Pressable>
           ),
+          header: () => (
+            <Header title=''/>
+          ),
         })}
       />
       <BottomTab.Screen
-        name="TabTwo"
-        component={TabTwoScreen}
+        name="PlayMusic"
+        component={PlayMusicScreen}
         options={{
-          title: 'Tab Two',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          title: '',
+          tabBarIcon: ({ color, focused }) => <TabBarImg icon='playMusic' color={color} focused={focused}/>,
+          header: () => (
+            <Header title=''/>
+          ),
+        }}
+      />
+      <BottomTab.Screen
+        name="AssignSection"
+        component={AssignSectionScreen}
+        options={{
+          title: '',
+          tabBarIcon: ({ color, focused }) => <TabBarImg icon='sectionView' color={color} focused={focused} />,
+          headerLeft: () => (
+            <Image source={require("../assets/images/logos/icon.png")} style={{resizeMode: 'contain', height: 48, width: '100%', marginVertical: 5, marginLeft: -20}}/>
+          ),
+          header: () => (
+            <Header title=''/>
+          ),
+        }}
+      />
+      <BottomTab.Screen
+        name="TestWhatever"
+        component={TestWhateverScreen}
+        options={{
+          title: '',
+          headerLeft: () => (
+            <Image source={require("../assets/images/logos/icon.png")} style={{resizeMode: 'contain', height: 48, width: '100%', marginVertical: 5, marginLeft: -20}}/>
+          ),
+          header: () => (
+            <Header title=''/>
+          ),
         }}
       />
     </BottomTab.Navigator>
@@ -104,4 +146,50 @@ function TabBarIcon(props: {
   color: string;
 }) {
   return <FontAwesome size={30} style={{ marginBottom: -3 }} {...props} />;
+}
+
+function TabBarImg(props: {
+  icon: keyof typeof navImgs.selected & keyof typeof navImgs.deselected;
+  color: string;
+  focused?: boolean
+}) {
+  if(props.focused) {
+    return (
+        <Image source= {navImgs.selected[props.icon]} style={{resizeMode: 'contain', width: '100%', height: 40, marginTop: 15}}/>
+    );
+  }
+  return <Image source= {navImgs.deselected[props.icon]} style={{resizeMode: 'contain', width: '100%', height: 40, marginTop: 15}}/>
+}
+
+function Header(props: {
+  title: string;
+}) {
+  if(props.title == "") {
+    return (
+      <View style={{height: 100, backgroundColor: colorTheme["t_dark"], borderBottomColor: colorTheme['gray'], borderBottomWidth: 1}}>
+        {/* <Image source={require("../assets/images/logos/title.png")} style= {{position: 'absolute', right: -20, top: 45, resizeMode: 'contain', height: 45, alignSelf: 'center'}}/> */}
+        <Image source={require("../assets/images/logos/title.png")} style= {{marginTop: 45, resizeMode: 'contain', height: 45, alignSelf: 'center'}}/>
+      </View>
+    )
+  }
+  return (
+    <View style={{paddingBottom: 15, paddingTop: 48, backgroundColor: colorTheme["t_white"], borderBottomColor: colorTheme['gray'], borderBottomWidth: 1}}>
+      <Image source={require("../assets/images/logos/title.png")} style= {{position: 'absolute', top: 40, right: 1, resizeMode: 'contain', height: 30, alignSelf: 'center'}}/>
+      <Text style={[appStyles.header, {alignSelf: 'center'}]}>{props.title}</Text>
+    </View>
+  );
+}
+
+
+const navImgs= {
+  selected: {
+    library: require("../assets/images/navigation/library-selected.png"),
+    playMusic: require("../assets/images/navigation/playMusic-selected.png"),
+    sectionView: require("../assets/images/navigation/sectionView-selected.png"),
+  },
+  deselected: {
+    library: require("../assets/images/navigation/library.png"),
+    playMusic: require("../assets/images/navigation/playMusic.png"),
+    sectionView: require("../assets/images/navigation/sectionView.png"),
+  }
 }
