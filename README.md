@@ -2,7 +2,10 @@
 
 Music Learning App for Databases CS 4750
 
-# RePhrase: A music 
+# RePhrase: A Music Learning App
+Part of this project is intended for Databases CS 4750
+Uses React Native and MySQL
+
 # Installing and Running
 ### Install
   
@@ -16,10 +19,8 @@ Music Learning App for Databases CS 4750
     Expo Go
   
   
-### Create Directory for Project: 'rePhrase'
-    
-    > expo init rePhrase  
-  then pull from this github repository into the rePhrase directory
+### Clone this rePhrase directory
+
 ### Run Project
     
     > npm start
