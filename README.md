@@ -34,5 +34,6 @@ Uses React Native and MySQL
   On phone with Expo Go
     
     Scan QR Code with camera app to open in Expo Go
+      (phone must be on same wifi as the computer thats hosting the app)
    
     
