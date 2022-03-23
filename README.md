@@ -19,7 +19,7 @@ Music Learning App for Databases CS 4750
 ## Create Directory for Project: 'rePhrase'
     
     > expo init rePhrase  
-  ### pull from this github repository into the rePhrase directory
+  then pull from this github repository into the rePhrase directory
 ## Run Project
     
     > npm start
