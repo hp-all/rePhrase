@@ -2,9 +2,8 @@
 
 Music Learning App for Databases CS 4750
 
-
-To Get Running,
-  Install
+# Installing and Running
+## Install
   
     Node.js
       https://nodejs.org/en/
@@ -12,19 +11,19 @@ To Get Running,
     Expo
       https://docs.expo.dev/get-started/installation/
   
-  On phone, donwload App
+## Download App
     Expo Go
   
   
-  Create Directory for Project: 'rePhrase'
+## Create Directory for Project: 'rePhrase'
     
     > expo init rePhrase
     
-  In rePhrase Directory
+## Run Project
     
     > npm start
   
-  On phone with Expo Go
+  ### On phone with Expo Go
     
     Scan QR Code with camera app to open in Expo Go
    
