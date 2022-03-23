@@ -3,11 +3,10 @@
 Music Learning App for Databases CS 4750
 
 
-To Get Running
+To Get Running,
   Install
   
     Node.js
-  
       https://nodejs.org/en/
     
     Expo
@@ -18,11 +17,15 @@ To Get Running
   
   
   Create Directory for Project: 'rePhrase'
+    
     > expo init rePhrase
     
   In rePhrase Directory
+    
     > npm start
+  
   On phone with Expo Go
+    
     Scan QR Code with camera app to open in Expo Go
    
     
