@@ -4,7 +4,7 @@ Music Learning App for Databases CS 4750
 
 # RePhrase: A music 
 # Installing and Running
-## Install
+### Install
   
     Node.js
       https://nodejs.org/en/
@@ -12,19 +12,19 @@ Music Learning App for Databases CS 4750
     Expo
       https://docs.expo.dev/get-started/installation/
   
-## Download App
+### Download App
     Expo Go
   
   
-## Create Directory for Project: 'rePhrase'
+### Create Directory for Project: 'rePhrase'
     
     > expo init rePhrase  
   then pull from this github repository into the rePhrase directory
-## Run Project
+### Run Project
     
     > npm start
   
-  ### On phone with Expo Go
+  On phone with Expo Go
     
     Scan QR Code with camera app to open in Expo Go
    
