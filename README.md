@@ -2,6 +2,7 @@
 
 Music Learning App for Databases CS 4750
 
+# RePhrase: A music 
 # Installing and Running
 ## Install
   
@@ -17,8 +18,8 @@ Music Learning App for Databases CS 4750
   
 ## Create Directory for Project: 'rePhrase'
     
-    > expo init rePhrase
-    
+    > expo init rePhrase  
+  ### pull from this github repository into the rePhrase directory
 ## Run Project
     
     > npm start
