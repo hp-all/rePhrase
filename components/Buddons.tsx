@@ -124,8 +124,11 @@ export class Buddon extends Component<bP, bS> {
                 filesrc = buttonIcons['light'][icon];
             }
         }
+        var sizeStuff: any = {width: '100%', height: '100%'};
+        if(icon == 'editBlock')
+            sizeStuff = {width: '100%', height: '400%', left: '0%', top: '-150%'};
         return (
-            <Image source= {filesrc} style={{resizeMode: 'contain', width: '100%', height: '100%'}}/>
+            <Image source= {filesrc} style={{resizeMode: 'contain', ...sizeStuff}}/>
         );
     }
 
@@ -169,6 +172,7 @@ type ptP = {
     popupListener: (p: any)=>void, 
     isSelected: boolean, options: any[],  style?: any, 
     icon?: keyof typeof buttonIcons.light & keyof typeof buttonIcons.dark, alticon?: keyof typeof buttonIcons.light & keyof typeof buttonIcons.dark
+    bg?: colorTypes,
     key?: any,
 } 
 type ptS = {};
@@ -191,7 +195,7 @@ export class PopupTrigger extends Component<ptP, ptS> {
             else
                 filesrc = buttonIcons['light'][icon];
         }
-        return <Image source= {filesrc} style={{resizeMode: 'contain', width: '100%', height: '100%'}}/>;
+        return <Image source= {filesrc} style={{resizeMode: 'contain'}}/>;
     }
 
     render() {
@@ -214,13 +218,14 @@ export class PopupTrigger extends Component<ptP, ptS> {
                     label: this.props.label,
                     options: this.props.options,
                 })}}
+                bg= {this.props.bg}
                 style={this.props.style}
             />
         );
     }
 }
 
-export function ButtonGroup(props: {label: string, style?: any, children?: any}) {
+export function ButtonGroup(props: {label?: string, style?: any, children?: any, vertical?: boolean}) {
     var babies = Children.map(props.children, baby => {
         // Checking isValidElement is the safe way and avoids a typescript
         // error too.
@@ -232,7 +237,7 @@ export function ButtonGroup(props: {label: string, style?: any, children?: any})
     return (
         <View style={[styles.container, {flex: 1, backgroundColor: 'transparent', ...props.style}]}>        
             <Text style={[styles.subheader, {flexShrink: 1}]}>{props.label}</Text>
-            <View style={[styles.rowContainer, {flex: 1, backgroundColor: 'transparent'}]}>
+            <View style={[props.vertical? styles.container: styles.rowContainer, {flex: 1, backgroundColor: 'transparent'}]}>
                 {babies}
             </View>
         </View>
@@ -248,8 +253,11 @@ const buttonIcons = {
         editBlock:  require("../assets/images/buttons/light/editBlock.png"),
         showLines:  require("../assets/images/buttons/light/showLines.png"),
         list:       require("../assets/images/buttons/light/list.png"),
-        add:       require("../assets/images/buttons/light/add.png"),
+        add:        require("../assets/images/buttons/light/add.png"),
         snap:       require("../assets/images/buttons/light/snap.png"),
+        loops:      require("../assets/images/buttons/light/loops.png"),
+        undo:       require("../assets/images/buttons/light/undo.png"),
+        redo:       require("../assets/images/buttons/light/redo.png"),
     },
     dark: {
         play:       require("../assets/images/buttons/dark/play.png"),
@@ -259,7 +267,10 @@ const buttonIcons = {
         editBlock:  require("../assets/images/buttons/dark/editBlock.png"),
         showLines:  require("../assets/images/buttons/dark/showLines.png"),
         list:       require("../assets/images/buttons/dark/list.png"),
-        add:       require("../assets/images/buttons/dark/add.png"),
+        add:        require("../assets/images/buttons/dark/add.png"),
         snap:       require("../assets/images/buttons/dark/snap.png"),
+        loops:      require("../assets/images/buttons/light/loops.png"),
+        undo:       require("../assets/images/buttons/light/undo.png"),
+        redo:       require("../assets/images/buttons/light/redo.png"),
     }
 }

@@ -18,7 +18,7 @@ import ModalScreen from '../screens/ModalScreen';
 import NotFoundScreen from '../screens/NotFoundScreen';
 import MusicLibraryScreen from '../screens/MusicLibraryScreen';
 import PlayMusicScreen from '../screens/PlayMusicScreen';
-import AssignSectionScreen from '../screens/AssignSectionScreen';
+import AssignSectionScreen from '../screens/AssignSection/AssignSectionScreen';
 import TestWhateverScreen from '../screens/TestWhateverScreen';
 
 import { RootStackParamList, RootTabParamList, RootTabScreenProps } from '../types';

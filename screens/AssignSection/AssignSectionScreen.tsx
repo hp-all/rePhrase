@@ -1,20 +1,22 @@
 import { StatusBar } from 'expo-status-bar';
 import * as React from 'react';
 import { TouchableOpacity, ScrollView, SafeAreaView, Platform, Animated} from 'react-native';
-import { Text, View } from '../components/Themed';
-import Layout from "../constants/Layout";
+import { Text, View } from '../../components/Themed';
+import Layout from "../../constants/Layout";
 
-import { appStyles as styles, bottomBorderRadius, colorTheme, leftBorderRadius, rightBorderRadius, topBorderRadius } from '../components/AppStyles';
-import { Draggable, Buddon, ButtonGroup, PopupTrigger } from '../components/Buddons';
-import { Form, FormNumber, FormText } from '../components/Form';
-import { barPositioning, ChangeLog, TrackPlayerController, MeasureMaker } from '../components/MusicComponents';
+import { appStyles as styles, bottomBorderRadius, colorTheme, leftBorderRadius, rightBorderRadius, topBorderRadius } from '../../components/AppStyles';
+import { Draggable, Buddon, ButtonGroup, PopupTrigger } from '../../components/Buddons';
+import { Form, FormNumber, FormText } from '../../components/Form';
+import { barPositioning, ChangeLog, TrackPlayerController, MeasureMaker } from '../../components/MusicComponents';
 
-import SongSection, { SectionType } from '../MusicModel/SongSection';
-import Track, { Source } from '../MusicModel/Track';
-import Loop from '../MusicModel/Loop';
-import TrackyPlayer from '../MusicModel/TrackPlayer';
+import SongSection, { SectionType } from '../../MusicModel/SongSection';
+import Track, { Source } from '../../MusicModel/Track';
+import Loop from '../../MusicModel/Loop';
+import TrackyPlayer from '../../MusicModel/TrackPlayer';
 
-const frootSongSource = require('../assets/soundFiles/lofi_fruits_jazz.mp3');
+import ButtonMenu from './ButtonMenu';
+
+const frootSongSource = require('../../assets/soundFiles/lofi_fruits_jazz.mp3');
 const windowWidth = Layout.window.width;
 const windowHeight = Layout.window.height-100;
 const viewAreaFactor = 0.9;
@@ -29,7 +31,7 @@ export default function AssignSectionScreen() {
 			{name: "Froot Song (ft. Jazz)", artist: "Test Track", album: "from SoundCloud", length: 203000}
 		);
 	frootSongTrack.name = "Froot Song (ft. Jazz)"
-frootSongTrack.addSection("First Song", SectionType.A, 0, 98000, true, 120);
+	frootSongTrack.addSection("First Song", SectionType.A, 0, 98000, true, 120);
 	frootSongTrack.addSection("Solo", SectionType.Verse, 56000, 80000, true, 120);
 	frootSongTrack.addSection("Second Song", SectionType.B, 98000, 1000000, true, 70, "4:4", true);
 
@@ -232,7 +234,7 @@ class TrackAssignView extends React.Component<tavP, tavS>{
 	songPos = () => {return this.state.trackPlayerController.songPos;}
 	viewPos = () => {return this.state.trackPlayerController.viewPos;}
 
-	popupListener = (p: any) => {
+	popupListener = (p: {label: string, options: any}) => {
 		this.popupTitle= p.label;
 		this.popupOptions= p.options;
 		this.popupHeight= 70*p.options.length;
@@ -261,7 +263,7 @@ class TrackAssignView extends React.Component<tavP, tavS>{
 				}
 				this.popupSelectedOption = snapName;
 				break;
-			} 
+			}
 		}
 		this.setState({
 			showPopup: true,
@@ -290,6 +292,23 @@ class TrackAssignView extends React.Component<tavP, tavS>{
 				this.setSnap(option);
 				break;
 			} 
+			case ButtonLabels.ViewSettings: {
+				switch(option) {
+					case ButtonLabels.ViewSize: {
+						this.popupListener({label: option, options: Object.values(ViewSizeOptions)})
+						break;
+					}
+					case ButtonLabels.ViewSnap: {
+						this.popupListener({label: option, options: Object.values(SnapOptions)})
+						break;
+					}
+					case ButtonLabels.ShowLines: {
+						this.toggleSimpleView();
+						break;
+					}
+				}
+				break;
+			}
 		}
 		this.popupSelectedOption = option;
 	}
@@ -590,98 +609,6 @@ export class ToolComponent extends React.Component<tcP, tcS> {
 	}
 }
 
-function ButtonMenu(props: 
-	{
-		trackPlayerController: TrackPlayerController,
-		popupListener: (p: any)=>any,
-		selectedSize: string,
-		showLines: boolean, toggleLines: ()=>void,
-		editBlock: string,
-		showToolComponent: () => void,
-	}) {
-	var { trackPlayerController } = props;
-	var loopOptions= [...props.trackPlayerController.track.getLoopNames(), 'none'];
-	return (
-		<View style={[{backgroundColor: colorTheme['gray'], height: 125, paddingHorizontal: 10, paddingBottom: 10}]}>
-			<View style={[styles.rowContainer, {flex: 1, padding: 5, backgroundColor: 'transparent'}]}>
-				<ButtonGroup label="View Settings" style={{flex: 2}}>
-					<PopupTrigger
-						label={ButtonLabels.ViewSize}
-						icon='viewSize'
-						popupListener={props.popupListener}
-						options= {Object.values(ViewSizeOptions)}
-						isSelected= {false}
-						style={{flexShrink: 1, height: '100%', margin: 5}}
-					/>
-					<Buddon
-						label={ButtonLabels.ShowLines}
-						icon='showLines'
-						onPress={props.toggleLines}
-						isSelected= {props.showLines}
-						style={{flexShrink: 1, height: '100%', margin: 5, marginLeft: 0}}
-					/>
-					<PopupTrigger
-						label={ButtonLabels.ViewSnap}
-						icon='snap'
-						popupListener={props.popupListener}
-						options= {Object.values(SnapOptions)}
-						isSelected= {false}
-						style={{flexShrink: 1, height: '100%', margin: 5, marginLeft: 0}}
-					/>
-				</ButtonGroup>
-				<View style={{flex: 0.5, backgroundColor: 'transparent'}}>
-				</View>
-				<ButtonGroup label='Edit Shit' style={{alignItems: 'flex-end', flex: 2}}>
-					<PopupTrigger
-						label={ButtonLabels.EditBlock}
-						icon='editBlock'
-						popupListener={props.popupListener}
-						options= {Object.values(EditBlockOptions)}
-						isSelected= {props.editBlock != 'none'}
-						style={{flexShrink: 1, height: '100%', margin: 5, padding: 0}}
-					/>
-					<PopupTrigger
-						label={ButtonLabels.PlayLoop}
-						icon='list'
-						popupListener={props.popupListener}
-						options= {loopOptions}
-						isSelected= {false}
-						style={{flexShrink: 1, height: '100%', margin: 5, marginLeft: 0}}
-					/>
-					<Buddon
-						label={ButtonLabels.AddBlock}
-						icon='add'
-						onPress={props.showToolComponent}
-						isSelected= {false}
-						style={{flexShrink: 1, height: '100%', margin: 5, marginLeft: 0}}
-					/>
-				</ButtonGroup>
-			</View>
-			<View style={[styles.rowContainer, {flex: 0.7, backgroundColor: 'transparent'}]}>
-				<ButtonGroup label="" style={{flex: 1, alignItems: 'center'}}>
-					<Buddon
-						label={ButtonLabels.Restart}
-						icon='restart' 
-						onPress= {trackPlayerController.restart}
-						isSelected= {false}
-						bg= {'t_white'}
-						style={{...leftBorderRadius(5), marginLeft: 0, flexShrink: 1, height: '100%'}}
-					/>
-					<View style={[styles.vertLine, {marginHorizontal: 0, flexShrink: 1}]}/>
-					<Buddon
-						label={ButtonLabels.Play}
-						icon='pause' 
-						alticon='play'
-						onPress= {trackPlayerController.togglePlay}
-						isSelected= {trackPlayerController.isPlaying}
-						bg= {'t_white'}
-						style={{...rightBorderRadius(5), marginRight: 0, flexShrink: 1, height: '100%'}}
-					/>
-				</ButtonGroup>
-			</View>
-		</View>
-	)
-}
 
 function OptionPopup(props: {title: string, options?: any[], selectedOption?: any, height: number, closePopup: ()=>void, select: (option: any)=>void}) {
 	return (
@@ -728,13 +655,15 @@ function OptionPopup(props: {title: string, options?: any[], selectedOption?: an
 
 enum ButtonLabels {
 	PlayLoop= "Play Loop",
-	EditBlock= "Edit Block",
 	ShowLines= "Show Lines",
 	ViewSize= "View Size",
 	Play= "Play",
 	Restart= "Restart",
 	ViewSnap= "Snap",
+	
+	ViewSettings= "View Settings",
 	AddBlock= "Add",
+	EditBlock= "Edit Block",
 }
 enum ViewSizeOptions {
 	small= "small",
