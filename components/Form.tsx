@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { TextInput, View, Text, TouchableOpacity } from 'react-native';
 import { Draggable } from './Buddons';
-import { appStyles as styles, colorTheme, rightBorderRadius, leftBorderRadius, topBorderRadius} from './AppStyles';
+import { appStyles as styles, colorTheme, rightBorderRadius, leftBorderRadius, topBorderRadius, bottomBorderRadius} from './AppStyles';
 
 type fP = {title: string, children?: any, onSubmit?: (dict: any) => any, style?: any}
 type fS = {}
@@ -125,7 +125,7 @@ export function FormInputError(props: {
     style?: any
 }) {
     return (
-        <View style={{borderRadius: 0, padding: 4, backgroundColor: colorTheme['t_opplight'], ...topBorderRadius(4), ...props.style}}>
+        <View style={{borderRadius: 0, padding: 4, backgroundColor: colorTheme['t_opplight'], ...bottomBorderRadius(4), ...props.style}}>
             <Text style={[styles.text, {color: colorTheme['t_oppdark']}]}>{props.errMsg}</Text>
         </View>
     )

@@ -16,10 +16,13 @@ import { appStyles, colorTheme } from '../components/AppStyles';
 
 import ModalScreen from '../screens/ModalScreen';
 import LoginScreen from '../screens/LoginScreen';
+import SignupScreeen from '../screens/SignupScreen';
+
 import NotFoundScreen from '../screens/NotFoundScreen';
 import MusicLibraryScreen from '../screens/MusicLibraryScreen';
 import PlayMusicScreen from '../screens/PlayMusicScreen';
 import AssignSectionScreen from '../screens/AssignSection/AssignSectionScreen';
+import ProfileInfoScreen from '../screens/ProfileInfoScreen';
 import TestWhateverScreen from '../screens/TestWhateverScreen';
 
 import { RootStackParamList, RootTabParamList, RootTabScreenProps } from '../types';
@@ -55,7 +58,12 @@ function RootNavigator() {
       </Stack.Group>
       
       <Stack.Group screenOptions={{ presentation: 'modal' }}>
-        <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false}}/>
+        <Stack.Screen name="Signup" component={SignupScreeen} options={{
+          title: '',
+          header: () => (
+            <Header title=''/>
+          ),
+        }}/>
       </Stack.Group>
     </Stack.Navigator>
   );
@@ -86,7 +94,7 @@ function BottomTabNavigator() {
           tabBarIcon: ({ color, focused }) => <TabBarImg icon='library' color={color} focused={focused} />,
           headerRight: () => (
             <Pressable
-              onPress={() => navigation.navigate('Login')}
+              onPress={() => navigation.navigate('Signup')}
               style={({ pressed }) => ({
                 opacity: pressed ? 0.5 : 1,
               })}>
@@ -129,6 +137,16 @@ function BottomTabNavigator() {
         }}
       />
       <BottomTab.Screen
+        name="ProfileInfo"
+        component={ProfileInfoScreen}
+        options={{
+          title: '',
+          header: () => (
+            <Header title=''/>
+          ),
+        }}
+      />
+      {/* <BottomTab.Screen
         name="TestWhatever"
         component={TestWhateverScreen}
         options={{
@@ -140,7 +158,7 @@ function BottomTabNavigator() {
             <Header title=''/>
           ),
         }}
-      />
+      /> */}
     </BottomTab.Navigator>
   );
 }

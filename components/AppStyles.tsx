@@ -129,7 +129,6 @@ export const appStyles = StyleSheet.create({
 		borderRadius: 3,
 		color: colorTheme['t_dark'],
 		paddingHorizontal: 7,
-		marginBottom: 10,
 	},
 	submitBuddon: {
 		backgroundColor: colorTheme['t_light'],
