@@ -115,7 +115,7 @@ export const appStyles = StyleSheet.create({
 		color: colorTheme['t_white'],
 	},
 	text: {
-		fontSize: 10,
+		fontSize: 12,
 		color: colorTheme['t_white'],
 	},
 	centerText: {

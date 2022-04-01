@@ -48,13 +48,14 @@ function RootNavigator() {
 
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Login" component={LoginScreen} options={{header: () => (
-            <Header title=''/>
-          ),}}/>
       <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
       <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
       <Stack.Group screenOptions={{ presentation: 'modal' }}>
         <Stack.Screen name="Modal" component={ModalScreen} />
+      </Stack.Group>
+      
+      <Stack.Group screenOptions={{ presentation: 'modal' }}>
+        <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false}}/>
       </Stack.Group>
     </Stack.Navigator>
   );
