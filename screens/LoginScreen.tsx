@@ -37,6 +37,33 @@ class LoginForm extends React.Component<lfp, lfs> {
   submitLoginInfo = () => {
 	//SUBMIT TO PHP HERE
 	var { username, password } = this.state;
+    if ((username.length==0) || (password.length==0)){
+        alert("Not enough characters for Username or Password");
+    }
+    else {
+        var DatabaseURL = "http://localhost/Project/login.php"; // where server is hosted right now
+
+        var headers = {
+            'Accept' : 'application/json',
+            'Content-Type' : 'application/json'
+        };
+
+        var Data = {
+            Username : username,
+            Password : password
+        }
+
+        fetch(DatabaseURL, {
+            method: 'POST',
+            headers:headers,
+            body: JSON.stringify(Data)
+        })
+        .then((Response)=>Response.json()) // check if in the response is in JSON format
+        // dealing with the repsonse
+        .then((Response)=>{
+
+        })
+    }
 	console.log("SUBMIT: " + username + ", " + password);
   }
 
