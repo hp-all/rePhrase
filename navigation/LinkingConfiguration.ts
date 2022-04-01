@@ -30,6 +30,11 @@ const linking: LinkingOptions<RootStackParamList> = {
               AssignSectionScreen: 'assignsect',
             },
           },
+          ProfileInfo: {
+            screens: {
+              ProfileInfoScreen: 'profileinfo',
+            },
+          },
           TestWhatever: {
             screens: {
               TestWhateverScreen: 'testscreen',

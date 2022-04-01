@@ -31,6 +31,7 @@ export type RootTabParamList = {
   MusicLibrary: undefined;
   PlayMusic: undefined;
   AssignSection: undefined;
+  ProfileInfo: undefined;
   TestWhatever: undefined;
 };
 

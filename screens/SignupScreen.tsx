@@ -8,19 +8,21 @@ import { FormInputError } from '../components/Form';
 import { appStyles as styles, colorTheme} from '../components/AppStyles';
 
 
-export default function LoginScreen() {
+export default function SignupScreeen() {
   return (
 	<View style={{padding: 10}}>
-		<Text style={[styles.header, {fontSize: 50}]}>Log In</Text>
+		<Text style={[styles.header, {fontSize: 50}]}>Sign Up</Text>
 		<LoginForm/>
 	</View>
-
-	  
   );
 }
 
 type lfp = {};
-type lfs = {username: string, password: string, showUserError: boolean, showPasswordError: boolean};
+type lfs = {
+	username: string,
+	password: string,
+	passwordCheck: string,
+	showUserError: boolean, showPasswordError: boolean};
 class LoginForm extends React.Component<lfp, lfs> {
 	userErrMsg = "";
 	passErrMsg = "";
@@ -29,52 +31,47 @@ class LoginForm extends React.Component<lfp, lfs> {
 		this.state = {
 			username: "",
 			password: "",
+			passwordCheck: "",
 			showUserError: false,
 			showPasswordError: false,
 		}
+  	}
+
+	setEmail = (u:string) => {
+		this.setState({username: u});
+  	}
+  	setPassword = (p:string) => {
+		this.setState({password: p});
+  	}
+	setPasswordCheck = (p: string) => {
+		this.setState({passwordCheck: p})
+  	}
+  	submitLoginInfo = () => {
+		//SUBMIT TO PHP HERE
+		var { username, password, passwordCheck } = this.state;
+		console.log("SUBMIT: " + username + ", " + password + ", " + passwordCheck);
+
+
+		// Input Checks BEFORE sending to SQL
+		if(username == "") {
+			this.showUserError("Enter your username");
+		} else { this.setState({showUserError: false})}
+
+		if(password == "") {
+			this.showPasswordError("Enter your password");
+		} else if(password != passwordCheck) {
+			this.showPasswordError("Passwords do not match");
+		} else { this.setState({showPasswordError: false})}
+
+
+		// Input Checks AFTER sending to SQL
+		// if() {
+
+		// }
 	}
-
-  setEmail = (u:string) => {
-	this.setState({username: u});
-  }
-  setPassword = (p:string) => {
-	this.setState({password: p});
-  }
-  submitLoginInfo = () => {
-	//SUBMIT TO PHP HERE
-	var { username, password } = this.state;
-    if ((username.length==0) || (password.length==0)){
-        alert("Not enough characters for Username or Password");
-    }
-    else {
-        var DatabaseURL = "http://localhost/Project/login.php"; // where server is hosted right now
-
-        var headers = {
-            'Accept' : 'application/json',
-            'Content-Type' : 'application/json'
-        };
-
-        var Data = {
-            Username : username,
-            Password : password
-        }
-
-        fetch(DatabaseURL, {
-            method: 'POST',
-            headers:headers,
-            body: JSON.stringify(Data)
-        })
-        .then((Response)=>Response.json()) // check if in the response is in JSON format
-        // dealing with the repsonse
-        .then((Response)=>{
-
-        })
-    }
-	console.log("SUBMIT: " + username + ", " + password);
-  }
-  	showUserError = (errMsg: string) => {
-	this.userErrMsg = errMsg;
-	this.setState({showUserError: true});
+	showUserError = (errMsg: string) => {
+		this.userErrMsg = errMsg;
+		this.setState({showUserError: true});
 	}
 	showPasswordError = (errMsg: string) => {
 		this.passErrMsg = errMsg;
@@ -123,6 +120,15 @@ class LoginForm extends React.Component<lfp, lfs> {
 				onChangeText = {text => this.setPassword(text)}
 			/>
 			{passErrorView}
+
+			<Text style={[styles.header]}>Confirm Password</Text>
+			<TextInput
+				style={[styles.textInput, passSpace]}
+				placeholder='password...'
+				placeholderTextColor={'#888'}
+				keyboardType={'visible-password'}
+				onChangeText = {text => this.setPasswordCheck(text)}
+			/>
 
 			<Buddon
 				style={[styles.submitBuddon, {marginTop: 15}]}
