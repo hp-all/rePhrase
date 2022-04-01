@@ -15,6 +15,7 @@ import useColorScheme from '../hooks/useColorScheme';
 import { appStyles, colorTheme } from '../components/AppStyles';
 
 import ModalScreen from '../screens/ModalScreen';
+import LoginScreen from '../screens/LoginScreen';
 import NotFoundScreen from '../screens/NotFoundScreen';
 import MusicLibraryScreen from '../screens/MusicLibraryScreen';
 import PlayMusicScreen from '../screens/PlayMusicScreen';
@@ -43,8 +44,13 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function RootNavigator() {
+  //TODO
+
   return (
     <Stack.Navigator>
+      <Stack.Screen name="Login" component={LoginScreen} options={{header: () => (
+            <Header title=''/>
+          ),}}/>
       <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
       <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
       <Stack.Group screenOptions={{ presentation: 'modal' }}>
@@ -79,7 +85,7 @@ function BottomTabNavigator() {
           tabBarIcon: ({ color, focused }) => <TabBarImg icon='library' color={color} focused={focused} />,
           headerRight: () => (
             <Pressable
-              onPress={() => navigation.navigate('Modal')}
+              onPress={() => navigation.navigate('Login')}
               style={({ pressed }) => ({
                 opacity: pressed ? 0.5 : 1,
               })}>
@@ -91,9 +97,9 @@ function BottomTabNavigator() {
               />
             </Pressable>
           ),
-          header: () => (
-            <Header title=''/>
-          ),
+          // header: () => (
+          //   <Header title=''/>
+          // ),
         })}
       />
       <BottomTab.Screen

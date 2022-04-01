@@ -120,6 +120,15 @@ export class Form extends React.Component<fP, fS> {
     }
 }
 
+export function FormInputError(props: {
+    errMsg: string
+}) {
+    return (
+        <View style={{borderRadius: 4, padding: 4, backgroundColor: colorTheme['t_opplight']}}>
+            <Text style={[styles.subheader, {color: colorTheme['t_oppdark']}]}>{props.errMsg}</Text>
+        </View>
+    )
+}
     
 type fnP = {numID: string, prompt?: string, numListener?: (v: number)=>any, defaultNum?: number, verticalDrag?: boolean, numInterval?: number, dragFactor?: number, decimals?: number, upperBound?: number, lowerBound?: number, style?: any}
 type fnS = {num: number, movRef: number,}

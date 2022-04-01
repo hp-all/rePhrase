@@ -123,11 +123,19 @@ export const appStyles = StyleSheet.create({
 	},
 	textInput: {
 		height: 25,
+		width: 250,
 		backgroundColor: colorTheme['white'],
 		alignSelf: 'center',
 		borderRadius: 3,
 		color: colorTheme['t_dark'],
 		paddingHorizontal: 7,
+		marginBottom: 10,
+	},
+	submitBuddon: {
+		backgroundColor: colorTheme['t_light'],
+		padding: 7,
+		width: 150,
+		alignSelf: 'center'
 	},
 
 
