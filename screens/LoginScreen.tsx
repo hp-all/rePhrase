@@ -24,3 +24,6 @@ export default function LoginScreen() {
       </View>
   );
 }
+
+function LoggingIn(){
+}
