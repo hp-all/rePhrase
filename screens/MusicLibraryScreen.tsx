@@ -5,10 +5,16 @@ import { Text, View } from '../components/Themed';
 import { appStyles as styles, colorTheme } from '../components/AppStyles';
 
 
-export default function MusicLibraryScreen() {
+export default function MusicLibraryScreen({navigation, route}: {navigation: any, route:any}) {
+	console.log("---------- Start Music Library Screen -------------------");
+	var title: string = "Library";
+	console.log("Route: " + Object.keys(route) + '\n' + Object.values(route));
+	if(route & route.params) {
+		title = route.params.username + "'s Library";
+	}
   	return (
 		<View style={[styles.container, styles.darkbg]}>
-			<Text style={styles.title}>Library</Text>
+			<Text style={styles.title}>{title}</Text>
 			<View style= {{backgroundColor: colorTheme['gray'], flexShrink: 1, padding: 20, borderRadius: 8}}>
 				<TextInput 
 					style={[styles.textInput, {width: '100%'}]}

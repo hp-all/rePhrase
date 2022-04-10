@@ -99,13 +99,14 @@ export default function ButtonMenu(props:
 					/>
                 </ButtonGroup>
 			</View>
+
 		</View>
 	);
 
 	return (
 		<View style={[{backgroundColor: colorTheme['gray'], height: 130, paddingHorizontal: 10, paddingBottom: 10}]}>
 			<View style={[styles.rowContainer, styles.transparentbg]}>
-				<ButtonGroup style={{flex: 1}}>
+				<ButtonGroup style={{flex: 1.5}}>
 					<PopupTrigger
 						label = {ButtonLabels.ViewSettings}
 						icon='viewSize'
@@ -130,15 +131,15 @@ export default function ButtonMenu(props:
                         style={{flexShrink: 1, height: '100%', padding: 0}}
                     />
 				</ButtonGroup>
-				<View style={{flex: 1}}/>
-				<ButtonGroup style={{flex: 1, alignItems: 'flex-end'}}>
-					<View style={{flex:1, backgroundColor: 'transparent'}}/>
+				<View style={[styles.container, styles.transparentbg]}/>
+				<ButtonGroup style={{flex: 1}}>
+					<View style={{flex:0.5, backgroundColor: 'transparent'}}/>
 					<Buddon
 						label='undo'
 						icon='undo'
 						onPress={()=>{}}
 						isSelected= {false}
-                        style={{...rightBorderRadius(0), ...leftBorderRadius(5), flex: 1}}
+                        style={{...rightBorderRadius(0), ...leftBorderRadius(5), height: '100%', flex: 1}}
 					/>
 					<View style={[styles.vertLine, {marginHorizontal: 0, flexShrink: 1}]}/>
 					<Buddon
@@ -146,12 +147,42 @@ export default function ButtonMenu(props:
 						icon='redo'
 						onPress={()=>{}}
 						isSelected= {false}
-                        style={{...rightBorderRadius(5), ...leftBorderRadius(0), flex: 1}}
+                        style={{...rightBorderRadius(5), ...leftBorderRadius(0), height: '100%', flex: 1}}
 					/>
                 </ButtonGroup>
 			</View>
 			<View style={[styles.rowContainer, styles.transparentbg]}>
-				
+				<PopupTrigger
+					style={{flex: 2, height: 40}}
+					label={ButtonLabels.PlayLoop}
+					icon= 'loops'
+					popupListener={props.popupListener}
+					options= {[""]}
+					isSelected= {false}
+					bg= {'t_white'}
+				/>
+				<View style={[styles.container, styles.transparentbg]}/>
+				<ButtonGroup style={{flex: 1, alignItems: 'center'}}>
+					<Buddon
+						label={ButtonLabels.Restart}
+						icon='restart' 
+						onPress= {trackPlayerController.restart}
+						isSelected= {false}
+						bg= {'t_white'}
+						style={{...rightBorderRadius(0), ...leftBorderRadius(5), marginLeft: 0, flex: 1, height: 40}}
+					/>
+					<View style={[styles.vertLine, {marginHorizontal: 0, flexShrink: 1, height: 40}]}/>
+					<Buddon
+						label={ButtonLabels.Play}
+						icon='pause' 
+						alticon='play'
+						onPress= {trackPlayerController.togglePlay}
+						isSelected= {trackPlayerController.isPlaying}
+						bg= {'t_white'}
+						style={{...rightBorderRadius(5), ...leftBorderRadius(0), marginRight: 0, flex: 1, height: 40}}
+					/>
+				</ButtonGroup>
+
 			</View>
 		</View>
 	)
