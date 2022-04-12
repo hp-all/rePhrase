@@ -130,6 +130,58 @@ export function FormInputError(props: {
         </View>
     )
 }
+
+export class FormField<T> {
+    fieldName: string;
+    errorMessage = "";
+    showError = false;
+    fieldValue: T;
+    private checkConditions: {val: T, msg: string}[];
+    constructor(fieldName: string, init: T, checkConditions: {val: T, msg: string}[]) {
+        this.fieldName = fieldName;
+        this.fieldValue = init;
+        this.checkConditions = checkConditions;
+    }
+    setField(value: T) {
+        this.fieldValue = value;
+    }
+    checkFieldValue() {
+        for(var condition of this.checkConditions) {
+            if(this.fieldValue == condition.val) {
+                this.showError = true;
+                this.errorMessage = condition.msg;
+                return false;
+            }
+        }
+        this.showError = false;
+        this.errorMessage = "";
+        return true;
+    }
+    getErrorView(style: any) {
+        if(this.showError) {
+            return <FormInputError errMsg={this.errorMessage} style={style}/>
+        }
+        return null;
+    }
+    getTextInputView() {
+        if(typeof this.fieldValue == "string") {
+            return (
+                <View>
+                    <Text style={styles.header}>{this.fieldName}</Text>
+                    <TextInput
+                        style={[styles.textInput, {marginBottom: (this.showError)?0:20}]}
+                        placeholder='song name...'
+                        placeholderTextColor={'#888'}
+                        keyboardType={'default'}
+                        onChangeText = {text => {this.fieldValue = text}}
+                        clearButtonMode= 'always'
+                    />
+                </View>
+            )
+        }
+    }
+}
+
     
 type fnP = {numID: string, prompt?: string, numListener?: (v: number)=>any, defaultNum?: number, verticalDrag?: boolean, numInterval?: number, dragFactor?: number, decimals?: number, upperBound?: number, lowerBound?: number, style?: any}
 type fnS = {num: number, movRef: number,}

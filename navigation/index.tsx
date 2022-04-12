@@ -19,7 +19,7 @@ import LoginScreen from '../screens/LoginScreen';
 import SignupScreeen from '../screens/SignupScreen';
 
 import NotFoundScreen from '../screens/NotFoundScreen';
-import MusicLibraryScreen from '../screens/MusicLibraryScreen';
+import MusicLibraryScreen from '../screens/MusicLibrary/MusicLibraryScreen';
 import PlayMusicScreen from '../screens/PlayMusicScreen';
 import AssignSectionScreen from '../screens/AssignSection/AssignSectionScreen';
 import ProfileInfoScreen from '../screens/ProfileInfoScreen';
@@ -50,21 +50,25 @@ function RootNavigator() {
   //TODO
 
   return (
-    <Stack.Navigator>
+    // ask php if logged in
+      //show app
+    // else 
+      //show login
+    <Stack.Navigator initialRouteName='Root'>
+      
       <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
       <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
       <Stack.Group screenOptions={{ presentation: 'modal' }}>
         <Stack.Screen name="Modal" component={ModalScreen} />
       </Stack.Group>
+      <Stack.Screen name="Login" component={LoginScreen} options={{
+        title: '',
+        header: () => (
+          <Header title=''/>
+        ),
+      }}/>
+
       
-      <Stack.Group screenOptions={{ presentation: 'modal' }}>
-        <Stack.Screen name="Signup" component={SignupScreeen} options={{
-          title: '',
-          header: () => (
-            <Header title=''/>
-          ),
-        }}/>
-      </Stack.Group>
     </Stack.Navigator>
   );
 }
@@ -77,10 +81,10 @@ const BottomTab = createBottomTabNavigator<RootTabParamList>();
 
 function BottomTabNavigator() {
   const colorScheme = useColorScheme();
-
+  console.log("Moved to Bottom Tab");
   return (
     <BottomTab.Navigator
-      initialRouteName="AssignSection"
+      initialRouteName="MusicLibrary"
       screenOptions={{
         tabBarInactiveBackgroundColor: colorTheme['t_white'],
         tabBarActiveBackgroundColor: colorTheme['t_dark'],
@@ -94,7 +98,7 @@ function BottomTabNavigator() {
           tabBarIcon: ({ color, focused }) => <TabBarImg icon='library' color={color} focused={focused} />,
           headerRight: () => (
             <Pressable
-              onPress={() => navigation.navigate('Signup')}
+              onPress={() => navigation.navigate('Login')}
               style={({ pressed }) => ({
                 opacity: pressed ? 0.5 : 1,
               })}>

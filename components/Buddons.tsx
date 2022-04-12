@@ -95,7 +95,7 @@ export class Draggable extends Component<dp, dS> {
     }
 }
 
-type bP = {label: string, onPress: ()=>void, isSelected: boolean, style?: any, 
+type bP = {label: string, onPress: ()=>void, isSelected?: boolean, style?: any, 
     icon?: keyof typeof buttonIcons.light & keyof typeof buttonIcons.dark, 
     alticon?: keyof typeof buttonIcons.light & keyof typeof buttonIcons.dark
     fontAwesome?: {name: 'close'|undefined, size: number, color: string}
@@ -108,8 +108,8 @@ export class Buddon extends Component<bP, bS> {
         super(props);
     }
     tabBarImg = (
-        isSelected: boolean,
         icon: keyof typeof buttonIcons.light & keyof typeof buttonIcons.dark,
+        isSelected?: boolean,
         alticon?: keyof typeof buttonIcons.light & keyof typeof buttonIcons.dark,
     ) => {
         var filesrc;
@@ -134,12 +134,12 @@ export class Buddon extends Component<bP, bS> {
 
     render() {
         var info = (
-            <Text style={[styles.subheader, styles.centerText, this.props.isSelected? styles.selectedbuttonlabel: styles.buttonlabel]}>
+            <Text style={[styles.subheader, styles.centerSelf, this.props.isSelected? styles.selectedbuttonlabel: styles.buttonlabel]}>
                 {this.props.label}
             </Text>
         );
         if(this.props.icon) {
-            info = this.tabBarImg(this.props.isSelected, this.props.icon, this.props.alticon);
+            info = this.tabBarImg(this.props.icon, this.props.isSelected, this.props.alticon);
         } else if(this.props.fontAwesome) {
             info = (
                 <FontAwesome
@@ -200,7 +200,7 @@ export class PopupTrigger extends Component<ptP, ptS> {
 
     render() {
         var info = (
-            <Text style={[styles.subheader, styles.centerText]}>
+            <Text style={[styles.subheader, styles.centerSelf]}>
                 {this.props.label}
             </Text>
         );
