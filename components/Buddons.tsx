@@ -5,6 +5,41 @@ import { appStyles as styles, colorTheme, colorTypes} from '../components/AppSty
 import { FontAwesome } from '@expo/vector-icons';
 
 
+
+export const buttonIcons = {
+    light: {
+        play:       require("../assets/images/buttons/light/play.png"),
+        pause:      require("../assets/images/buttons/light/pause.png"),
+        restart:    require("../assets/images/buttons/light/restart.png"),
+        viewSize:   require("../assets/images/buttons/light/viewSize.png"),
+        editBlock:  require("../assets/images/buttons/light/editBlock.png"),
+        showLines:  require("../assets/images/buttons/light/showLines.png"),
+        list:       require("../assets/images/buttons/light/list.png"),
+        add:        require("../assets/images/buttons/light/add.png"),
+        snap:       require("../assets/images/buttons/light/snap.png"),
+        loops:      require("../assets/images/buttons/light/loops.png"),
+        undo:       require("../assets/images/buttons/light/undo.png"),
+        redo:       require("../assets/images/buttons/light/redo.png"),
+        upload:       require("../assets/images/buttons/dark/upload.png"),
+
+    },
+    dark: {
+        play:       require("../assets/images/buttons/dark/play.png"),
+        pause:      require("../assets/images/buttons/dark/pause.png"),
+        restart:    require("../assets/images/buttons/dark/restart.png"),
+        viewSize:   require("../assets/images/buttons/dark/viewSize.png"),
+        editBlock:  require("../assets/images/buttons/dark/editBlock.png"),
+        showLines:  require("../assets/images/buttons/dark/showLines.png"),
+        list:       require("../assets/images/buttons/dark/list.png"),
+        add:        require("../assets/images/buttons/dark/add.png"),
+        snap:       require("../assets/images/buttons/dark/snap.png"),
+        loops:      require("../assets/images/buttons/light/loops.png"),
+        undo:       require("../assets/images/buttons/light/undo.png"),
+        redo:       require("../assets/images/buttons/light/redo.png"),
+        upload:       require("../assets/images/buttons/dark/upload.png"),
+    }
+}
+
 type dp = {children?: any, onLift?: any, onDrag?: any, showXBar?: boolean, style?: any};
 type dS = {dragging: boolean, label: string, xVal: number};
 export class Draggable extends Component<dp, dS> {
@@ -99,6 +134,7 @@ type bP = {label: string, onPress: ()=>void, isSelected?: boolean, style?: any,
     icon?: keyof typeof buttonIcons.light & keyof typeof buttonIcons.dark, 
     alticon?: keyof typeof buttonIcons.light & keyof typeof buttonIcons.dark
     fontAwesome?: {name: 'close'|undefined, size: number, color: string}
+    withText?: boolean,
     bg?: colorTypes,
     altbg?: colorTypes,
 } 
@@ -133,15 +169,16 @@ export class Buddon extends Component<bP, bS> {
     }
 
     render() {
-        var info = (
+        var label = (
             <Text style={[styles.subheader, styles.centerSelf, this.props.isSelected? styles.selectedbuttonlabel: styles.buttonlabel]}>
                 {this.props.label}
             </Text>
         );
+        var img = null;
         if(this.props.icon) {
-            info = this.tabBarImg(this.props.icon, this.props.isSelected, this.props.alticon);
+            img = this.tabBarImg(this.props.icon, this.props.isSelected, this.props.alticon);
         } else if(this.props.fontAwesome) {
-            info = (
+            img = (
                 <FontAwesome
                     name={this.props.fontAwesome.name}
                     size={this.props.fontAwesome.size}
@@ -150,6 +187,19 @@ export class Buddon extends Component<bP, bS> {
                 />
             )
         }
+
+        var buttonDisplay;
+        if(this.props.withText && img) {
+            <View style={styles.rowContainer}>
+                {img}
+                {label}
+            </View>
+        } else if(img) {
+            buttonDisplay = img;
+        }else {
+            buttonDisplay = label;
+        }
+
         var bg = null;
         if(this.props.bg && !this.props.isSelected) {
             bg = {backgroundColor: colorTheme[this.props.bg]}
@@ -161,7 +211,7 @@ export class Buddon extends Component<bP, bS> {
                 onPress={this.props.onPress}
                 style={[styles.button, this.props.isSelected && styles.selected, this.props.icon && styles.buttonSize, bg, this.props.style]}
             >
-                {info}
+                {buttonDisplay}
             </TouchableOpacity>
         );
     }
@@ -242,35 +292,4 @@ export function ButtonGroup(props: {label?: string, style?: any, children?: any,
             </View>
         </View>
     )
-}
-
-const buttonIcons = {
-    light: {
-        play:       require("../assets/images/buttons/light/play.png"),
-        pause:      require("../assets/images/buttons/light/pause.png"),
-        restart:    require("../assets/images/buttons/light/restart.png"),
-        viewSize:   require("../assets/images/buttons/light/viewSize.png"),
-        editBlock:  require("../assets/images/buttons/light/editBlock.png"),
-        showLines:  require("../assets/images/buttons/light/showLines.png"),
-        list:       require("../assets/images/buttons/light/list.png"),
-        add:        require("../assets/images/buttons/light/add.png"),
-        snap:       require("../assets/images/buttons/light/snap.png"),
-        loops:      require("../assets/images/buttons/light/loops.png"),
-        undo:       require("../assets/images/buttons/light/undo.png"),
-        redo:       require("../assets/images/buttons/light/redo.png"),
-    },
-    dark: {
-        play:       require("../assets/images/buttons/dark/play.png"),
-        pause:      require("../assets/images/buttons/dark/pause.png"),
-        restart:    require("../assets/images/buttons/dark/restart.png"),
-        viewSize:   require("../assets/images/buttons/dark/viewSize.png"),
-        editBlock:  require("../assets/images/buttons/dark/editBlock.png"),
-        showLines:  require("../assets/images/buttons/dark/showLines.png"),
-        list:       require("../assets/images/buttons/dark/list.png"),
-        add:        require("../assets/images/buttons/dark/add.png"),
-        snap:       require("../assets/images/buttons/dark/snap.png"),
-        loops:      require("../assets/images/buttons/light/loops.png"),
-        undo:       require("../assets/images/buttons/light/undo.png"),
-        redo:       require("../assets/images/buttons/light/redo.png"),
-    }
 }

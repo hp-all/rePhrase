@@ -15,6 +15,18 @@ export class Profile {
         this.username = username;
         // DO SQL LOOKUP to get list of friends
     }
+    toJSON() {
+        return {
+            uid: this.uid,
+            username: this.username,
+        }
+    }
+    static parseJSON(json: any) {
+        return new Profile(json.uid, json.username);
+    }
+}
+Profile.prototype.toString = function toString() {
+    return "Profile -> uid: " + this.uid + ", username: " + this.username;
 }
 
 export default class UserProfile extends Profile {
@@ -31,8 +43,29 @@ export default class UserProfile extends Profile {
     removeFriend(friend: FriendProfile) {
 
     }
+    toJSON() {
+        return {
+            uid: this.uid,
+            username: this.username,
+            password: this.password,
+        }
+    }
+    copy(u: UserProfile) {
+        this.uid = u.uid;
+        this.username = u.username;
+        this.password = u.password;
+    }
+    static parseJSON(json: any) {
+        return new UserProfile(json.uid, json.username, json.password);
+    }
 }
 
+
+UserProfile.prototype.toString = function toString() {
+    return "Profile -> uid: " + this.uid + ", username: " + this.username + ", password: " + this.password;
+}
+
+export const thisAppUser: UserProfile = new UserProfile(-1, "", "");
 
 export class FriendProfile { 
     // Um idk, he baby

@@ -13,16 +13,17 @@ import { SongGroup, SongGroupButton, SongListTypes } from './SongListViews';
 // Objects & Wrappers
 import { SongListItem, Playlist, getUsersPlaylists, getAllFromPlaylists, searchForSongs, getSongsByAlbumFromPlaylists, getSongsByArtistFromPlaylists } from '../../DatabaseWrappers/SongStuff';
 import { UploadMP3, UploadMP3Popup } from './UploadMP3';
+import { RootTabScreenProps } from '../../types';
 
-export default function MusicLibraryScreen({navigation, route}: {navigation: any, route:any}) {
+export default function MusicLibraryScreen({navigation, route}: any) {
 	console.log("---------- Start Music Library Screen ------------");
 	var title: string = "Library";
-	if(route & route.params) {
+	if(route && route.params) {
 		title = route.params.username + "'s Library";
 	}
   	return (
 		<View style={[styles.container, styles.darkbg, {}]}>
-			<Text style={styles.title}>{"Library"}</Text>
+			<Text style={styles.title}>{title}</Text>
 			<PlaylistView/>
 		<StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
 		</View>

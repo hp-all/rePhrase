@@ -1,7 +1,7 @@
 // React Native & Expo
 import { StatusBar } from 'expo-status-bar';
 import * as React from 'react';
-import { Platform, TextInput, Image} from 'react-native';
+import { Platform, TextInput, Image, TouchableOpacity} from 'react-native';
 
 // Theme and Styles
 import { Text, View } from '../components/Themed';
@@ -9,11 +9,11 @@ import { appStyles as styles, colorTheme} from '../components/AppStyles';
 
 // Components
 import { Buddon } from '../components/Buddons';
-import { FormInputError } from '../components/Form';
+import { FormInputError, FormField } from '../components/Form';
 
 // Database & Wrappers
 import { MYSQLRequest } from '../DatabaseWrappers/DatabaseRequest';
-import UserProfile from '../DatabaseWrappers/Profiles';
+import UserProfile, { thisAppUser } from '../DatabaseWrappers/Profiles';
 
 export default function LoginScreen({navigation, route}: {navigation: any, route:any}) {
 	console.log("----------- Start Login Screen ----------------");
@@ -21,123 +21,125 @@ export default function LoginScreen({navigation, route}: {navigation: any, route
 		<View style={[{padding: 10}, styles.transparentbg]}>
 			<Text style={[styles.header, {fontSize: 50}]}>Log In</Text>
 			<LoginForm
-				navigateToRoot={(username: string)=>{navigation.navigate("Root", {username: username})}}
+				navigateToRoot={(profileData: any)=>{navigation.navigate("Root", profileData)}}
 			/>
 		</View>
   	);
 }
 
-type lfp = {navigateToRoot: (username: string)=>void};
-type lfs = {username: string, password: string, showUserError: boolean, showPasswordError: boolean};
+type lfp = {navigateToRoot: (profileData: any)=>void};
+type lfs = {showError: boolean, isSignup: boolean};
 class LoginForm extends React.Component<lfp, lfs> {
-	userErrMsg = "";
-	passErrMsg = "";
+	usernameField: FormField<string>;
+	passwordField: FormField<string>;
+	passwordCheckField: FormField<string>;
 	constructor(props: any) {
 		super(props);
+		this.usernameField = new FormField("Username", "", [{val: "", msg: "enter a username"}]);
+		this.passwordField = new FormField("Password", "", [{val: "", msg: "enter a username"}]);
+		this.passwordCheckField = new FormField("Confirm Password", "", [
+			{val: "", msg: "enter a username"}, 
+			{val: this.passwordField.value, msg: "Passwords do not match", mustMatch: true}
+		]);
+
 		this.state = {
-			username: "",
-			password: "",
-			showUserError: false,
-			showPasswordError: false,
+			showError: false,
+			isSignup: false,
 		}
 	}
 
-	setEmail = (u:string) => {
-		this.setState({username: u});
+	checkEntries = ():boolean => {
+		console.log("Checking");
+		var a = this.usernameField.checkValue();
+		var b = this.passwordField.checkValue();
+		var c = true;
+		if(this.state.isSignup) {
+			c = this.passwordCheckField.checkValue();
+		}
+		return a && b && c;
 	}
-	setPassword = (p:string) => {
-		this.setState({password: p});
+	quickLogin = () => {
+		var profile = new UserProfile(0, "Admin", "adminpassword");
+		thisAppUser.copy(profile);
+		this.props.navigateToRoot(profile.toJSON());
 	}
-	checkEntries = (username: string, password: string):boolean => {
-		var canSubmit = true;
-		if(username == "") {
-			this.showUserError("Enter your username");
-			canSubmit = false;
-		} else { this.setState({showUserError: false})}
-		if(password == "") {
-			this.showPasswordError("Enter your password");
-			canSubmit = false;
-		} else { this.setState({showPasswordError: false})}
-		
-
-		return canSubmit;
-	}
-	submitLoginInfo = () => {
-		var { username, password } = this.state;
-		
-		if (this.checkEntries(username, password)) {
+	submitLoginInfo = () => {		
+		if (this.checkEntries()) {
 			//SUBMIT TO PHP HERE
 			var Data = {
-				Username : username,
-				Password : password
+				Username : this.usernameField.value,
+				Password : this.passwordField.value,
 			}
-			MYSQLRequest("login.php", Data).then((Response)=>{
+			var profile: UserProfile;
+			profile = new UserProfile(0, this.usernameField.value, this.passwordField.value);
+			// MYSQLRequest("login.php", Data).then((Response)=>{
 				
-			});
+			// });
 			
 			// TODO:: After checking, navigate to the root tab with the props function
 			// !!Probably would go within the .then(Response) seciton above
-			this.props.navigateToRoot(username);
+		
+			thisAppUser.copy(profile);
+
+			this.props.navigateToRoot(profile.toJSON());
+            this.setState({showError: false});
+		} else {
+            this.setState({showError: true});
 		}
-	}
-  	showUserError = (errMsg: string) => {
-	this.userErrMsg = errMsg;
-	this.setState({showUserError: true});
-	}
-	showPasswordError = (errMsg: string) => {
-		this.passErrMsg = errMsg;
-		this.setState({showPasswordError: true});
 	}
 
 	render() {
-		var userErrorView = null, passErrorView = null;
+		var passCheckView = null;
+		var userErrView = null, passErrView = null, passCheckErrView = null;
 		var userSpace = {marginBottom: 0}, passSpace = {marginBottom: 0}
 		var errMargin = 8;
 		var noErrSpace = 10;
-		if(this.state.showUserError) {
-			userErrorView = (
-				<FormInputError errMsg={this.userErrMsg} style={{marginBottom: errMargin}}/>
-			);
-		} else {
-			this.userErrMsg = "";
-			userSpace = {marginBottom: noErrSpace};
+		
+		if(this.state.showError) {
+            console.log("Showing Error");
+            userErrView = this.usernameField.getErrorView({marginBottom: errMargin});
+            passErrView = this.passwordField.getErrorView({marginBottom: errMargin});
+			if(this.state.isSignup)
+				passCheckErrView = this.passwordField.getErrorView({marginBottom: errMargin});
+        }
+		if(this.state.isSignup) {
+			passCheckView = this.passwordCheckField.getTextInputView();
 		}
-		if(this.state.showPasswordError) {
-			passErrorView = (
-				<FormInputError errMsg={this.passErrMsg} style={{marginBottom: errMargin}}/>
-			)
-		} else {
-			this.passErrMsg = "";
-			passSpace = {marginBottom: noErrSpace};
-		}
+
+		var switchText = "click here to sign up instead";
+		if(this.state.isSignup)
+			switchText = "click here to login";
+
 		return (
 			<View style={{width: 290, alignSelf: 'center', margin: 20, padding: 20, backgroundColor: colorTheme['t_med'], borderRadius: 10}}>
-				<Text style={styles.header}>Username</Text>
-				<TextInput
-					style={[styles.textInput, userSpace]}
-					placeholder='username...'
-					placeholderTextColor={'#888'}
-					keyboardType={'default'}
-					onChangeText = {text => this.setEmail(text)}
-				/>
-				{userErrorView}
+				{this.usernameField.getTextInputView()}
+				{userErrView}
 
-				<Text style={[styles.header]}>Password</Text>
-				<TextInput
-					style={[styles.textInput, passSpace]}
-					placeholder='password...'
-					placeholderTextColor={'#888'}
-					keyboardType={'visible-password'}
-					onChangeText = {text => this.setPassword(text)}
-				/>
-				{passErrorView}
+				{this.passwordField.getTextInputView()}
+				{passErrView}
+
+				{passCheckView}
+				{passCheckErrView}
 
 				<Buddon
-					style={[styles.submitBuddon, {marginTop: 15}]}
+					style={[styles.submitBuddon, {margin: 15}]}
 					label = "Login"
 					onPress={this.submitLoginInfo}
 					isSelected={false}
 				/>
+				<Buddon
+					style={{marginBottom: 15}}
+					bg={'t_white'}
+					label = "QUICK LOGIN"
+					onPress={this.quickLogin}
+				/>
+				<TouchableOpacity
+					style={[styles.transparentbg]}
+					onPress={()=>this.setState({isSignup: true})}
+				>
+					<Text style={[styles.subheader, styles.centerSelf, {color: colorTheme['t_white']}]}>{switchText}</Text>
+				</TouchableOpacity>
+
 			</View>
 		)
 	}

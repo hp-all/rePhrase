@@ -1,6 +1,6 @@
 // React and Expo Stuff
 import * as React from 'react';
-import { TouchableOpacity, TextInput } from 'react-native';
+import { TouchableOpacity, TextInput, Image} from 'react-native';
 
 // Themes and Styles
 import { Text, View } from '../../components/Themed';
@@ -8,7 +8,7 @@ import { appStyles as styles, blockColors, colorTheme } from '../../components/A
 
 // Components
 import { FormField, FormInputError } from '../../components/Form';
-import { Buddon } from '../../components/Buddons';
+import { Buddon, buttonIcons } from '../../components/Buddons';
 import { MYSQLRequest } from '../../DatabaseWrappers/DatabaseRequest';
 import { UploadMP3ToDB } from '../../DatabaseWrappers/SongStuff';
 
@@ -16,9 +16,10 @@ export function UploadMP3(props: {onPress: ()=>void, style?: any}) {
     return (
         <View style={props.style}> 
             <TouchableOpacity 
-                style={{backgroundColor: blockColors['green_med'], width: 180, borderRadius: 8, height: 50, padding: 10}}
+                style={{backgroundColor: blockColors['green_med'], width: 190, borderRadius: 8, height: 50, padding: 10, flexDirection: 'row'}}
                 onPress= {props.onPress}    
             >
+                <Image source= {buttonIcons['light']['upload']} style={{resizeMode: 'stretch', width: 25, height: 35, marginHorizontal: 5}}/>
                 <Text style={[styles.header, styles.centerSelf, {color: 'white'}]}>Upload MP3</Text>
             </TouchableOpacity>
         </View>
@@ -75,22 +76,22 @@ class UploadMP3Form extends React.Component<umfP, umfS> {
     }    
 
     checkEntries = (): boolean => {
-        var a = this.songField.checkFieldValue() 
-        var b = this.albumField.checkFieldValue()
-        var c = this.artistField.checkFieldValue()
-        var d = this.mp3Field.checkFieldValue();
+        var a = this.songField.checkValue() 
+        var b = this.albumField.checkValue()
+        var c = this.artistField.checkValue()
+        var d = this.mp3Field.checkValue();
         return a && b && c && d;
 	}
     submitLoginInfo = () => {
         this.setState({showSuccess: false});
 		if (this.checkEntries()) {
 			//SUBMIT TO PHP HERE
-            this.songField.fieldValue,
-            this.albumField.fieldValue,
-            this.artistField.fieldValue,
-            this.mp3Field.fieldValue
+            this.songField.value,
+            this.albumField.value,
+            this.artistField.value,
+            this.mp3Field.value
 
-			UploadMP3ToDB(0, this.songField.fieldValue, this.albumField.fieldValue, this.artistField.fieldValue, this.mp3Field.fieldValue);
+			UploadMP3ToDB(0, this.songField.value, this.albumField.value, this.artistField.value, this.mp3Field.value);
             this.setState({showError: false, showSuccess: true});
 		} else {
             this.setState({showError: true});

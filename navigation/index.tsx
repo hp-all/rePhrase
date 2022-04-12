@@ -16,7 +16,6 @@ import { appStyles, colorTheme } from '../components/AppStyles';
 
 import ModalScreen from '../screens/ModalScreen';
 import LoginScreen from '../screens/LoginScreen';
-import SignupScreeen from '../screens/SignupScreen';
 
 import NotFoundScreen from '../screens/NotFoundScreen';
 import MusicLibraryScreen from '../screens/MusicLibrary/MusicLibraryScreen';
@@ -27,6 +26,7 @@ import TestWhateverScreen from '../screens/TestWhateverScreen';
 
 import { RootStackParamList, RootTabParamList, RootTabScreenProps } from '../types';
 import LinkingConfiguration from './LinkingConfiguration';
+import UserProfile from '../DatabaseWrappers/Profiles';
 
 export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
   return (
@@ -54,7 +54,7 @@ function RootNavigator() {
       //show app
     // else 
       //show login
-    <Stack.Navigator initialRouteName='Root'>
+    <Stack.Navigator initialRouteName='Login'>
       
       <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
       <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
@@ -79,9 +79,13 @@ function RootNavigator() {
  */
 const BottomTab = createBottomTabNavigator<RootTabParamList>();
 
-function BottomTabNavigator() {
+function BottomTabNavigator({navigation, route}: {navigation: any, route: any}) {
   const colorScheme = useColorScheme();
-  console.log("Moved to Bottom Tab");
+  var userProfile = undefined;
+  if(route.params) {
+    userProfile = UserProfile.parseJSON(route.params);
+    // console.log(userProfile);
+  }
   return (
     <BottomTab.Navigator
       initialRouteName="MusicLibrary"
@@ -89,31 +93,33 @@ function BottomTabNavigator() {
         tabBarInactiveBackgroundColor: colorTheme['t_white'],
         tabBarActiveBackgroundColor: colorTheme['t_dark'],
         tabBarActiveTintColor: colorTheme['t_oppdark'],
-      }}>
+      }}
+    >
       <BottomTab.Screen
         name="MusicLibrary"
         component={MusicLibraryScreen}
         options={({ navigation }: RootTabScreenProps<'MusicLibrary'>) => ({
           title: '',
           tabBarIcon: ({ color, focused }) => <TabBarImg icon='library' color={color} focused={focused} />,
-          headerRight: () => (
-            <Pressable
-              onPress={() => navigation.navigate('Login')}
-              style={({ pressed }) => ({
-                opacity: pressed ? 0.5 : 1,
-              })}>
-              <FontAwesome
-                name="info-circle"
-                size={25}
-                color={Colors[colorScheme].text}
-                style={{ marginRight: 15 }}
-              />
-            </Pressable>
-          ),
-          // header: () => (
-          //   <Header title=''/>
+          // headerRight: () => (
+          //   <Pressable
+          //     onPress={() => navigation.navigate('Login')}
+          //     style={({ pressed }) => ({
+          //       opacity: pressed ? 0.5 : 1,
+          //     })}>
+          //     <FontAwesome
+          //       name="info-circle"
+          //       size={25}
+          //       color={Colors[colorScheme].text}
+          //       style={{ marginRight: 15 }}
+          //     />
+          //   </Pressable>
           // ),
+          header: () => (
+            <Header title=''/>
+          ),
         })}
+        initialParams={route.params}
       />
       <BottomTab.Screen
         name="PlayMusic"
@@ -125,6 +131,7 @@ function BottomTabNavigator() {
             <Header title=''/>
           ),
         }}
+        initialParams={route.params}
       />
       <BottomTab.Screen
         name="AssignSection"
@@ -132,23 +139,23 @@ function BottomTabNavigator() {
         options={{
           title: '',
           tabBarIcon: ({ color, focused }) => <TabBarImg icon='sectionView' color={color} focused={focused} />,
-          headerLeft: () => (
-            <Image source={require("../assets/images/logos/icon.png")} style={{resizeMode: 'contain', height: 48, width: '100%', marginVertical: 5, marginLeft: -20}}/>
-          ),
           header: () => (
             <Header title=''/>
           ),
         }}
+        initialParams={route.params}
       />
       <BottomTab.Screen
         name="ProfileInfo"
         component={ProfileInfoScreen}
         options={{
           title: '',
+          tabBarIcon: ({ color, focused }) => <TabBarImg icon='profile' color={color} focused={focused} />,
           header: () => (
             <Header title=''/>
           ),
         }}
+        initialParams={route.params}
       />
       {/* <BottomTab.Screen
         name="TestWhatever"
@@ -215,10 +222,12 @@ const navImgs= {
     library: require("../assets/images/navigation/library-selected.png"),
     playMusic: require("../assets/images/navigation/playMusic-selected.png"),
     sectionView: require("../assets/images/navigation/sectionView-selected.png"),
+    profile: require("../assets/images/navigation/profile-selected.png"),
   },
   deselected: {
     library: require("../assets/images/navigation/library.png"),
     playMusic: require("../assets/images/navigation/playMusic.png"),
     sectionView: require("../assets/images/navigation/sectionView.png"),
+    profile: require("../assets/images/navigation/profile.png"),
   }
 }

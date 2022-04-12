@@ -131,23 +131,30 @@ export function FormInputError(props: {
     )
 }
 
+
+type errorCondition<T> = {val: T, msg: string, mustMatch?: boolean}
+
 export class FormField<T> {
     fieldName: string;
     errorMessage = "";
     showError = false;
-    fieldValue: T;
-    private checkConditions: {val: T, msg: string}[];
-    constructor(fieldName: string, init: T, checkConditions: {val: T, msg: string}[]) {
+    value: T;
+    private errorConditions: errorCondition<T>[];
+    constructor(fieldName: string, init: T, errorConditions: errorCondition<T>[]) {
         this.fieldName = fieldName;
-        this.fieldValue = init;
-        this.checkConditions = checkConditions;
+        this.value = init;
+        this.errorConditions = errorConditions;
     }
     setField(value: T) {
-        this.fieldValue = value;
+        this.value = value;
     }
-    checkFieldValue() {
-        for(var condition of this.checkConditions) {
-            if(this.fieldValue == condition.val) {
+    checkValue() {
+        for(var condition of this.errorConditions) {
+            if(condition.mustMatch && this.value != condition.val) {
+                this.showError = true;
+                this.errorMessage = condition.msg;
+                return false;
+            } else if(this.value == condition.val) {
                 this.showError = true;
                 this.errorMessage = condition.msg;
                 return false;
@@ -164,16 +171,16 @@ export class FormField<T> {
         return null;
     }
     getTextInputView() {
-        if(typeof this.fieldValue == "string") {
+        if(typeof this.value == "string") {
             return (
                 <View>
                     <Text style={styles.header}>{this.fieldName}</Text>
                     <TextInput
                         style={[styles.textInput, {marginBottom: (this.showError)?0:20}]}
-                        placeholder='song name...'
+                        placeholder={this.fieldName.toLowerCase() + '...'}
                         placeholderTextColor={'#888'}
                         keyboardType={'default'}
-                        onChangeText = {text => {this.fieldValue = text}}
+                        onChangeText = {text => {this.value = text}}
                         clearButtonMode= 'always'
                     />
                 </View>

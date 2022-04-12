@@ -1,26 +1,36 @@
 import { StatusBar } from 'expo-status-bar';
 import * as React from 'react';
-import { StyleSheet, TouchableOpacity, ScrollView, SafeAreaView, Dimensions, Platform, Animated} from 'react-native';
-import { FontAwesome } from '@expo/vector-icons';
-import { Text, useThemeColor, View } from '../components/Themed';
-import Layout from "../constants/Layout";
+import { Text, View } from '../components/Themed';
 
 import { appStyles as styles, bottomBorderRadius, colorTheme, leftBorderRadius, rightBorderRadius, topBorderRadius } from '../components/AppStyles';
+import { Buddon } from '../components/Buddons';
 
-export default function ProfileInfoScreen() {
 
-    var username = "Jimothy Jambus";
-    var password = "ohnicemanthatscool:)";
 
+
+export default function ProfileInfoScreen({navigation, route}: any) {  
+    var username = route.params.username;
+    var password = route.params.password;
     return (
         <View style={{padding: 10}}>
         <Text style={styles.title}>Profile</Text>
-		<View style={{width: 290, alignSelf: 'center', margin: 20, padding: 20, backgroundColor: colorTheme['t_med'], borderRadius: 10}}>
+		<View style={{width: '100%', alignSelf: 'center', margin: 20, padding: 20, backgroundColor: colorTheme['t_med'], borderRadius: 10}}>
 			<Text style={[styles.header]}>Username</Text>
-            <Text style={styles.text}>{username}</Text>
+            <View style={{backgroundColor: colorTheme['t_light'], borderRadius: 8, padding: 6}}>
+                <Text style={styles.subheader}>{username}</Text>
+            </View>
 			<Text style={[styles.header, {paddingTop: 15}]}>Password</Text>
-            <Text style={styles.text}>{password}</Text>
+            <View style={{backgroundColor: colorTheme['t_light'], borderRadius: 8, padding: 6}}>
+                <Text style={styles.subheader}>{password}</Text>
+            </View>
         </View>
+        <Buddon
+            style={[styles.centerSelf, {width: 150, padding: 8}]}
+            label = "logout"
+            altbg={'t_med'}
+            isSelected={true}
+            onPress={()=>navigation.navigate("Login")}
+        />
         </View>
     )
 }
