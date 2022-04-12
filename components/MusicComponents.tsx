@@ -527,6 +527,13 @@ export class MeasureMaker {
 	}
 }
 
+export function Spacer (props: {children?: any, flex?: number}) {
+	return (
+		<View style={{flex: (props.flex)?props.flex:1}}>
+			{props.children}
+		</View>
+	)
+}
 
 /**
  * course(courseID)

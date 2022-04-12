@@ -1,3 +1,10 @@
+export function getProfileByUID(uid: number) {
+    // MYSQLRequest("_________.php", Data).then((Response)=>{
+
+    // });
+    return {uid: 0, username: ""};
+}
+
 export class Profile {
     uid: number = 0;
     username: string;

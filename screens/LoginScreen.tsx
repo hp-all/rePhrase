@@ -1,12 +1,19 @@
+// React Native & Expo
 import { StatusBar } from 'expo-status-bar';
 import * as React from 'react';
 import { Platform, TextInput, Image} from 'react-native';
 
+// Theme and Styles
 import { Text, View } from '../components/Themed';
-import { Buddon } from '../components/Buddons';
-import { FormInputError } from '../components/Form';
 import { appStyles as styles, colorTheme} from '../components/AppStyles';
 
+// Components
+import { Buddon } from '../components/Buddons';
+import { FormInputError } from '../components/Form';
+
+// Database & Wrappers
+import { MYSQLRequest } from '../DatabaseWrappers/DatabaseRequest';
+import UserProfile from '../DatabaseWrappers/Profiles';
 
 export default function LoginScreen({navigation, route}: {navigation: any, route:any}) {
 	console.log("----------- Start Login Screen ----------------");
@@ -60,26 +67,13 @@ class LoginForm extends React.Component<lfp, lfs> {
 		
 		if (this.checkEntries(username, password)) {
 			//SUBMIT TO PHP HERE
-			var DatabaseURL = "http://localhost/Project/login.php"; // where server is hosted right now
-
-			var headers = {
-				'Accept' : 'application/json',
-				'Content-Type' : 'application/json'
-			};
 			var Data = {
 				Username : username,
 				Password : password
 			}
-			// fetch(DatabaseURL, {
-			// 	method: 'POST',
-			// 	headers:headers,
-			// 	body: JSON.stringify(Data)
-			// })
-			// .then((Response)=>Response.json()) // check if in the response is in JSON format
-			// // dealing with the repsonse
-			// .then((Response)=>{
-			// 	// Set Login State -> navigate to actual app
-			// })
+			MYSQLRequest("login.php", Data).then((Response)=>{
+				
+			});
 			
 			// TODO:: After checking, navigate to the root tab with the props function
 			// !!Probably would go within the .then(Response) seciton above

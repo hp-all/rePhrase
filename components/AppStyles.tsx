@@ -118,7 +118,7 @@ export const appStyles = StyleSheet.create({
 		fontSize: 12,
 		color: colorTheme['t_white'],
 	},
-	centerText: {
+	centerSelf: {
 		alignSelf: 'center',
 	},
 	textInput: {
@@ -135,6 +135,17 @@ export const appStyles = StyleSheet.create({
 		padding: 7,
 		width: 150,
 		alignSelf: 'center'
+	},
+	successIcon: {
+		margin: 15,
+		marginBottom: 0,
+		width: "100%",
+		padding: 5,
+		height: 40,
+		borderRadius: 5,
+		backgroundColor: blockColors['green_med'],
+		alignSelf: 'center',
+		alignItems: 'center',
 	},
 
 
@@ -176,7 +187,10 @@ export const appStyles = StyleSheet.create({
         textAlign: "center",
     },
 
-
+	spacer: {
+		flex: 1,
+		backgroundColor: 'transparent',
+	},
 	horzLine: {
 		borderBottomColor: colorTheme['t_dark'],
 		borderBottomWidth: 1,

@@ -618,7 +618,7 @@ function OptionPopup(props: {title: string, options?: any[], selectedOption?: an
 			<TouchableOpacity style={{alignSelf: "center", top: 250, width: 250, backgroundColor: colorTheme['t_med'], borderRadius: 5, paddingHorizontal:  15}}
 				activeOpacity= {1}
 			>
-				<Text style={[styles.title, styles.centerText]}>{props.title}</Text>
+				<Text style={[styles.title, styles.centerSelf]}>{props.title}</Text>
 				{props.options?.map((option, index) => {
 					var margins= {
 						marginTop: (index==0)? 5: 0,

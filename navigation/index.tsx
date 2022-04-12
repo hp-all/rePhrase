@@ -19,7 +19,7 @@ import LoginScreen from '../screens/LoginScreen';
 import SignupScreeen from '../screens/SignupScreen';
 
 import NotFoundScreen from '../screens/NotFoundScreen';
-import MusicLibraryScreen from '../screens/MusicLibraryScreen';
+import MusicLibraryScreen from '../screens/MusicLibrary/MusicLibraryScreen';
 import PlayMusicScreen from '../screens/PlayMusicScreen';
 import AssignSectionScreen from '../screens/AssignSection/AssignSectionScreen';
 import ProfileInfoScreen from '../screens/ProfileInfoScreen';
@@ -54,7 +54,7 @@ function RootNavigator() {
       //show app
     // else 
       //show login
-    <Stack.Navigator initialRouteName='Login'>
+    <Stack.Navigator initialRouteName='Root'>
       
       <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
       <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
@@ -81,7 +81,7 @@ const BottomTab = createBottomTabNavigator<RootTabParamList>();
 
 function BottomTabNavigator() {
   const colorScheme = useColorScheme();
-
+  console.log("Moved to Bottom Tab");
   return (
     <BottomTab.Navigator
       initialRouteName="MusicLibrary"
