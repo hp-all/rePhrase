@@ -1,6 +1,8 @@
 import { StyleSheet } from "react-native";
 
-export type colorTypes = keyof typeof colorTheme 
+export type ColorTypes = keyof typeof colorTheme 
+export type Bounds = {min?: number, max?: number};
+
 export const colorTheme = {
 	t_dark: '#000b24',
 	t_med: '#143662',
@@ -123,7 +125,16 @@ export const appStyles = StyleSheet.create({
 	},
 	textInput: {
 		height: 25,
-		width: 250,
+		width: '100%',
+		backgroundColor: colorTheme['white'],
+		alignSelf: 'center',
+		borderRadius: 3,
+		color: colorTheme['t_dark'],
+		paddingHorizontal: 7,
+	},
+	inputBox: {
+		height: 25,
+		width: '100%',
 		backgroundColor: colorTheme['white'],
 		alignSelf: 'center',
 		borderRadius: 3,
@@ -215,6 +226,6 @@ export const appStyles = StyleSheet.create({
 		borderWidth: 2,
 		...topBorderRadius(4),
 		width: '100%', 
-
+		padding: 20,
 	},
 });

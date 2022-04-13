@@ -1,11 +1,12 @@
 import { Component, Children, isValidElement, cloneElement, useCallback } from 'react';
 import { PanResponder, PanResponderInstance, Animated, TouchableOpacity, Image } from 'react-native';
 import { Text, View } from '../components/Themed';
-import { appStyles as styles, colorTheme, colorTypes} from '../components/AppStyles';
+import { appStyles as styles, colorTheme, ColorTypes} from '../components/AppStyles';
 import { FontAwesome } from '@expo/vector-icons';
 
 
 
+type ButtonIcon = keyof typeof buttonIcons.light & keyof typeof buttonIcons.dark;
 export const buttonIcons = {
     light: {
         play:       require("../assets/images/buttons/light/play.png"),
@@ -131,38 +132,32 @@ export class Draggable extends Component<dp, dS> {
 }
 
 type bP = {label: string, onPress: ()=>void, isSelected?: boolean, style?: any, 
-    icon?: keyof typeof buttonIcons.light & keyof typeof buttonIcons.dark, 
-    alticon?: keyof typeof buttonIcons.light & keyof typeof buttonIcons.dark
+    icon?: ButtonIcon, 
+    alticon?: ButtonIcon,
     fontAwesome?: {name: 'close'|undefined, size: number, color: string}
     withText?: boolean,
-    bg?: colorTypes,
-    altbg?: colorTypes,
+    bg?: ColorTypes,
+    altbg?: ColorTypes,
 } 
 type bS = {};
 export class Buddon extends Component<bP, bS> {
     constructor(props: any) {
         super(props);
     }
-    tabBarImg = (
-        icon: keyof typeof buttonIcons.light & keyof typeof buttonIcons.dark,
-        isSelected?: boolean,
-        alticon?: keyof typeof buttonIcons.light & keyof typeof buttonIcons.dark,
-    ) => {
+    tabBarImg = (icon: ButtonIcon, alticon?: ButtonIcon, isSelected?: boolean) => {
         var filesrc;
-        if(isSelected)  {
-            filesrc = buttonIcons['dark'][icon];
-        }
+        if(isSelected)  {filesrc = buttonIcons['dark'][icon];}
         else {
-            if(alticon) {
+            if(alticon)
                 filesrc = buttonIcons['light'][alticon];
-            }
-            else {
+            else
                 filesrc = buttonIcons['light'][icon];
-            }
         }
         var sizeStuff: any = {width: '100%', height: '100%'};
         if(icon == 'editBlock')
             sizeStuff = {width: '100%', height: '400%', left: '0%', top: '-150%'};
+        if(icon == 'undo' || icon == 'redo') 
+            sizeStuff = {width: '90%', height: '100%', marginHorizontal: '5%'};
         return (
             <Image source= {filesrc} style={{resizeMode: 'contain', ...sizeStuff}}/>
         );
@@ -176,7 +171,7 @@ export class Buddon extends Component<bP, bS> {
         );
         var img = null;
         if(this.props.icon) {
-            img = this.tabBarImg(this.props.icon, this.props.isSelected, this.props.alticon);
+            img = this.tabBarImg(this.props.icon, this.props.alticon, this.props.isSelected);
         } else if(this.props.fontAwesome) {
             img = (
                 <FontAwesome
@@ -190,9 +185,12 @@ export class Buddon extends Component<bP, bS> {
 
         var buttonDisplay;
         if(this.props.withText && img) {
-            <View style={styles.rowContainer}>
-                {img}
-                {label}
+            console.log(this.props.label);
+            <View style={{flexDirection: 'row'}}>
+                <Image source= {buttonIcons['light']['loops']} style={{resizeMode: 'contain', width: '100%', height: '100%', flex: 1}}/>
+                <Text style={[styles.subheader, styles.centerSelf, this.props.isSelected? styles.selectedbuttonlabel: styles.buttonlabel, {flex: 1}]}>
+                    {this.props.label}
+                </Text>
             </View>
         } else if(img) {
             buttonDisplay = img;
@@ -217,62 +215,32 @@ export class Buddon extends Component<bP, bS> {
     }
 }
 
-type ptP = {
+export function PopupTrigger (props: {
     label: string, 
     popupListener: (p: any)=>void, 
-    isSelected: boolean, options: any[],  style?: any, 
+    isSelected: boolean, 
+    options: any[],  
     icon?: keyof typeof buttonIcons.light & keyof typeof buttonIcons.dark, alticon?: keyof typeof buttonIcons.light & keyof typeof buttonIcons.dark
-    bg?: colorTypes,
-    key?: any,
-} 
-type ptS = {};
-export class PopupTrigger extends Component<ptP, ptS> {
-    constructor(props: any) {
-        super(props);
-
-    }
-    tabBarImg = (
-        isSelected: boolean,
-        icon: keyof typeof buttonIcons.light & keyof typeof buttonIcons.dark,
-        alticon?: keyof typeof buttonIcons.light & keyof typeof buttonIcons.dark,
-    ) => {
-        var filesrc;
-        if(isSelected)
-            filesrc = buttonIcons['dark'][icon];
-        else {
-            if(alticon)
-                filesrc = buttonIcons['light'][alticon];
-            else
-                filesrc = buttonIcons['light'][icon];
-        }
-        return <Image source= {filesrc} style={{resizeMode: 'contain'}}/>;
-    }
-
-    render() {
-        var info = (
-            <Text style={[styles.subheader, styles.centerSelf]}>
-                {this.props.label}
-            </Text>
-        );
-        if(this.props.icon) {
-            info = this.tabBarImg(this.props.isSelected, this.props.icon, this.props.alticon);
-        }
-        return (
-            <Buddon
-                key={this.props.key}
-                label={this.props.label}
-                icon={this.props.icon}
-                alticon={this.props.alticon}
-                isSelected={this.props.isSelected}
-                onPress={()=>{this.props.popupListener({
-                    label: this.props.label,
-                    options: this.props.options,
-                })}}
-                bg= {this.props.bg}
-                style={this.props.style}
-            />
-        );
-    }
+    bg?: ColorTypes,
+    key?: any, style?: any, 
+    withText?: boolean;
+}) {
+    return (
+        <Buddon
+            key={props.key}
+            label={props.label}
+            icon={props.icon}
+            alticon={props.alticon}
+            isSelected={props.isSelected}
+            onPress={()=>{props.popupListener({
+                label: props.label,
+                options: props.options,
+            })}}
+            bg= {props.bg}
+            style={props.style}
+            withText= {props.withText}
+        />
+    );
 }
 
 export function ButtonGroup(props: {label?: string, style?: any, children?: any, vertical?: boolean}) {

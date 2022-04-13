@@ -24,13 +24,13 @@ export default function MusicLibraryScreen({navigation, route}: any) {
   	return (
 		<View style={[styles.container, styles.darkbg, {}]}>
 			<Text style={styles.title}>{title}</Text>
-			<PlaylistView/>
+			<PlaylistView navigateToSectionScreen={(song: SongListItem)=>{navigation.navigate("AssignScreen")}}/>
 		<StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
 		</View>
   	);
 }
 
-type PVP = {}
+type PVP = {navigateToSectionScreen?: (song: SongListItem)=>void}
 type PVS = {listTypeShowing: SongListTypes, showMP3Popup: boolean}
 class PlaylistView extends React.Component<PVP, PVS> {
 	visibleSsongList: Playlist[] | Playlist = new Playlist("");
@@ -81,6 +81,8 @@ class PlaylistView extends React.Component<PVP, PVS> {
 	}
 	songClickListener = (song: SongListItem) => {
 		console.log("Song " + song.name + " picked!");
+		if(this.props.navigateToSectionScreen)
+			this.props.navigateToSectionScreen(song);
 	}
 	
 	render() {

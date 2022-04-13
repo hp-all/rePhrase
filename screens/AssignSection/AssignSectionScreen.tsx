@@ -4,9 +4,8 @@ import { TouchableOpacity, ScrollView, SafeAreaView, Platform, Animated} from 'r
 import { Text, View } from '../../components/Themed';
 import Layout from "../../constants/Layout";
 
-import { appStyles as styles, bottomBorderRadius, colorTheme, leftBorderRadius, rightBorderRadius, topBorderRadius } from '../../components/AppStyles';
+import { appStyles as styles, bottomBorderRadius, Bounds, colorTheme, leftBorderRadius, rightBorderRadius, topBorderRadius } from '../../components/AppStyles';
 import { Draggable, Buddon, ButtonGroup, PopupTrigger } from '../../components/Buddons';
-import { Form, FormNumber, FormText } from '../../components/Form';
 import { barPositioning, ChangeLog, TrackPlayerController, MeasureMaker } from '../../components/MusicComponents';
 
 import SongSection, { SectionType } from '../../MusicModel/SongSection';
@@ -15,6 +14,7 @@ import Loop from '../../MusicModel/Loop';
 import TrackyPlayer from '../../MusicModel/TrackPlayer';
 
 import ButtonMenu from './ButtonMenu';
+import AddMenu from './AddMenu';
 
 const frootSongSource = require('../../assets/soundFiles/lofi_fruits_jazz.mp3');
 const windowWidth = Layout.window.width;
@@ -26,7 +26,7 @@ const thumbOffY = -300;
 
 
 export default function AssignSectionScreen() {
-	console.log("----Start Assign Section Screen -----");
+	console.log("---------- Start Assign Section Screen -----");
 	var frootSongTrack = new Track(Source.MP3, frootSongSource, 
 			{name: "Froot Song (ft. Jazz)", artist: "Test Track", album: "from SoundCloud", length: 203000}
 		);
@@ -57,14 +57,14 @@ type tavS = {
 	snapSpecificity: number, editMode: EditBlockOptions, fingiePlace: number,
 	trackPlayerController: TrackPlayerController;
 	reRenderThing: boolean,
-	isMoving: boolean, viewPos: number, highlight: {start: number|null, end: number|null}, highlightState: 'not'|'waiting'|'start'|'end', 
+	isMoving: boolean, viewPos: number, highlight: Bounds, highlightState: 'not'|'waiting'|'start'|'end', 
 	showToolMenu: boolean, toolTransitionYVal: number, animateTool: Animated.ValueXY,
 	showPopup: boolean,
 };
 class TrackAssignView extends React.Component<tavP, tavS>{
 	changeLog: ChangeLog = new ChangeLog();
 	snapOptions: any = {none: -2, Section: -1, Measure: 0, Beat: 1, HalfBeat: 2};
-	toolComponentHeight = 220;
+	toolComponentHeight = 250;
 	toolAnimDuration = 350;
 	popupTitle: string; popupOptions: any; popupHeight: number; popupSelectedOption: any;
 	updateStatus: (s:any) => void;
@@ -103,7 +103,7 @@ class TrackAssignView extends React.Component<tavP, tavS>{
 			editMode: EditBlockOptions.none,
 			simpleView: true,
 			fingiePlace: 0, snapSpecificity: 0,
-			isMoving: false, viewPos: 0, highlight: {start: null, end: null}, highlightState: 'not',
+			isMoving: false, viewPos: 0, highlight: {}, highlightState: 'not',
 			showToolMenu: false, toolTransitionYVal: 0, animateTool: new Animated.ValueXY(),
 			reRenderThing: false,
 			showPopup: false,
@@ -141,32 +141,32 @@ class TrackAssignView extends React.Component<tavP, tavS>{
 	}
 	borsMouseListener = (isEndTouch: boolean, pos: number) => {
 		if(this.state.highlightState != 'not') {
-			if(this.state.highlight.start == null) {
+			if(this.state.highlight.min == null) {
 				this.setState({
-					highlight: {start: pos, end: null},
+					highlight: {min: pos},
 					highlightState: 'start',
 				});
-			} else if(this.state.highlight.end == null) {
+			} else if(this.state.highlight.max == undefined) {
 				this.setState({
-					highlight: {start: this.state.highlight.start, end: pos},
+					highlight: {min: this.state.highlight.min, max: pos},
 					highlightState: 'end',
 				});
 			} else {
 				var hState = this.state.highlightState;
 				if(hState === 'waiting') {
-					if(Math.abs(pos-this.state.highlight.start) < Math.abs(pos-this.state.highlight.end)) 
+					if(Math.abs(pos-this.state.highlight.min) < Math.abs(pos-this.state.highlight.max)) 
 						hState = 'start';
 					else
 						hState = 'end';
 				}
 				if(hState === 'start') {
 					//Reseting the start position of the highlight
-					if(pos < this.state.highlight.end)
-						this.setState({highlight: {start: pos, end: this.state.highlight.end},});
+					if(pos < this.state.highlight.max)
+						this.setState({highlight: {min: pos, max: this.state.highlight.max},});
 				} else {
 					//Resetting the end position
-					if(pos > this.state.highlight.start)
-						this.setState({highlight: {start: this.state.highlight.start, end: pos},});
+					if(pos > this.state.highlight.min)
+						this.setState({highlight: {min: this.state.highlight.min, max: pos},});
 				}
 				this.setState({
 					highlightState: hState,
@@ -204,7 +204,7 @@ class TrackAssignView extends React.Component<tavP, tavS>{
 		this.setState({
 			showToolMenu: false,
 			highlightState: 'not',
-			highlight: {start: null, end: null},
+			highlight: {},
 		});
 		Animated.timing(this.state.animateTool, {
 			toValue: {x: 0, y: 0},
@@ -227,13 +227,7 @@ class TrackAssignView extends React.Component<tavP, tavS>{
 		this.props.track.setJSON(this.changeLog.getCurrentState());
 	}
 
-	// Convenience things like getters n shid
-	isLoaded = () => {return this.state.trackPlayerController.isLoaded;}
-	isPlaying = () => {return this.state.trackPlayerController.isPlaying;}
-	songLen = () => {return this.state.trackPlayerController.songLen;}
-	songPos = () => {return this.state.trackPlayerController.songPos;}
-	viewPos = () => {return this.state.trackPlayerController.viewPos;}
-
+	// Popup
 	popupListener = (p: {label: string, options: any}) => {
 		this.popupTitle= p.label;
 		this.popupOptions= p.options;
@@ -313,6 +307,16 @@ class TrackAssignView extends React.Component<tavP, tavS>{
 		this.popupSelectedOption = option;
 	}
 
+	// Add Menu
+	setHighlight = (s: Bounds) => {
+		var hihglight: Bounds = this.state.highlight;
+		if(s.min)
+			hihglight.min = s.min;
+		if(s.max)
+			hihglight.max = s.max;
+		this.setState({highlight: hihglight});
+	}
+
 	render() {
 		var popup = null;
 		if(this.state.showPopup) {
@@ -350,10 +354,11 @@ class TrackAssignView extends React.Component<tavP, tavS>{
 					mouseListener = {this.borsMouseListener}
 				/>
 				{/* Tool Component */}
-				<ToolComponent 
+				<AddMenu 
 					style= {{position: 'absolute', bottom: -this.toolComponentHeight, height: this.toolComponentHeight}}
 					hide={this.hideToolComponent}
 					selectedArea={this.state.highlight}
+					setSelectedArea={this.setHighlight}
 				/>
 				{popup}
 			</Animated.View>
@@ -368,7 +373,7 @@ type bvP = {
 	snapSpecificity: number,
 	drawSimple: boolean,
 	viewPos: number,
-	highlightRegion: {start: number|null, end: number|null},
+	highlightRegion: Bounds,
 	mouseListener?: (b: boolean, n: number) => void,
 	yTouchOffset: number, 
 	style?: any,
@@ -507,8 +512,8 @@ export class BorsView extends React.Component<bvP, bvS> {
 		}
 		var highlightView: (JSX.Element | undefined)[] = [];
 		var fingieXY = this.measureMaker.mapMilliToCoord(this.state.fingiePlaceInSec);
-		if(highlightRegion.start != null && highlightRegion.end != null)
-			highlightView = this.measureMaker.makeSubGroupView(highlightRegion.start, highlightRegion.end, "highlight");
+		if(highlightRegion.min != null && highlightRegion.max != null)
+			highlightView = this.measureMaker.makeSubGroupView(highlightRegion.min, highlightRegion.max, "highlight");
 
 		return (
 			<View style={[styles.container, styles.borsViewStyle, {...this.props.style}]}>
@@ -560,52 +565,6 @@ export class BorsView extends React.Component<bvP, bvS> {
 				</SafeAreaView>
 			</View>
 		);
-	}
-}
-
-type tcP = {hide: ()=>void, selectedArea: {start: number|null, end: number|null}, style?: any};
-type tcS = {};
-export class ToolComponent extends React.Component<tcP, tcS> {
-	constructor(props: any) {
-		super(props);
-		this.state = {
-		};
-	}
-	componentWillUnmount() {
-	}
-	render() {
-		
-		return(
-			<View style={[styles.container, styles.toolComponentStyle,
-			{...this.props.style}]}>
-				{/* <Form
-					title='Add Section'
-				>
-					<FormText
-						textID='Section Name'
-						defaultText='name...'
-						style={{}}
-					/>
-					<View style={{flexDirection: 'row', flex: 1}}>
-						<FormNumber
-							numID='Start Time'
-							style={{height: 25, marginLeft: 10}}
-						/>
-						<FormNumber
-							numID= 'End Time'
-							style={{height: 25, marginHorizontal: 10}}
-						/>
-					</View>
-				</Form> */}
-				<Buddon
-					style= {{position: 'absolute', top: 6, right: 4, height: 20, width: 20, borderRadius: 10, paddingLeft: 1, backgroundColor: colorTheme['t_dark']}}
-					label= "close"
-					fontAwesome= {{name: 'close', size: 19, color: colorTheme['gray']}}
-					onPress= {this.props.hide}
-					isSelected= {false}
-				/>
-			</View>
-		)
 	}
 }
 

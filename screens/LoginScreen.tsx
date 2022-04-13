@@ -9,7 +9,7 @@ import { appStyles as styles, colorTheme} from '../components/AppStyles';
 
 // Components
 import { Buddon } from '../components/Buddons';
-import { FormInputError, FormField } from '../components/Form';
+import { FormInputError, FormField, TextField } from '../components/Form';
 
 // Database & Wrappers
 import { MYSQLRequest } from '../DatabaseWrappers/DatabaseRequest';
@@ -30,16 +30,16 @@ export default function LoginScreen({navigation, route}: {navigation: any, route
 type lfp = {navigateToRoot: (profileData: any)=>void};
 type lfs = {showError: boolean, isSignup: boolean};
 class LoginForm extends React.Component<lfp, lfs> {
-	usernameField: FormField<string>;
-	passwordField: FormField<string>;
-	passwordCheckField: FormField<string>;
+	username: TextField;
+	password: TextField;
+	passwordCheck: TextField;
 	constructor(props: any) {
 		super(props);
-		this.usernameField = new FormField("Username", "", [{val: "", msg: "enter a username"}]);
-		this.passwordField = new FormField("Password", "", [{val: "", msg: "enter a username"}]);
-		this.passwordCheckField = new FormField("Confirm Password", "", [
-			{val: "", msg: "enter a username"}, 
-			{val: this.passwordField.value, msg: "Passwords do not match", mustMatch: true}
+		this.username = new TextField("Username", "", [{val: "", msg: "enter a username"}]);
+		this.password = new TextField("Password", "", [{val: "", msg: "enter a Password"}]);
+		this.passwordCheck = new TextField("Confirm Password", "", [
+			{val: "", msg: "enter a Password"}, 
+			{val: this.password.value, msg: "Passwords do not match", operator: "!="}
 		]);
 
 		this.state = {
@@ -48,30 +48,37 @@ class LoginForm extends React.Component<lfp, lfs> {
 		}
 	}
 
+	clearEntries = () => {
+		console.log("clearing");
+		this.username.clear();
+		this.password.clear();
+		this.passwordCheck.clear();
+	}
 	checkEntries = ():boolean => {
 		console.log("Checking");
-		var a = this.usernameField.checkValue();
-		var b = this.passwordField.checkValue();
+		var a = this.username.checkValue();
+		var b = this.password.checkValue();
 		var c = true;
 		if(this.state.isSignup) {
-			c = this.passwordCheckField.checkValue();
+			c = this.passwordCheck.checkValue();
 		}
 		return a && b && c;
 	}
 	quickLogin = () => {
 		var profile = new UserProfile(0, "Admin", "adminpassword");
 		thisAppUser.copy(profile);
+		this.clearEntries();
 		this.props.navigateToRoot(profile.toJSON());
 	}
 	submitLoginInfo = () => {		
 		if (this.checkEntries()) {
 			//SUBMIT TO PHP HERE
 			var Data = {
-				Username : this.usernameField.value,
-				Password : this.passwordField.value,
+				Username : this.username.value,
+				Password : this.password.value,
 			}
 			var profile: UserProfile;
-			profile = new UserProfile(0, this.usernameField.value, this.passwordField.value);
+			profile = new UserProfile(0, this.username.value, this.password.value);
 			// MYSQLRequest("login.php", Data).then((Response)=>{
 				
 			// });
@@ -80,9 +87,8 @@ class LoginForm extends React.Component<lfp, lfs> {
 			// !!Probably would go within the .then(Response) seciton above
 		
 			thisAppUser.copy(profile);
-
+			this.clearEntries();
 			this.props.navigateToRoot(profile.toJSON());
-            this.setState({showError: false});
 		} else {
             this.setState({showError: true});
 		}
@@ -90,20 +96,8 @@ class LoginForm extends React.Component<lfp, lfs> {
 
 	render() {
 		var passCheckView = null;
-		var userErrView = null, passErrView = null, passCheckErrView = null;
-		var userSpace = {marginBottom: 0}, passSpace = {marginBottom: 0}
-		var errMargin = 8;
-		var noErrSpace = 10;
-		
-		if(this.state.showError) {
-            console.log("Showing Error");
-            userErrView = this.usernameField.getErrorView({marginBottom: errMargin});
-            passErrView = this.passwordField.getErrorView({marginBottom: errMargin});
-			if(this.state.isSignup)
-				passCheckErrView = this.passwordField.getErrorView({marginBottom: errMargin});
-        }
 		if(this.state.isSignup) {
-			passCheckView = this.passwordCheckField.getTextInputView();
+			passCheckView = this.passwordCheck.getView();
 		}
 
 		var switchText = "click here to sign up instead";
@@ -112,14 +106,9 @@ class LoginForm extends React.Component<lfp, lfs> {
 
 		return (
 			<View style={{width: 290, alignSelf: 'center', margin: 20, padding: 20, backgroundColor: colorTheme['t_med'], borderRadius: 10}}>
-				{this.usernameField.getTextInputView()}
-				{userErrView}
-
-				{this.passwordField.getTextInputView()}
-				{passErrView}
-
+				{this.username.getView({}, true)}
+				{this.password.getView({}, true)}
 				{passCheckView}
-				{passCheckErrView}
 
 				<Buddon
 					style={[styles.submitBuddon, {margin: 15}]}
@@ -135,7 +124,7 @@ class LoginForm extends React.Component<lfp, lfs> {
 				/>
 				<TouchableOpacity
 					style={[styles.transparentbg]}
-					onPress={()=>this.setState({isSignup: true})}
+					onPress={()=>this.setState({isSignup: !this.state.isSignup})}
 				>
 					<Text style={[styles.subheader, styles.centerSelf, {color: colorTheme['t_white']}]}>{switchText}</Text>
 				</TouchableOpacity>

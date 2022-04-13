@@ -1,124 +1,8 @@
 import * as React from 'react';
-import { TextInput, View, Text, TouchableOpacity } from 'react-native';
+import { TextInput, View, Text, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView, Animated } from 'react-native';
 import { Draggable } from './Buddons';
 import { appStyles as styles, colorTheme, rightBorderRadius, leftBorderRadius, topBorderRadius, bottomBorderRadius} from './AppStyles';
-
-type fP = {title: string, children?: any, onSubmit?: (dict: any) => any, style?: any}
-type fS = {}
-export class Form extends React.Component<fP, fS> {
-    childCount: number;
-    newChildren: any;
-    dict: any = {};
-    constructor(props: any) {
-        super(props);
-        this.state = {
-        }
-        this.childCount = React.Children.count(this.props.children);
-        this.newChildren = React.Children.map(this.props.children, baby => {
-            if(baby) {
-                console.log("BABY: " + Object.keys(baby?.props) + ", ");
-                return this.parseBaby(baby);
-            }
-        });
-        console.log(Object.keys(this.dict));
-    }
-    parseBaby = (baby: any) => {
-        if(Object.keys(baby?.props).includes("numID")) {
-            console.log("Adding number");
-            return this.makeNumField(baby);
-        } else if(Object.keys(baby?.props).includes("textID")) {
-            return this.makeTextField(baby);
-        } else if(baby.props.children){
-            console.log("BABY HAS BABIES YO!");
-            var lilerbabies = React.Children.map(baby.props.children, lilbaby => {
-                if(lilbaby) {
-                    return this.parseBaby(lilbaby);
-                }
-            });
-            console.log("Babies: " + Object.keys(lilerbabies));
-            var style = {};
-            if(baby.props.style)
-                style = baby.props.style;
-            return (
-                <View style={{...style}}>
-                    {lilerbabies}
-                </View>
-            )
-        }
-    }
-    makeNumField(baby: any) {
-        var {numID, numListener, prompt, defaultNum, verticalDrag, numInterval, dragFactor, decimals, upperBound, lowerBound, style} = baby.props;
-        var formNumListener = (val: number) => {
-            console.log("Changing from " + this.dict[numID] + " to " + val);
-            this.dict[numID] = val
-            if(numListener) 
-                numListener(val);
-        };
-        this.dict[numID] = defaultNum? defaultNum: 0;
-        return (
-            <FormNumberObj
-                numID = {numID}
-                prompt= {prompt}
-                numListener={formNumListener}
-                defaultNum={defaultNum}
-                verticalDrag={verticalDrag}
-                numInterval={numInterval}
-                dragFactor={dragFactor}
-                decimals={decimals}
-                upperBound={upperBound}
-                lowerBound={lowerBound}
-                style={style}
-            />
-        )   
-    }
-    makeTextField(baby: any) {
-        var {textID, prompt, textListener, defaultText, style} = baby.props;
-        var formTextListener = (text: string) => {
-            console.log("Changing from " + this.dict[textID] + " to " + text);
-            this.dict[textID] = text
-            
-            if(textListener) 
-                textListener(text);
-        };
-        this.dict[textID] = defaultText? defaultText: 0;
-        return (
-            <FormTextObj
-                textID = {textID}
-                prompt= {prompt}
-                textListener = {formTextListener}
-                defaultText = {defaultText}
-                style={style}
-            />
-        )
-    }
-    updateVal = (val: number) => {
-        this.setState({
-            num: val
-        })
-    }
-    onSubmit = () => {
-        for(let key of Object.keys(this.dict)) {
-            console.log(key + ": " + this.dict[key])
-        }
-        if (this.props.onSubmit)
-            this.props.onSubmit(this.dict);
-    }
-    render() {
-        // console.log("Dict: " + Object.keys(this.dict) + "\nVals: " + this.dict["num test"]);
-        return (
-            <View style={{alignItems: 'center', ...this.props.style}}>
-                <Text style={{fontWeight: 'bold', fontSize: 20}}>{this.props.title}</Text>
-                {this.newChildren}
-                <TouchableOpacity
-                    style={{backgroundColor: colorTheme["blue"], padding: 5, width: "100%", borderRadius: 5, marginVertical: 10}}
-                    onPress={this.onSubmit}
-                >
-                    <Text style={[styles.text, {alignSelf: 'center'}]}>Submit</Text>
-                </TouchableOpacity>
-            </View>
-        );
-    }
-}
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export function FormInputError(props: {
     errMsg: string,
@@ -132,31 +16,50 @@ export function FormInputError(props: {
 }
 
 
-type errorCondition<T> = {val: T, msg: string, mustMatch?: boolean}
+type errorCondition<T> = {val: T, msg: string, operator?: string, errorSet?: T}
 
-export class FormField<T> {
+
+
+
+export abstract class FormField<T> {
     fieldName: string;
     errorMessage = "";
     showError = false;
     value: T;
+    initValue: T;
+    moveRef?: number;
     private errorConditions: errorCondition<T>[];
     constructor(fieldName: string, init: T, errorConditions: errorCondition<T>[]) {
         this.fieldName = fieldName;
         this.value = init;
+        this.initValue = init;
         this.errorConditions = errorConditions;
+    }
+    clear() {
+        this.showError = false;
+        this.errorMessage = "";
+        this.value = this.initValue;
+        this.moveRef = undefined;
     }
     setField(value: T) {
         this.value = value;
     }
     checkValue() {
+        var isBad = false;
         for(var condition of this.errorConditions) {
-            if(condition.mustMatch && this.value != condition.val) {
+            switch(condition.operator) {
+                case ("!="): isBad = this.value != condition.val; break;
+                case ("<="): isBad = this.value <= condition.val; break;
+                case (">="): isBad = this.value >= condition.val; break;
+                case (">"): isBad = this.value > condition.val; break;
+                case ("<"): isBad = this.value < condition.val; break;
+                default:  isBad = this.value == condition.val; break;
+            }
+            if(isBad) {
+                if(condition.errorSet)
+                    this.value = condition.errorSet;
                 this.showError = true;
-                this.errorMessage = condition.msg;
-                return false;
-            } else if(this.value == condition.val) {
-                this.showError = true;
-                this.errorMessage = condition.msg;
+                this.errorMessage = condition.msg
                 return false;
             }
         }
@@ -164,60 +67,74 @@ export class FormField<T> {
         this.errorMessage = "";
         return true;
     }
-    getErrorView(style: any) {
+    getLabelView(style: any) {
+        return <Text style={style}>{this.fieldName}</Text>
+    }
+    protected getErrorView(style: any) {
         if(this.showError) {
             return <FormInputError errMsg={this.errorMessage} style={style}/>
         }
         return null;
     }
-    getTextInputView() {
-        if(typeof this.value == "string") {
-            return (
-                <View>
-                    <Text style={styles.header}>{this.fieldName}</Text>
-                    <TextInput
-                        style={[styles.textInput, {marginBottom: (this.showError)?0:20}]}
-                        placeholder={this.fieldName.toLowerCase() + '...'}
-                        placeholderTextColor={'#888'}
-                        keyboardType={'default'}
-                        onChangeText = {text => {this.value = text}}
-                        clearButtonMode= 'always'
-                    />
-                </View>
-            )
-        }
-    }
+    abstract getView(style?: any, includeTitle?: boolean): JSX.Element;
 }
 
-    
-type fnP = {numID: string, prompt?: string, numListener?: (v: number)=>any, defaultNum?: number, verticalDrag?: boolean, numInterval?: number, dragFactor?: number, decimals?: number, upperBound?: number, lowerBound?: number, style?: any}
-type fnS = {num: number, movRef: number,}
-
-type ftP = {textID: string, prompt?: string, textListener?: (v: string)=>any, defaultText?: string, style?: any};
-type ftS = {text: string};
-
-
-
-class FormNumberObj extends React.Component<fnP, fnS> {
-    constructor(props: any) {
-    super(props);
-        var startNum = 0;
-        if(this.props.defaultNum) { startNum = this.props.defaultNum; }
-        this.state = {
-            num: startNum,
-            movRef: 0,
+export class TextField extends FormField<string> {
+    constructor(fieldName: string, init: string, errorConditions: errorCondition<string>[]) {
+        super(fieldName, init, errorConditions);
+    }
+    getView(style?: any, includeTitle?: boolean) { 
+        var errorView = null;
+        if(this.showError){
+            errorView = this.getErrorView({marginBottom: 8});
+        }
+        var title = null;
+        if(includeTitle) 
+            title = this.getLabelView(styles.header);
+        return (
+            <View style={[style]}>
+                {title}
+                <TextInput
+                    style={[{marginBottom: (this.showError)?0:20}, styles.textInput]}
+                    placeholder={this.fieldName.toLowerCase() + '...'}
+                    placeholderTextColor={'#888'}
+                    keyboardType={'default'}
+                    onChangeText = {text => {this.value = text}}
+                    selectTextOnFocus = {true}
+                    clearButtonMode= 'always'
+                />
+                {errorView}
+            </View>
+        )
+    }
+}
+export class NumberField extends FormField<number> {
+    verticalDrag?: boolean;
+    dragFactor: number = 1;
+    numInterval?: number;
+    style?: any;
+    unit?: string;
+    constructor(fieldName: string, init: number, errorConditions: errorCondition<number>[], props?: {verticalDrag?: boolean, dragFactor?: number, numInterval?: number, unit?: string}) {
+        super(fieldName, init, errorConditions);
+        if(props) {
+            this.verticalDrag = props.verticalDrag;
+            this.dragFactor = (props.dragFactor)?props.dragFactor:1;
+            this.numInterval = props.numInterval;
+            this.unit = props.unit;
         }
     }
-    changeNum = (x: number, y: number) => {
-        var touchPos = x;
-        var moveRef = this.state.movRef;
-        var dragFactor = (this.props.dragFactor)? (this.props.dragFactor*.5): .5;
-        var interval = (this.props.numInterval)? this.props.numInterval: 1;
 
+    changeNum = (x: number, y: number) => {
         // Set the direction of the dragging
-        if(this.props.verticalDrag) {touchPos = -y;}
-        // If not set, then set the reference point to the current location
-        if(this.state.movRef == 0)
+        var touchPos = (this.verticalDrag)?-y:x;
+        var moveRef;
+        var dragFactor = (this.dragFactor)? (this.dragFactor*.5): .5;
+        var interval = (this.numInterval)? this.numInterval: 1;
+
+        // If reference not set, then set the reference point to the current location
+        if(this.moveRef)
+            moveRef = this.moveRef
+        else
             moveRef = touchPos;
 
         // Compute how much to chagne the value based on the drag gesture
@@ -230,127 +147,168 @@ class FormNumberObj extends React.Component<fnP, fnS> {
                 delta = Math.floor(delta);
             else
                 delta = Math.ceil(delta);
-            var newNum = this.state.num + delta*interval;
-            if(this.props.upperBound && newNum > this.props.upperBound)
-                newNum = this.props.upperBound;
-            if(this.props.lowerBound && newNum < this.props.lowerBound)
-                newNum = this.props.lowerBound;
+            this.value += delta*interval;
+            this.checkValue();
         
-            this.setState({
-                num: newNum,
-                movRef: touchPos,
-            });
-            if(this.props.numListener)
-                this.props.numListener(newNum);
+            this.moveRef = touchPos;
+
         } else if(delta === 0) {
-            this.setState({
-                movRef: touchPos,
-            })
+            this.moveRef = touchPos;
         }
 
         // Update the moveRef to the current location
     }
+
     validateNum(text: string) {
         if(!isNaN(parseFloat(text))) {
-            var num = parseFloat(text);
-            if(this.props.upperBound && num > this.props.upperBound)
-                num = this.props.upperBound;
-            if(this.props.lowerBound && num < this.props.lowerBound)
-                num = this.props.lowerBound;
-            this.setState({
-                num: num,
-            });
-
-            if(this.props.numListener)
-                this.props.numListener(num);
+            this.value = parseFloat(text);
+            this.checkValue();
         } else {
-            
+            this.showError = true;
+            this.errorMessage = "Enter a number";   
         }
     }
-    render() {
-        var num = this.state.num + "";
-        var parts = num.split(".");
-        if(this.props.decimals) {
-            if(num.split(".").length != 2) {
-                parts = [num, "".padEnd(this.props.decimals, "0")];
-            } else {
-                parts[1] = parts[1].padEnd(this.props.decimals, "0");
-            }
-            num = parts[0] + "." + parts[1];
-        }
+
+    getView(style?: any) {
+
         return (
-            <View style={{flexDirection: 'row', flex: 1, marginTop: 10, ...this.props.style}}>
-                <Draggable
+            <View style={{flexDirection: 'row', ...style}}>
+                {/* <Draggable
                     onDrag={(e: any, m: any)=> {
                         this.changeNum(e.nativeEvent.locationX, e.nativeEvent.locationY);
                     }}
-                    onLift={(e: any, m: any)=> {this.setState({movRef: 0})}}
+                    onLift={(e: any, m: any)=> {this.moveRef = undefined}}
                     style={{backgroundColor: colorTheme["bg"], width: 25, height: '100%', ...leftBorderRadius(5), padding: 6, flex: 1}}
                 >
                     <Text>...</Text>
-                </Draggable>
-                <View style={[styles.horzLine]}/>
+                </Draggable> 
+                <View style={[styles.vertLine, {marginHorizontal: 0}]}/> */}
                 <TextInput 
-                    style={{flex: 1, backgroundColor: colorTheme['bg'], width: 100, height: '100%', ...rightBorderRadius(5), padding: 6}}
+                    value={this.value + ""}
+                    style={{flex: 1, backgroundColor: colorTheme['bg'], width: 100, height: '100%', borderRadius: 5, padding: 6}}
                     onEndEditing={(text)=>{this.validateNum(text.nativeEvent.text)}}
+                    keyboardType={'numeric'}
                 >
-                    {num}s
+                    {this.value}{this.unit}
                 </TextInput>
             </View>
-            
-        );
-    }
-}
-class FormTextObj extends React.Component<ftP, ftS>{
-    constructor(props: any) {
-        super(props);
-        var startText = "";
-        if(this.props.defaultText) { startText = this.props.defaultText; }
-        this.state = {
-            text: startText,
-        }
-    }
-    setText = (newText: string) => {
-        var validText = this.validateText(newText);
-        console.log(validText);
-        this.setState({
-            text: validText,
-        });
-        
-        if(this.props.textListener)
-            this.props.textListener(validText);
-    }
-    validateText =(newText: String) => {
-        var validText = newText.replaceAll("{", "").replaceAll("(", "").replaceAll("[", "").replaceAll("\"", "");
-        if(validText == "" && this.props.defaultText) {
-            validText = this.props.defaultText
-        }
-        return validText;
-    }
-    render() {
-        return (
-            <View style={{flexDirection: 'row', marginTop: 10, ...this.props.style}}>
-                <TextInput 
-                    style= {{textDecorationStyle: 'dotted', color: (this.state.text == this.props.defaultText)?'rgba(0, 0, 0, 0.5)': '#000', backgroundColor: 'white', borderRadius: 4, height: 25, width: '100%', paddingHorizontal: 6}} 
-                    onFocus={e=>{}} 
-                    onEndEditing={(e)=>{this.setText(e.nativeEvent.text)}}
-                    selectTextOnFocus= {true}
-                >
-                    {this.state.text}
-                </TextInput>
-            </View>
-            
         );
     }
 }
 
-export class FormText extends React.Component<ftP, {}> {
+
+type Bounds = {min?: number, max?: number}
+type npfP = {bounds: Bounds, values: Bounds, keyboardDifference?: number, unit?: string, stackView?: string, labels?: {min: string, max: string}, setLower?: (num: number)=>void, setUpper?: (num: number)=>void};
+type npfS = {offset: number, animatedV: Animated.Value};
+export class NumberPairField extends React.Component<npfP, npfS> {
+    animTime = 350;
+    bounds: Bounds;
     constructor(props: any) {
         super(props);
+        this.bounds = props.Bounds;
+        this
+        this.state = {
+            animatedV: new Animated.Value(0),
+            offset: 0
+        }
+        this.state.animatedV.addListener(anim=>{this.setState({offset: anim.value})})
     }
-}
-export class FormNumber extends React.Component<fnP, {}> {
-    constructor(props: any) {
-        super(props);
+    constrainToBounds = (num: number) => {
+        if(this.bounds) {
+            if(this.bounds.min && num < this.bounds.min) 
+            num = this.bounds.min;
+            else if(this.bounds.max && num > this.bounds.max) 
+                num = this.bounds.max;
+        }       
+        return num;
+    }
+    checkIfNum = (numInput: string) => {
+        if(!isNaN(parseFloat(numInput)))
+            return parseFloat(numInput);
+        return undefined;
+            
+    }
+    changeLower = (textInput: string) => {
+        var num = this.checkIfNum(textInput);
+        if(num) {
+            num = this.constrainToBounds(num);
+            if(this.props.values.min && num > this.props.values.min)
+                num = this.props.values.min;
+            if(this.props.setLower && num)
+                this.props.setLower(num);
+        }
+    }
+    changeUpper = (textInput: string) => {
+        var num = this.checkIfNum(textInput);
+        if(num) {
+            num = this.constrainToBounds(num);
+            if(this.props.values.min && num < this.props.values.min)
+                num = this.props.values.min;
+            if(this.props.setUpper && num)
+                this.props.setUpper(num);
+        }
+    }
+    raiseOnFocus = () => {
+        if(this.props.keyboardDifference)
+            Animated.timing(this.state.animatedV, {
+                toValue: -this.props.keyboardDifference,
+                duration: this.animTime,
+                useNativeDriver: true,
+            }).start();
+    }
+    lowerOnUnfocus = () => {
+        if(this.props.keyboardDifference)
+            Animated.timing(this.state.animatedV, {
+                toValue: 0,
+                duration: this.animTime,
+                useNativeDriver: true,
+            }).start();
+    }
+
+    render() {
+        var minLabel = null, maxLabel = null;
+        if(this.props.labels) {
+            minLabel = <Text style={styles.subheader}>{this.props.labels.min}</Text>
+            maxLabel = <Text style={styles.subheader}>{this.props.labels.max}</Text>
+        }
+        var minVal = "", maxVal = "";
+        if(this.props.values.min != undefined) {
+            
+            minVal = this.props.values.min + ((this.props.unit)?this.props.unit:"")
+        }
+        if(this.props.values.max != undefined) {
+
+            maxVal = this.props.values.max + ((this.props.unit)?this.props.unit:"");
+        }
+        return (
+            <Animated.View 
+                style={[(!this.props.stackView)&&{flexDirection: 'row'}, {marginTop: this.state.offset, backgroundColor: colorTheme['gray'], borderRadius: 5, paddingHorizontal: 10}]}
+            >
+                <View 
+                    style={[(!this.props.stackView)&&{flex: 1}, {marginRight: 10}]}
+                >
+                    {minLabel}
+                    <TextInput 
+                        value={minVal}
+                        style={styles.inputBox}
+                        onChangeText={(text)=>{this.changeLower(text)}}
+                        onEndEditing={this.lowerOnUnfocus}
+                        keyboardType={'numeric'}
+                        onFocus={this.raiseOnFocus}
+                    />
+                </View>
+                <View style={(!this.props.stackView)&&{flex: 1}}>
+                    {maxLabel}
+                    <TextInput 
+                        value={maxVal}
+                        style={styles.inputBox}
+                        onChangeText={(text)=>{this.changeUpper(text)}}
+                        onEndEditing={this.lowerOnUnfocus}
+                        keyboardType={'numeric'}
+                        onFocus={this.raiseOnFocus}
+                    />
+                </View>
+            </Animated.View>
+        );
     }
 }

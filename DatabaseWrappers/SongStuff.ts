@@ -1,4 +1,4 @@
-export function getSong(songname: string) {
+export function getSongMP3Data(songname: string) {
     // Get a song from SQL here
     // set param to either the name, or the sid, or idk man
 
@@ -8,8 +8,7 @@ export function getSong(songname: string) {
     // MYSQLRequest("_________.php", Data).then((Response)=>{
 
     // });
-
-    return new SongListItem("song name", "album", "artist");
+    
 }
 export function searchForSongs(searchterm: string) {
     // Search for songs based on a searchterm here
