@@ -11,25 +11,36 @@ import Axios from "axios"
 import { Buddon } from '../components/Buddons';
 import { FormInputError, FormField } from '../components/Form';
 
-export default function Login () {
+export default function SignUp () {
 	// hooks that are used to change the state of the login parameters
 	const [Username, setUsername] = React.useState("");
 	const [Password, setPassword] = React.useState("");
+    const [ConfirmPw, setConfirmPw] = React.useState("");
 
-	const [LoginStatus, setLoginStatus] = React.useState("");
+	const [RegisterStatus, setRegisterStatus] = React.useState("");
 
-	const login = () => {
-		Axios.post("http://localhost:3001/login", {
-			Username: Username,
-			Password: Password
-		}).then((response) => {
-			if (response.data.message == "Success"){
-				setLoginStatus(response.data.message); // login is successful
-				// want to navigate to the users page from here
-			} else {
-				setLoginStatus(response.data.message);
-			}
-		})
+	const signup = () => {
+        if (Password.length <= 10){
+            if (ConfirmPw == Password){
+                Axios.post("http://localhost:3001/login", {
+                    Username: Username,
+                    Password: Password
+                }).then((response) => {
+                    if (response.data.message == "Success"){
+                        setRegisterStatus(response.data.message); // login is successful
+                        // want to navigate to the users page from here
+                    } else {
+                        setRegisterStatus(response.data.message);
+                    }
+                })
+            }
+            else {
+                console.log("Passwords Do Not Match");
+            }
+        }
+        else {
+            console.log("Password Too Long");
+        }
 	}
 
 	// TODO: need to put a view in here that displays that the error message if they didn't login correctly
@@ -49,13 +60,20 @@ export default function Login () {
 				setPassword(e.nativeEvent.text);
 			}}
 			/>
+            <TextInput
+			style={[styles.textInput, {width: '100%'}, {margin:20}]}
+			defaultValue="Confirm Password"
+			onChange={(e)=>{
+				setConfirmPw(e.nativeEvent.text);
+			}}
+			/>
 			<Buddon
 				style={[styles.submitBuddon, {margin: 15}]}
-				label = "Login"
-				onPress={login}
+				label = "Register"
+				onPress={signup}
 				isSelected={false}
 			/>
-			<Text> {LoginStatus} </Text>
+            <h1>{RegisterStatus}</h1>
 		</View>
 	)
 }
