@@ -1,3 +1,7 @@
+import React, { useState, useEffect } from 'react';
+import { thisAppUser } from './Profiles';
+import axios from "axios";
+
 export function getSongMP3Data(songname: string) {
     // Get a song from SQL here
     // set param to either the name, or the sid, or idk man
@@ -10,6 +14,16 @@ export function getSongMP3Data(songname: string) {
     // });
     
 }
+
+export function getAllSongs() {
+    // get all song metadat from mysql database
+    axios.get("/tracks").then(res => {
+        var tracks = res;
+        console.log(tracks);
+    });
+
+}
+
 export function searchForSongs(searchterm: string) {
     // Search for songs based on a searchterm here
     // Return a list of SongListItems

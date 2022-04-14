@@ -111,7 +111,6 @@ class PlaylistView extends React.Component<PVP, PVS> {
 		if(this.state.showMP3Popup) {
 			popupView = (<UploadMP3Popup closePopup={this.closeMP3Upload}/>);
 		}
-
 		return (
 			<View style={[styles.container, {flexShrink: 1}]}>
 				{songListView}
