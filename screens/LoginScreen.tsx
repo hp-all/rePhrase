@@ -24,8 +24,9 @@ export default function Login () {
 			Password: Password
 		}).then((response) => {
 			if (response.data.message == "Success"){
-				setLoginStatus(response.data.message); // login is successful
+				setLoginStatus(response.data.UID); // login is successful
 				// want to navigate to the users page from here
+				console.log(LoginStatus);
 			} else {
 				setLoginStatus(response.data.message);
 			}
