@@ -22,7 +22,7 @@ export default function SignUp () {
 	const signup = () => {
         if (Password.length <= 10){
             if (ConfirmPw == Password){
-                Axios.post("http://localhost:3001/login", {
+                Axios.post("http://localhost:3001/register", {
                     Username: Username,
                     Password: Password
                 }).then((response) => {
