@@ -61,7 +61,7 @@ export default function SignUp ({navigation}: any) {
                 navigation.navigate("Root");
             })
         }
-    });
+    }, [RegisterStatus]);
 
 	// TODO: need to put a view in here that displays that the error message if they didn't login correctly
 	return (
@@ -70,6 +70,7 @@ export default function SignUp ({navigation}: any) {
 			style={[styles.textInput, {width: '100%'}]}
 			placeholder="Username"
             autoCorrect={false}
+            autoCapitalize='none'
 			onChange={(e)=>{
 				setUsername(e.nativeEvent.text);
 			}}
@@ -78,6 +79,7 @@ export default function SignUp ({navigation}: any) {
 			style={[styles.textInput, {width: '100%'}, {margin:20}]}
 			placeholder="Password"
             autoCorrect={false}
+            autoCapitalize='none'
 			onChange={(e)=>{
 				setPassword(e.nativeEvent.text);
 			}}
@@ -86,6 +88,7 @@ export default function SignUp ({navigation}: any) {
 			style={[styles.textInput, {width: '100%'}, {margin:20}]}
 			placeholder="Confirm Password"
             autoCorrect={false}
+            autoCapitalize='none'
 			onChange={(e)=>{
 				setConfirmPw(e.nativeEvent.text);
 			}}
