@@ -47,6 +47,8 @@ export default function Login ({navigation}: any) {
 				style={[styles.textInput, {width: '100%'}]}
 				placeholder="username..."
 				placeholderTextColor={'#888'}
+				autoCorrect={false}
+            	autoCapitalize='none'
 				onChange={(e)=>{
 					setUsername(e.nativeEvent.text);
 				}}
@@ -55,6 +57,8 @@ export default function Login ({navigation}: any) {
 				style={[styles.textInput, {width: '100%'}, {margin:20}]}
 				placeholder="password..."
 				placeholderTextColor={'#888'}
+				autoCorrect={false}
+            	autoCapitalize='none'
 				onChange={(e)=>{
 					setPassword(e.nativeEvent.text);
 				}}
@@ -69,6 +73,12 @@ export default function Login ({navigation}: any) {
 				label = "Delete This"
 				onPress={deleteThisLogin}
 			/>
+			<Buddon
+				style={[styles.submitBuddon, {margin: 15, backgroundColor: colorTheme['t_white']}]}
+				label = "Register"
+				onPress={()=>navigation.navigate("Signup")}
+			/>
+			<Text>{LoginStatus}</Text>
 		</View>
 	)
 }

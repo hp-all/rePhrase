@@ -16,6 +16,7 @@ import { appStyles, colorTheme } from '../components/AppStyles';
 
 import ModalScreen from '../screens/ModalScreen';
 import LoginScreen from '../screens/LoginScreen';
+import SignUpScreen from '../screens/SignUpScreen';
 
 import NotFoundScreen from '../screens/NotFoundScreen';
 import MusicLibraryScreen from '../screens/MusicLibrary/MusicLibraryScreen';
@@ -62,6 +63,12 @@ function RootNavigator() {
         <Stack.Screen name="Modal" component={ModalScreen} />
       </Stack.Group>
       <Stack.Screen name="Login" component={LoginScreen} options={{
+        title: '',
+        header: () => (
+          <Header title=''/>
+        ),
+      }}/>
+      <Stack.Screen name="Signup" component={SignUpScreen} options={{
         title: '',
         header: () => (
           <Header title=''/>

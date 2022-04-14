@@ -11,7 +11,9 @@ import Axios from "axios"
 import { Buddon } from '../components/Buddons';
 import { FormInputError, FormField } from '../components/Form';
 
-export default function SignUp () {
+import UserProfile, { thisAppUser } from '../DatabaseWrappers/Profiles';
+
+export default function SignUp ({navigation}: any) {
 	// hooks that are used to change the state of the login parameters
 	const [Username, setUsername] = React.useState("");
 	const [Password, setPassword] = React.useState("");
@@ -20,15 +22,21 @@ export default function SignUp () {
 	const [RegisterStatus, setRegisterStatus] = React.useState("");
 
 	const signup = () => {
+        console.log("Pre api call");
+        console.log(Password);
+        console.log(ConfirmPw);
         if (Password.length <= 10){
             if (ConfirmPw == Password){
+                // console.log("Pre api call");
+                // console.log(Password);
+                // console.log(ConfirmPw);
+                console.log("passwords match");
                 Axios.post("http://localhost:3001/register", {
                     Username: Username,
                     Password: Password
                 }).then((response) => {
-                    if (response.data.message == "Success"){
-                        setRegisterStatus(response.data.message); // login is successful
-                        // want to navigate to the users page from here
+                    if (response.data.message == "Successfully Registered"){
+                        setRegisterStatus(response.data.message); //register successful
                     } else {
                         setRegisterStatus(response.data.message);
                     }
@@ -43,26 +51,44 @@ export default function SignUp () {
         }
 	}
 
+    React.useEffect(() => {
+        if(RegisterStatus == "Successfully Registered"){
+            Axios.post("http://localhost:3001/getUID", {
+                Username: Username
+            }).then((response) => {
+                console.log(response.data.UID);
+                thisAppUser.copy(new UserProfile(response.data.UID, Username, Password));
+                navigation.navigate("Root");
+            })
+        }
+    }, [RegisterStatus]);
+
 	// TODO: need to put a view in here that displays that the error message if they didn't login correctly
 	return (
 		<View style={{width: 290, alignSelf: 'center', margin: 20, padding: 20, backgroundColor: colorTheme['t_med'], borderRadius: 10}}>
 			<TextInput
 			style={[styles.textInput, {width: '100%'}]}
-			defaultValue="Username"
+			placeholder="Username"
+            autoCorrect={false}
+            autoCapitalize='none'
 			onChange={(e)=>{
 				setUsername(e.nativeEvent.text);
 			}}
 			/>
 			<TextInput
 			style={[styles.textInput, {width: '100%'}, {margin:20}]}
-			defaultValue="Password"
+			placeholder="Password"
+            autoCorrect={false}
+            autoCapitalize='none'
 			onChange={(e)=>{
 				setPassword(e.nativeEvent.text);
 			}}
 			/>
             <TextInput
 			style={[styles.textInput, {width: '100%'}, {margin:20}]}
-			defaultValue="Confirm Password"
+			placeholder="Confirm Password"
+            autoCorrect={false}
+            autoCapitalize='none'
 			onChange={(e)=>{
 				setConfirmPw(e.nativeEvent.text);
 			}}
@@ -73,7 +99,7 @@ export default function SignUp () {
 				onPress={signup}
 				isSelected={false}
 			/>
-            <h1>{RegisterStatus}</h1>
+            <Text> {RegisterStatus} </Text>
 		</View>
 	)
 }
