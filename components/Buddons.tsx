@@ -131,20 +131,15 @@ export class Draggable extends Component<dp, dS> {
     }
 }
 
-type bP = {label: string, onPress: ()=>void, isSelected?: boolean, style?: any, 
+export function Buddon (props: {label: string, onPress: ()=>void, isSelected?: boolean, style?: any, 
     icon?: ButtonIcon, 
     alticon?: ButtonIcon,
     fontAwesome?: {name: 'close'|undefined, size: number, color: string}
     withText?: boolean,
     bg?: ColorTypes,
     altbg?: ColorTypes,
-} 
-type bS = {};
-export class Buddon extends Component<bP, bS> {
-    constructor(props: any) {
-        super(props);
-    }
-    tabBarImg = (icon: ButtonIcon, alticon?: ButtonIcon, isSelected?: boolean) => {
+}) {
+    const tabBarImg = (icon: ButtonIcon, alticon?: ButtonIcon, isSelected?: boolean) => {
         var filesrc;
         if(isSelected)  {filesrc = buttonIcons['dark'][icon];}
         else {
@@ -162,57 +157,54 @@ export class Buddon extends Component<bP, bS> {
             <Image source= {filesrc} style={{resizeMode: 'contain', ...sizeStuff}}/>
         );
     }
-
-    render() {
-        var label = (
-            <Text style={[styles.subheader, styles.centerSelf, this.props.isSelected? styles.selectedbuttonlabel: styles.buttonlabel]}>
-                {this.props.label}
-            </Text>
-        );
-        var img = null;
-        if(this.props.icon) {
-            img = this.tabBarImg(this.props.icon, this.props.alticon, this.props.isSelected);
-        } else if(this.props.fontAwesome) {
-            img = (
-                <FontAwesome
-                    name={this.props.fontAwesome.name}
-                    size={this.props.fontAwesome.size}
-                    color={this.props.fontAwesome.color}
-                    style={{alignSelf: 'center'}}
-                />
-            )
-        }
-
-        var buttonDisplay;
-        if(this.props.withText && img) {
-            console.log(this.props.label);
-            <View style={{flexDirection: 'row'}}>
-                <Image source= {buttonIcons['light']['loops']} style={{resizeMode: 'contain', width: '100%', height: '100%', flex: 1}}/>
-                <Text style={[styles.subheader, styles.centerSelf, this.props.isSelected? styles.selectedbuttonlabel: styles.buttonlabel, {flex: 1}]}>
-                    {this.props.label}
-                </Text>
-            </View>
-        } else if(img) {
-            buttonDisplay = img;
-        }else {
-            buttonDisplay = label;
-        }
-
-        var bg = null;
-        if(this.props.bg && !this.props.isSelected) {
-            bg = {backgroundColor: colorTheme[this.props.bg]}
-        } else if(this.props.altbg) {
-            bg = {backgroundColor: colorTheme[this.props.altbg]}
-        }
-        return (
-            <TouchableOpacity
-                onPress={this.props.onPress}
-                style={[styles.button, this.props.isSelected && styles.selected, this.props.icon && styles.buttonSize, bg, this.props.style]}
-            >
-                {buttonDisplay}
-            </TouchableOpacity>
-        );
+    var label = (
+        <Text style={[styles.subheader, styles.centerSelf, props.isSelected? styles.selectedbuttonlabel: styles.buttonlabel]}>
+            {props.label}
+        </Text>
+    );
+    var img = null;
+    if(props.icon) {
+        img = tabBarImg(props.icon, props.alticon, props.isSelected);
+    } else if(props.fontAwesome) {
+        img = (
+            <FontAwesome
+                name={props.fontAwesome.name}
+                size={props.fontAwesome.size}
+                color={props.fontAwesome.color}
+                style={{alignSelf: 'center'}}
+            />
+        )
     }
+
+    var buttonDisplay;
+    if(props.withText && img) {
+        console.log(props.label);
+        <View style={{flexDirection: 'row'}}>
+            <Image source= {buttonIcons['light']['loops']} style={{resizeMode: 'contain', width: '100%', height: '100%', flex: 1}}/>
+            <Text style={[styles.subheader, styles.centerSelf, props.isSelected? styles.selectedbuttonlabel: styles.buttonlabel, {flex: 1}]}>
+                {props.label}
+            </Text>
+        </View>
+    } else if(img) {
+        buttonDisplay = img;
+    }else {
+        buttonDisplay = label;
+    }
+
+    var bg = null;
+    if(props.bg && !props.isSelected) {
+        bg = {backgroundColor: colorTheme[props.bg]}
+    } else if(props.altbg) {
+        bg = {backgroundColor: colorTheme[props.altbg]}
+    }
+    return (
+        <TouchableOpacity
+            onPress={props.onPress}
+            style={[styles.button, props.isSelected && styles.selected, props.icon && styles.buttonSize, bg, props.style]}
+        >
+            {buttonDisplay}
+        </TouchableOpacity>
+    );
 }
 
 export function PopupTrigger (props: {

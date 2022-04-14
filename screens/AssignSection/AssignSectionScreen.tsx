@@ -6,7 +6,7 @@ import Layout from "../../constants/Layout";
 
 import { appStyles as styles, bottomBorderRadius, Bounds, colorTheme, leftBorderRadius, rightBorderRadius, topBorderRadius } from '../../components/AppStyles';
 import { Draggable, Buddon, ButtonGroup, PopupTrigger } from '../../components/Buddons';
-import { barPositioning, ChangeLog, TrackPlayerController, MeasureMaker } from '../../components/MusicComponents';
+import { barPositioning, ChangeLog, TrackPlayerController, MeasureMaker, LoopSkelly, SectionSkelly } from '../../components/MusicComponents';
 
 import SongSection, { SectionType } from '../../MusicModel/SongSection';
 import Track, { Source } from '../../MusicModel/Track';
@@ -95,10 +95,10 @@ class TrackAssignView extends React.Component<tavP, tavS>{
 		};
 
 		//Initializes the state variables for the View
-		var boy = new TrackyPlayer(this.updateStatus);
+		var trackPlayer = new TrackyPlayer(this.updateStatus);
 		this.state = {
-			trackPlayer: boy,
-			trackPlayerController: new TrackPlayerController(this.props.track, boy),
+			trackPlayer: trackPlayer,
+			trackPlayerController: new TrackPlayerController(this.props.track, trackPlayer),
 			selectedViewSize: ViewSizeOptions.large,
 			editMode: EditBlockOptions.none,
 			simpleView: true,
@@ -316,6 +316,14 @@ class TrackAssignView extends React.Component<tavP, tavS>{
 			hihglight.max = s.max;
 		this.setState({highlight: hihglight});
 	}
+	addLoop = (l: LoopSkelly) => {
+		this.state.trackPlayerController.track.addLoop(l.loopName, l.start, l.end);
+	}
+	addSection = (s: SectionSkelly) => {
+		console.log("Adding Section");
+		var isSnapped = s.type == SectionType.IDK;
+		this.state.trackPlayerController.track.addSection(s.sectionName, s.type, s.start, s.end, isSnapped, s.tempo, s.timeSig);
+	}
 
 	render() {
 		var popup = null;
@@ -342,7 +350,7 @@ class TrackAssignView extends React.Component<tavP, tavS>{
 				/>
 				{/* Track View */}
 				<BorsView 
-					style = {{flex: 4, marginTop: (this.state.showToolMenu)? 10: 0}}
+					style = {{flex: 4, marginTop: (this.state.showToolMenu)? 44: 0}}
 					trackPlayerController = {this.state.trackPlayerController}
 					size = {this.state.selectedViewSize} 
 					editMode= {this.state.editMode}
@@ -359,6 +367,8 @@ class TrackAssignView extends React.Component<tavP, tavS>{
 					hide={this.hideToolComponent}
 					selectedArea={this.state.highlight}
 					setSelectedArea={this.setHighlight}
+					createLoop={l=>{this.addLoop(l)}}
+					createSection={s=>{this.addSection(s)}}
 				/>
 				{popup}
 			</Animated.View>

@@ -6,6 +6,8 @@ import { Text, View } from '../../components/Themed';
 import { appStyles as styles, Bounds, colorTheme } from '../../components/AppStyles';
 import { Buddon } from '../../components/Buddons';
 import { NumberField, NumberPairField, TextField } from '../../components/Form';
+import Loop from '../../MusicModel/Loop';
+import { LoopSkelly, SectionSkelly } from '../../components/MusicComponents';
 
 // Elements & Components
 
@@ -14,7 +16,12 @@ import { NumberField, NumberPairField, TextField } from '../../components/Form';
 enum AddButtonTypes {
     AddSection, AddLoop, None,
 }
-type tcP = {hide: ()=>void, selectedArea: Bounds, setSelectedArea?: (a: Bounds)=>void, style?: any};
+type tcP = {
+    hide: ()=>void, 
+    selectedArea: Bounds, setSelectedArea?: (a: Bounds)=>void, style?: any, 
+    createLoop?: (loop: LoopSkelly)=>void,
+    createSection?: (section: SectionSkelly)=>void
+};
 type tcS = {buttonShowing: AddButtonTypes};
 export default class AddMenu extends React.Component<tcP, tcS> {
     initState = {buttonShowing: AddButtonTypes.None}
@@ -32,7 +39,13 @@ export default class AddMenu extends React.Component<tcP, tcS> {
         var buddonsView = null, formView = null;
         switch(this.state.buttonShowing) {
             case AddButtonTypes.AddLoop:
-                formView = (<AddLoopForm hide={this.hideButtonForm} selectedArea={this.props.selectedArea} setSelectedArea={this.props.setSelectedArea}/>)
+                formView = (<AddLoopForm 
+                        hide={this.hideButtonForm} 
+                        selectedArea={this.props.selectedArea} 
+                        setSelectedArea={this.props.setSelectedArea}
+                        createLoop={this.props.createLoop}
+                        createSection={this.props.createSection}
+                        />)
                 break;
             case AddButtonTypes.AddSection: 
                 formView = (<AddSectionForm hide={this.hideButtonForm} selectedArea={this.props.selectedArea}/>)
@@ -61,54 +74,15 @@ export default class AddMenu extends React.Component<tcP, tcS> {
 	}
 }
 
-function AddButtons(props: {showSectionForm: ()=>void, showLoopForm: ()=>void}) {
-    return (
-        <View>
-            {/* Add Section Button */}
-            <Buddon
-                style={[styles.buttonSize, {width: 140, padding: 12, marginVertical: 10}]}
-                label='Add Section'
-                onPress={props.showSectionForm}
-            />
-            {/* Add Loop Button */}
-            <Buddon
-                style={[styles.buttonSize, {width: 140, padding: 12}]}
-                label='Add Loop'
-                onPress={props.showLoopForm}
-            />
-        </View>
-    );
-}
-
-class AddSectionForm extends React.Component<{hide: ()=>void, selectedArea: Bounds}, {showError: boolean}> {
-
-    constructor(props: any) {
-        super(props);
-
-    }
-    submitForm = () => {
-
-    }
-    render() {
-        return (
-            <View>
-                <Text style={styles.subheader}>Add Section</Text>
-                <Buddon 
-                    label="Add Section"
-                    onPress={this.submitForm}
-                />
-                <Buddon
-                    label="back"
-                    onPress={this.props.hide}
-                />
-            </View>
-        )
-    }
-}
-class AddLoopForm extends React.Component<{hide: ()=>void, selectedArea: Bounds, setSelectedArea?: (a: Bounds)=>void}, {showError: boolean, startTime: number, endTime: number}> {
+type lfP = {
+    hide: ()=>void, 
+    selectedArea: Bounds, 
+    setSelectedArea?: (a: Bounds)=>void, 
+    createLoop?: (loop: LoopSkelly)=>void,
+    createSection?: (section: SectionSkelly)=>void,
+};
+class AddLoopForm extends React.Component<lfP, {showError: boolean, startTime: number, endTime: number}> {
     loopName: TextField;
-    startTime: NumberField;
-    endTime: NumberField;
     constructor(props: any) {
         super(props);
         var start = 0, end = 0;
@@ -119,8 +93,6 @@ class AddLoopForm extends React.Component<{hide: ()=>void, selectedArea: Bounds,
             end = props.selectedArea.end;
         }
         this.loopName = new TextField("Loop Name", "", [{val: "", msg: "Enter a name for the loop"}])
-        this.startTime = new NumberField("Start Time", start, [], {numInterval: 10})
-        this.endTime = new NumberField("End Time", end, [], {numInterval: 10}) 
         var start = 0, end = 0;
         if(this.props.selectedArea.min)
             start = this.props.selectedArea.min;
@@ -134,13 +106,16 @@ class AddLoopForm extends React.Component<{hide: ()=>void, selectedArea: Bounds,
     }
     checkEntries = () => {
         var a = this.loopName.checkValue();
-        this.startTime.checkValue();
-        this.endTime.checkValue();
         return a;
     }
     submitForm = () => {
         if(this.checkEntries()) {
-            console.log("LoopName: " + this.loopName.value + ", time: " + this.startTime.value + "-" + this.endTime.value);
+            // var newLoop: Loop = new Loop(0, this.loopName, this.)
+            var start = this.props.selectedArea.min;
+            var end = this.props.selectedArea.max;
+            if(!(start && end && this.props.createLoop)) 
+                return;
+            this.props.createLoop({loopName: this.loopName.value, start, end});
         }
     }
     render() {
@@ -171,4 +146,51 @@ class AddLoopForm extends React.Component<{hide: ()=>void, selectedArea: Bounds,
             </View>
         )
     }
+}
+
+class AddSectionForm extends React.Component<{hide: ()=>void, selectedArea: Bounds}, {showError: boolean}> {
+
+    constructor(props: any) {
+        super(props);
+
+    }
+    submitForm = () => {
+
+    }
+    render() {
+        return (
+            <View>
+                <Text style={styles.subheader}>Add Section</Text>
+                <Buddon 
+                    label="Add Section"
+                    onPress={this.submitForm}
+                />
+                <Buddon
+                    label="back"
+                    onPress={this.props.hide}
+                />
+            </View>
+        )
+    }
+}
+
+
+
+function AddButtons(props: {showSectionForm: ()=>void, showLoopForm: ()=>void}) {
+    return (
+        <View>
+            {/* Add Section Button */}
+            <Buddon
+                style={[styles.buttonSize, {width: 140, padding: 12, marginVertical: 10}]}
+                label='Add Section'
+                onPress={props.showSectionForm}
+            />
+            {/* Add Loop Button */}
+            <Buddon
+                style={[styles.buttonSize, {width: 140, padding: 12}]}
+                label='Add Loop'
+                onPress={props.showLoopForm}
+            />
+        </View>
+    );
 }

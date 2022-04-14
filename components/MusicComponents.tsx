@@ -10,6 +10,9 @@ const windowWidth = Layout.window.width;
 const viewAreaFactor = 0.9;
 const splitViewArea = (factor: number) => {return (windowWidth*viewAreaFactor)/factor;}
 
+export type LoopSkelly = {loopName: string, start: number, end: number};
+export type SectionSkelly = {sectionName: string, type: SectionType, start: number, end: number, tempo: number, timeSig: string}
+
 export const barPositioning = {
 	spacing: 52,
 	height: 40,
