@@ -31,9 +31,10 @@ export default function Login ({navigation}: any) {
 		}).then((response) => {
 			if (response.data.message == "Success"){
 				thisAppUser.copy(new UserProfile(response.data.UID, Username, Password));
-				setLoginStatus(response.data.message); // login is successful
+ 				setLoginStatus(response.data.UID); // login is successful
 				navigation.navigate("Root");
 				// want to navigate to the users page from here
+				console.log(LoginStatus);
 			} else {
 				setLoginStatus(response.data.message);
 			}
