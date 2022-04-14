@@ -4,13 +4,15 @@ import { Text, View } from '../components/Themed';
 
 import { appStyles as styles, bottomBorderRadius, colorTheme, leftBorderRadius, rightBorderRadius, topBorderRadius } from '../components/AppStyles';
 import { Buddon } from '../components/Buddons';
+import { thisAppUser } from '../DatabaseWrappers/Profiles';
 
 
 
 
-export default function ProfileInfoScreen({navigation, route}: any) {  
-    var username = route.params.username;
-    var password = route.params.password;
+export default function ProfileInfoScreen({navigation}: any) {  
+    var username = thisAppUser.username;
+    var password = thisAppUser.password;
+
     return (
         <View style={{padding: 10}}>
         <Text style={styles.title}>Profile</Text>

@@ -59,8 +59,6 @@ export default class UserProfile extends Profile {
         return new UserProfile(json.uid, json.username, json.password);
     }
 }
-
-
 UserProfile.prototype.toString = function toString() {
     return "Profile -> uid: " + this.uid + ", username: " + this.username + ", password: " + this.password;
 }
