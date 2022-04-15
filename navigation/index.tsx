@@ -17,6 +17,8 @@ import { appStyles, colorTheme } from '../components/AppStyles';
 import ModalScreen from '../screens/ModalScreen';
 import LoginScreen from '../screens/LoginScreen';
 import SignUpScreen from '../screens/SignUpScreen';
+import EditProfile from '../screens/EditProfileScreen';
+import Friends from '../screens/FriendsScreen';
 
 import NotFoundScreen from '../screens/NotFoundScreen';
 import MusicLibraryScreen from '../screens/MusicLibrary/MusicLibraryScreen';
@@ -74,8 +76,18 @@ function RootNavigator() {
           <Header title=''/>
         ),
       }}/>
-
-      
+      <Stack.Screen name="Friends" component={Friends} options={{
+        title: '',
+        header: () => (
+          <Header title=''/>
+        ),
+      }}/>
+      <Stack.Screen name="EditProfile" component={EditProfile} options={{
+        title: '',
+        header: () => (
+          <Header title=''/>
+        ),
+      }}/>
     </Stack.Navigator>
   );
 }

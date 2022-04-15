@@ -7,11 +7,48 @@ import { Buddon } from '../components/Buddons';
 import { thisAppUser } from '../DatabaseWrappers/Profiles';
 
 
+import Axios from 'axios';
+
+
 
 
 export default function ProfileInfoScreen({navigation}: any) {  
     var username = thisAppUser.username;
     var password = thisAppUser.password;
+
+    var friends:any = [];
+
+    const loadFriends = () => {
+        Axios.post('http://localhost:3001/Friends', {
+            UID: thisAppUser.uid
+        }).then((response)=>{
+            if(response.data.message == "You have no friends!"){
+                console.log("haha loser");
+                alert("hahah loser, you have no friends");
+            }
+            else {
+                console.log(response.data);
+                console.log(response.data[0]["UserID1"]);
+    
+                // want to iterate over the 
+                for (var i = 0; i<response.data.length; i++){
+                    var UserID1 = response.data[i]["UserID1"];
+                    var UserID2 = response.data[i]["UserID2"];
+    
+                    if (UserID1 != thisAppUser.uid){
+                        friends.push(UserID1);
+                    } else {
+                        friends.push(UserID2);    
+                    }
+                }
+                console.log(friends);
+                thisAppUser.friends = friends;
+                navigation.navigate("Friends");
+
+            }
+        })
+        
+    }
 
     return (
         <View style={{padding: 10}}>
@@ -32,6 +69,20 @@ export default function ProfileInfoScreen({navigation}: any) {
             altbg={'t_med'}
             isSelected={true}
             onPress={()=>navigation.navigate("Login")}
+        />
+        <Buddon
+            style={[styles.centerSelf, {width: 150, padding: 8, margin: 20}]}
+            label = "View Friends"
+            altbg={'t_med'}
+            isSelected={true}
+            onPress={loadFriends}
+        />
+        <Buddon
+            style={[styles.centerSelf, {width: 150, padding: 8}]}
+            label = "Edit Profile"
+            altbg={'t_med'}
+            isSelected={true}
+            onPress={()=>navigation.navigate("EditProfile")}
         />
         </View>
     )
