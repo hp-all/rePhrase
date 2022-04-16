@@ -55,6 +55,7 @@ export default function ProfileInfoScreen({navigation}: any) {
         // TODO: need to ping the API to get all the incoming friend requests
         // Send to page where they can see all of their incoming requests
         // Make navigation track for this page
+        navigation.navigate("FriendViews", {screen: 'FriendRequests'});
     }
 
     return (

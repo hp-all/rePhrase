@@ -18,18 +18,19 @@ import ModalScreen from '../screens/ModalScreen';
 import LoginScreen from '../screens/LoginScreen';
 import SignUpScreen from '../screens/SignUpScreen';
 import EditProfile from '../screens/EditProfileScreen';
-import Friends from '../screens/FriendsScreens/FriendsScreen';
+import FriendsScreen from '../screens/FriendsScreens/FriendsScreen';
+import OneFriendScreen from '../screens/FriendsScreens/OneFriendScreen';
 
 import NotFoundScreen from '../screens/NotFoundScreen';
 import MusicLibraryScreen from '../screens/MusicLibrary/MusicLibraryScreen';
 import PlayMusicScreen from '../screens/PlayMusicScreen';
 import AssignSectionScreen from '../screens/AssignSection/AssignSectionScreen';
 import ProfileInfoScreen from '../screens/ProfileInfoScreen';
-import FriendDisplay from '../screens/FriendsScreens/OneFriendScreen';
 
 import { FriendTabParamList, RootStackParamList, RootTabParamList, RootTabScreenProps } from '../types';
 import LinkingConfiguration from './LinkingConfiguration';
 import UserProfile from '../DatabaseWrappers/Profiles';
+import FriendRequestScreen from '../screens/FriendsScreens/FriendRequestScreen';
 
 export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
   return (
@@ -76,6 +77,7 @@ function RootNavigator() {
           <Header title=''/>
         ),
       }}/>
+      {/* FriendViews directs to all the friend related screens (Defined below) */}
       <Stack.Screen name="FriendViews" component={FriendsNavigator} options={{headerShown: false}}/>
       <Stack.Screen name="EditProfile" component={EditProfile} options={{
         title: '',
@@ -175,13 +177,18 @@ function FriendsNavigator() {
     >
       <FriendTab.Screen
         name = "Friends"
-        component={Friends}
+        component={FriendsScreen}
         options={{header: () => (<Header title=''/>),}}
       />
       
       <FriendTab.Screen
         name = "OneFriend"
-        component={FriendDisplay}
+        component={OneFriendScreen}
+        options={{header: () => (<Header title=''/>),}}
+      />
+      <FriendTab.Screen
+        name= "FriendRequests"
+        component={FriendRequestScreen}
         options={{header: () => (<Header title=''/>),}}
       />
     </FriendTab.Navigator>

@@ -39,6 +39,7 @@ export type RootTabParamList = {
 export type FriendTabParamList = {
   Friends: undefined;
   OneFriend: undefined;
+  FriendRequests: undefined;
 }
 
 export type RootTabScreenProps<Screen extends keyof RootTabParamList> = CompositeScreenProps<

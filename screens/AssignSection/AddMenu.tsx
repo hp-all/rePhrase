@@ -178,9 +178,26 @@ type sfP = {
  *          true if errors within the form should be shown
  */
 class AddSectionForm extends React.Component<sfP, {showError: boolean}> {
+    sectionName: TextField;
 
     constructor(props: any) {
         super(props);
+        var start = 0, end = 0;
+        if(props.selectedArea.start) {
+            start = end = props.selectedArea.start;
+        }
+        if(props.selectedArea.end) {
+            end = props.selectedArea.end;
+        }
+        this.sectionName = new TextField("Section Name", "", [{val: "", msg: "Enter a name for the section"}])
+        var start = 0, end = 0;
+        if(this.props.selectedArea.min)
+            start = this.props.selectedArea.min;
+        if(this.props.selectedArea.max)
+            end = this.props.selectedArea.max;
+        this.state = {
+            showError: false,
+        }
 
     }
     submitForm = () => {
@@ -189,14 +206,33 @@ class AddSectionForm extends React.Component<sfP, {showError: boolean}> {
     render() {
         return (
             <View>
-                <Text style={styles.subheader}>Add Section</Text>
-                <Buddon 
-                    label="Add Section"
-                    onPress={this.submitForm}
-                />
                 <Buddon
-                    label="back"
-                    onPress={this.props.hide}
+                        style={{position: 'absolute', left: 0, top: 0, padding: 5}}
+                        label="< back"
+                        onPress={()=>this.props.hide(false)}
+                />
+                <Text style={[styles.header, styles.centerSelf, {marginBottom: 15}]}>Add Loop</Text>
+
+                <View style={{flexDirection: 'row'}}>
+                    <View style={{flex: 1}}>
+                        {this.sectionName.getLabelView(styles.subheader)}
+                        {this.sectionName.getView()}
+                        <NumberPairField
+                            bounds = {{min: undefined, max: undefined}}
+                            values = {this.props.selectedArea}
+                            unit= "s"
+                            labels = {{min: "Start Time", max: "End Time"}}
+                            keyboardDifference={169}
+                        />
+                    </View>
+                    <View style={{flex: 1}}>
+                        
+                    </View>
+                </View>
+                <Buddon 
+                    style={[styles.centerSelf, {width: 100, marginTop: 15, height: 35, padding: 6}]}
+                    label="Add Loop"
+                    onPress={this.submitForm}
                 />
             </View>
         )
