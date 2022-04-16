@@ -15,6 +15,8 @@ import TrackyPlayer from '../../MusicModel/TrackPlayer';
 
 import ButtonMenu from './ButtonMenu';
 import AddMenu from './AddMenu';
+import { getSelectedSong } from '../../DatabaseWrappers/SongStuff';
+import axios from 'axios';
 
 const frootSongSource = require('../../assets/soundFiles/lofi_fruits_jazz.mp3');
 const windowWidth = Layout.window.width;
@@ -27,27 +29,60 @@ const thumbOffY = -300;
 
 export default function AssignSectionScreen() {
 	console.log("---------- Start Assign Section Screen -----");
-	var frootSongTrack = new Track(Source.MP3, frootSongSource, 
-			{name: "Froot Song (ft. Jazz)", artist: "Test Track", album: "from SoundCloud", length: 203000}
-		);
-	frootSongTrack.name = "Froot Song (ft. Jazz)"
+	console.log(getSelectedSong());
+
+	const [isLoading, setLoading] = React.useState(true); // set as loading first
+
+	var trackInfo:any = {};
+
+	React.useEffect(() => {
+		axios.get(`http://localhost:3001/track/${getSelectedSong()}`)
+			.then(res => { 
+				trackInfo = res.data;
+			}, err => { 
+				console.log("Error fetching track with id=" + getSelectedSong());
+			});
+		setLoading(false); // track info has been fetched and is ready to render
+	}, []);
+
+	var selectedTrack = new Track(
+		Source.MP3, require(trackInfo.mp3_url), 
+		{name: trackInfo.name, artist: trackInfo.artist, album: trackInfo.album, length: trackInfo.duration*1000});
+
+	// fetch track and then set to track
+
+
+	// var frootSongTrack = new Track(Source.MP3, frootSongSource, 
+	// 		{name: "Froot Song (ft. Jazz)", artist: "Test Track", album: "from SoundCloud", length: 203000}
+	// 	);
+
+	/*
 	frootSongTrack.addSection("First Song", SectionType.A, 0, 98000, true, 120);
 	frootSongTrack.addSection("Solo", SectionType.Verse, 56000, 80000, true, 120);
 	frootSongTrack.addSection("Second Song", SectionType.B, 98000, 1000000, true, 70, "4:4", true);
 
 	frootSongTrack.addLoop("small boy", 10000, 14000);
 	frootSongTrack.addLoop("solo snip", 56000, 68000);
+	*/
 
 
 	// var trackController: TrackPlayerController = new TrackPlayerController();
 
-	return(
-		<View style={[styles.container, styles.darkbg]}>
-			<Text style={styles.title}>{frootSongTrack.name}</Text>
-			<TrackAssignView track= {frootSongTrack}/>
-		<StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
-		</View>
-	);
+	if (isLoading) {
+		return (
+			<View style={[styles.container, styles.darkbg]}>
+			<Text>Loading...</Text>
+			</View>
+		);
+	} else {
+		return (
+			<View style={[styles.container, styles.darkbg]}>
+				<Text style={styles.title}>{selectedTrack.name}</Text>
+				<TrackAssignView track= {selectedTrack}/>
+			<StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
+			</View>
+		);
+	}
 }
 
 type tavP = {track: Track};

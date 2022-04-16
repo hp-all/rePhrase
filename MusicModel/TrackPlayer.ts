@@ -3,6 +3,7 @@ import { Source } from "./Track";
 import SongSection, { SectionType } from "./SongSection";
 import Loop from "./Loop";
 import { Audio } from 'expo-av';
+var Sound = require('react-native-sound');
 
 export default class TrackyPlayer {
     currentTrack?: Track;
@@ -12,7 +13,7 @@ export default class TrackyPlayer {
     queuedLoop?: Loop|undefined;
     isQueued: boolean = false;
 
-    //Some field variable to keep track of where in the song the player is
+    // Some field variable to keep track of where in the song the player is
     mediaPlayer: MediaPlayer;
     playMode: PlayMode = PlayMode.Loop;
     statusUpdate: (s: any)=>void;

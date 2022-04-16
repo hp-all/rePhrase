@@ -2,7 +2,8 @@ import SongSection, { SectionType } from "./SongSection";
 import Loop from "./Loop";
 
 export default class Track {
-    //Song Data
+    // track data
+
     mediaSource: Source;
     mediaData: any;
     name: string = "";
@@ -10,6 +11,7 @@ export default class Track {
     album: string = "";
     timeLen: number = 240000;
     uri: string;
+
     //User Created App Data
     defaultTempo: number;
     defaultTimeSig: string;
@@ -28,6 +30,7 @@ export default class Track {
         this.init(mediaSource, sourceData);
         this.sectionList.splice(0, 0, new SongSection("", 0, this.timeLen, this.defaultTempo, this.defaultTimeSig));
     }
+    
     init(mediaSource: Source, sourceData: any) {
         [ this.name, this.artist, this.album, this.timeLen ] = Track.getInfo(mediaSource, sourceData);
     }
