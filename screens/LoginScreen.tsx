@@ -18,6 +18,7 @@ export default function Login ({navigation}: any) {
 	const [Password, setPassword] = React.useState("");
 
 	const [LoginStatus, setLoginStatus] = React.useState("");
+	const [passwordVisible, setVisibility] = React.useState(true);
 
 
 	/** Login with "admin" profile that contains dummy data simply for quickly viewing the app */
@@ -37,7 +38,7 @@ export default function Login ({navigation}: any) {
 
 	/** Connects to the MySQL Database to check the login information, then navigate to the app */
 	const login = () => {
-		Axios.post("http://localhost:3001/login", {
+		Axios.post('https://rephrase-cs750.herokuapp.com/login', {
 			Username: Username,
 			Password: Password
 		}).then((response) => {
@@ -67,6 +68,7 @@ export default function Login ({navigation}: any) {
 			/>
 			<TextInput
 				style={[styles.textInput, {width: '100%'}, {margin:20}]}
+				secureTextEntry={passwordVisible}
 				placeholder="password..."
 				placeholderTextColor={'#888'}
 				autoCorrect={false}

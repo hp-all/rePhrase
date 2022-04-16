@@ -1,10 +1,3 @@
-export function getProfileByUID(uid: number) {
-    // MYSQLRequest("_________.php", Data).then((Response)=>{
-
-    // });
-    return {uid: 0, username: ""};
-}
-
 export class Profile {
     uid: number = 0;
     username: string;
@@ -70,7 +63,10 @@ export class FriendProfile extends Profile {
     constructor(uid: number, username: string) {
         super(uid, username);
     }
-    setUsername = (username: string) => {
+    setUsername (username: string) {
         this.username = username;
+    }
+    static parseJSON(json: any) {
+        return new FriendProfile(json.uid, json.username);
     }
 }

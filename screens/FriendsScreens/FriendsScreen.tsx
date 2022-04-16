@@ -26,8 +26,8 @@ export default function FriendDisplay ({navigation}: any) {
             return;
         }
         for (var i = 0; i < thisAppUser.friends.length; i++){
-            Axios.post('http://localhost:3001/getUsername', {
-                UID: thisAppUser.friends[i].uid // the current UID
+            Axios.post('https://rephrase-cs750.herokuapp.com/getUsername', {
+                UID: thisAppUser.friends[i] // the current UID
             }).then((response)=>{
                 thisAppUser.friends[i].setUsername(response.data.Username);
             });
@@ -49,8 +49,8 @@ export default function FriendDisplay ({navigation}: any) {
     for(var i = 0; i<thisAppUser.friends.length; i++) {
         friendsViews.push(<FriendView 
             friend={thisAppUser.friends[i]} 
-            selectFriend={(friend: FriendProfile)=>{navigation.navigate("Friend")}}
-            key={i}
+            onSelect={(friend: FriendProfile)=>{navigation.navigate("OneFriend", {friendData: friend.toJSON()})}}
+            listKey={"Friend"+i}
         />)
     }
 
@@ -61,33 +61,72 @@ export default function FriendDisplay ({navigation}: any) {
                 <Spacer/>
                 <Buddon
                     style={[styles.centerSelf, {width: 150, padding: 8, flex: 1, marginRight: 20}]}
-                    label = "logout"
+                    label = "Back"
                     altbg={'t_med'}
                     isSelected={true}
-                    onPress={()=>navigation.navigate("Login")}
+                    onPress={()=>navigation.goBack()}
                 />
             </View>
-            <SafeAreaView>
-                <ScrollView style={{backgroundColor: colorTheme['t_med'], borderRadius: 8}} horizontal={true}>
-                    {friendsViews}
-                </ScrollView>
-            </SafeAreaView>            
+            <ViewUsersFriends
+                friends={thisAppUser.friends}
+                onFriendSelect={(friend: FriendProfile)=>{
+                    navigation.navigate("OneFriend", {friendData: friend.toJSON()})
+                }}
+            />       
 		<StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
 		</View>
 	)
 }
 
+/** ViewUsersFriends
+ *  Component to view the friends of a given list
+ * @param props 
+ */
+export function ViewUsersFriends(props: {friends: FriendProfile[], onFriendSelect?: (friend: FriendProfile)=>void, horizontal?: boolean, title?: string}) {
+    // Creates the views for all of the friends
+    var friendsViews = [];
+
+    if(props.friends.length == 0) {
+        friendsViews.push(
+            <View style={[styles.centerSelf, {margin: 20}]}>
+                <Text style={styles.header}>No friends to display</Text>
+            </View>
+        )
+    } else {
+        for(var i = 0; i<props.friends.length; i++) {
+            friendsViews.push(<FriendView 
+                friend={props.friends[i]} 
+                onSelect={props.onFriendSelect}
+                listKey={"Friend"+i}
+            />)
+        }
+    }
+   
+    var title = null;
+    if(props.title)
+        title = <Text style={[styles.header, {marginHorizontal: 15, fontWeight: 'bold', fontSize: 30}]}>{props.title}</Text>
+    
+    return (
+        <SafeAreaView>
+            {title}
+            <ScrollView style={{backgroundColor: colorTheme['t_med'], borderRadius: 8}} horizontal={props.horizontal}>
+                {friendsViews}
+            </ScrollView>
+        </SafeAreaView>   
+    );
+}
 
 /** FriendView: creates the view for a friend's profile
  * 
  * @param props friend: the friend profile to display, selectfriend, the function to go the the friend's page
  * @returns a view for a specific friend
  */
-function FriendView(props: {friend: FriendProfile, selectFriend?: (friend: FriendProfile)=>void, key?: React.Key}) {
+function FriendView(props: {friend: FriendProfile, onSelect?: (friend: FriendProfile)=>void, listKey?: React.Key}) {
+    console.log(props.listKey);
     return (
         <TouchableOpacity
-            key={props.key}
-            onPress={()=>{props.selectFriend && props.selectFriend(props.friend)}}
+            key={props.listKey}
+            onPress={()=>{props.onSelect && props.onSelect(props.friend)}}
             style={{backgroundColor: colorTheme['t_light'], flex: 1, margin: 10, padding: 20, borderRadius: 5}}
         >
             <Text style={styles.header}>{props.friend.username}</Text>

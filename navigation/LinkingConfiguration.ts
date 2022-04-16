@@ -40,15 +40,13 @@ const linking: LinkingOptions<RootStackParamList> = {
               TestWhateverScreen: 'testscreen',
             },
           },
-          AddFriends: {
-            screens: {
-              TestWhateverScreen: 'addfriends',
-            },
-          },
         },
       },
       Modal: 'modal',
       NotFound: '*',
+      FriendViews: {
+        screens: {}
+      }
     },
   },
 };

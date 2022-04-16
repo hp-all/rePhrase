@@ -273,12 +273,12 @@ export class NumberPairField extends React.Component<npfP, npfS> {
         }
         var minVal = "", maxVal = "";
         if(this.props.values.min != undefined) {
-            
-            minVal = this.props.values.min + ((this.props.unit)?this.props.unit:"")
+            minVal = (Math.round((this.props.values.min + Number.EPSILON)) / 1000) + "";
+            minVal += ((this.props.unit)?this.props.unit:"");
         }
         if(this.props.values.max != undefined) {
-
-            maxVal = this.props.values.max + ((this.props.unit)?this.props.unit:"");
+            maxVal = (Math.round((this.props.values.max + Number.EPSILON)) / 1000) + "";
+            maxVal += ((this.props.unit)?this.props.unit:"");
         }
         return (
             <Animated.View 

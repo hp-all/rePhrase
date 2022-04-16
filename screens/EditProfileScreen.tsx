@@ -13,62 +13,47 @@ import { FormInputError, FormField, TextField } from '../components/Form';
 import UserProfile, { thisAppUser } from '../DatabaseWrappers/Profiles';
 
 export default function EditProfile ({navigation}: any) {
-	// hooks that are used to change the state of the login parameters
-	const [Username, setUsername] = React.useState("");
-	const [Password, setPassword] = React.useState("");
+	// TODO: Brandon will do
+	const [userName, setUsername] = React.useState(thisAppUser.username); // set default username to original
 
-	const [LoginStatus, setLoginStatus] = React.useState("");
-
-	const deleteThisLogin = () => {
-		thisAppUser.copy(new UserProfile(0, "Admin", "AdminP_word"));
-		navigation.navigate("Root");
-
-	}
-	const login = () => {
-		Axios.post("http://localhost:3001/login", {
-			Username: Username,
-			Password: Password
-		}).then((response) => {
-			if (response.data.message == "Success"){
-				thisAppUser.copy(new UserProfile(response.data.UID, Username, Password));
- 				setLoginStatus(response.data.UID); // login is successful
-				navigation.navigate("Root");
-				// want to navigate to the users page from here
-				console.log(LoginStatus);
-			} else {
-				setLoginStatus(response.data.message);
-			}
-		})
+	const updateName = () => {
+		if (userName == thisAppUser.username){
+			alert("Cannot be same username");
+		} else {
+			Axios.post('https://rephrase-cs750.herokuapp.com/updateUsername', {
+				UID: thisAppUser.uid,
+				Username: userName
+			}).then((response)=> {
+				if (response.data.message == "Error"){
+					alert("Username Already Taken");
+				} else {
+					alert("Username Updated Successfully!");
+					thisAppUser.username = userName; // update global class that we are using
+					navigation.navigate("ProfileInfo")
+				}
+			})
+		}
 	}
 
 	return (
-		<View style={{width: 290, alignSelf: 'center', margin: 20, padding: 20, backgroundColor: colorTheme['t_med'], borderRadius: 10}}>
-			<TextInput
-				style={[styles.textInput, {width: '100%'}]}
-				placeholder="username..."
-				placeholderTextColor={'#888'}
-				autoCorrect={false}
-            	autoCapitalize='none'
-				onChange={(e)=>{
-					setUsername(e.nativeEvent.text);
-				}}
-			/>
-			<TextInput
-				style={[styles.textInput, {width: '100%'}, {margin:20}]}
-				placeholder="password..."
-				placeholderTextColor={'#888'}
-				autoCorrect={false}
-            	autoCapitalize='none'
-				onChange={(e)=>{
-					setPassword(e.nativeEvent.text);
-				}}
-			/>
-			<Buddon
-				style={[styles.submitBuddon, {margin: 15}]}
-				label = "Set Information"
-				onPress={login}
-			/>
-			<Text>{LoginStatus}</Text>
+		<View>
+		<TextInput
+			style={[styles.textInput, {width: '100%'}]}
+			placeholder={thisAppUser.username}
+			placeholderTextColor={'#888'}
+			autoCorrect={false}
+            autoCapitalize='none'
+			onChange={(e)=>{
+				setUsername(e.nativeEvent.text);
+			}}
+		/>
+        <Buddon 
+            style={[styles.centerSelf, {width: 150, padding: 13, margin: 20}]}
+            label = "Update"
+            altbg={'t_med'}
+            isSelected={true}
+            onPress={updateName}
+        />
 		</View>
 	)
 }

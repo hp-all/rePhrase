@@ -18,10 +18,10 @@ export default function ProfileInfoScreen({navigation}: any) {
 
     const loadFriends = () => {
         if(thisAppUser.uid < 0) {
-            navigation.navigate("Friends");
+            navigation.navigate("FriendViews");
             return;
         }
-        Axios.post('http://localhost:3001/Friends', {
+        Axios.post('https://rephrase-cs750.herokuapp.com/Friends', {
             UID: thisAppUser.uid
         }).then((response)=>{
             if(response.data.message == "You have no friends!"){
@@ -45,11 +45,16 @@ export default function ProfileInfoScreen({navigation}: any) {
                 }
                 console.log(friends);
                 thisAppUser.friends = friends;
-                navigation.navigate("Friends");
-
+                navigation.navigate("FriendViews");
             }
         })
         
+    }
+
+    const friendRequests = () => {
+        // TODO: need to ping the API to get all the incoming friend requests
+        // Send to page where they can see all of their incoming requests
+        // Make navigation track for this page
     }
 
     return (
@@ -88,6 +93,13 @@ export default function ProfileInfoScreen({navigation}: any) {
             altbg={'t_med'}
             isSelected={true}
             onPress={loadFriends}
+        />
+        <Buddon 
+            style={[styles.centerSelf, {width: 150, padding: 13, margin: 20}]}
+            label = "Friend Requests"
+            altbg={'t_med'}
+            isSelected={true}
+            onPress={friendRequests}
         />
         </View>
     )
