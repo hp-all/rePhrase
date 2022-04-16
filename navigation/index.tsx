@@ -77,6 +77,7 @@ function RootNavigator() {
           <Header title=''/>
         ),
       }}/>
+      {/* FriendViews directs to all the friend related screens (Defined below) */}
       <Stack.Screen name="FriendViews" component={FriendsNavigator} options={{headerShown: false}}/>
       <Stack.Screen name="EditProfile" component={EditProfile} options={{
         title: '',
