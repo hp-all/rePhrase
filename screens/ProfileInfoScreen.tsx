@@ -5,6 +5,7 @@ import { Text, View } from '../components/Themed';
 import { appStyles as styles, bottomBorderRadius, colorTheme, leftBorderRadius, rightBorderRadius, topBorderRadius } from '../components/AppStyles';
 import { Buddon } from '../components/Buddons';
 import { thisAppUser } from '../DatabaseWrappers/Profiles';
+import { Spacer } from '../components/MusicComponents';
 
 
 
@@ -15,24 +16,35 @@ export default function ProfileInfoScreen({navigation}: any) {
 
     return (
         <View style={{padding: 10}}>
-        <Text style={styles.title}>Profile</Text>
-		<View style={{width: '100%', alignSelf: 'center', margin: 20, padding: 20, backgroundColor: colorTheme['t_med'], borderRadius: 10}}>
-			<Text style={[styles.header]}>Username</Text>
-            <View style={{backgroundColor: colorTheme['t_light'], borderRadius: 8, padding: 6}}>
-                <Text style={styles.subheader}>{username}</Text>
+            <View style={{flexDirection: "row"}}>
+                <Text style={[styles.title, {flex: 1}]}>Profile</Text>
+                <Spacer/>
+                <Buddon
+                    style={[styles.centerSelf, {width: 150, padding: 8, flex: 1, marginRight: 20}]}
+                    label = "logout"
+                    altbg={'t_med'}
+                    isSelected={true}
+                    onPress={()=>navigation.navigate("Login")}
+                />
             </View>
-			<Text style={[styles.header, {paddingTop: 15}]}>Password</Text>
-            <View style={{backgroundColor: colorTheme['t_light'], borderRadius: 8, padding: 6}}>
-                <Text style={styles.subheader}>{password}</Text>
+            <View style={{width: '100%', alignSelf: 'center', margin: 20, padding: 20, backgroundColor: colorTheme['t_med'], borderRadius: 10}}>
+                <Text style={[styles.header]}>Username</Text>
+                <View style={{backgroundColor: colorTheme['t_light'], borderRadius: 8, padding: 6}}>
+                    <Text style={styles.subheader}>{username}</Text>
+                </View>
+                <Text style={[styles.header, {paddingTop: 15}]}>Password</Text>
+                <View style={{backgroundColor: colorTheme['t_light'], borderRadius: 8, padding: 6}}>
+                    <Text style={styles.subheader}>{password}</Text>
+                </View>
             </View>
-        </View>
-        <Buddon
-            style={[styles.centerSelf, {width: 150, padding: 8}]}
-            label = "logout"
-            altbg={'t_med'}
-            isSelected={true}
-            onPress={()=>navigation.navigate("Login")}
-        />
+            <View style={{backgroundColor: colorTheme['t_med'], height: 200, borderRadius: 8}}>
+
+            </View>
+            <Buddon
+                style={[styles.centerSelf, {padding: 10, margin: 15}]}
+                label="Add Friends"
+                onPress={()=>navigation.navigate("AddFriend")}
+            />
         </View>
     )
 }
