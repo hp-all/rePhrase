@@ -52,6 +52,12 @@ export default function ProfileInfoScreen({navigation}: any) {
         
     }
 
+    const friendRequests = () => {
+        // TODO: need to ping the API to get all the incoming friend requests
+        // Send to page where they can see all of their incoming requests
+        // Make navigation track for this page
+    }
+
     return (
         <View style={{padding: 10}}>
             <View style={{flexDirection: "row"}}>
@@ -88,6 +94,13 @@ export default function ProfileInfoScreen({navigation}: any) {
             altbg={'t_med'}
             isSelected={true}
             onPress={loadFriends}
+        />
+        <Buddon 
+            style={[styles.centerSelf, {width: 150, padding: 13, margin: 20}]}
+            label = "Friend Requests"
+            altbg={'t_med'}
+            isSelected={true}
+            onPress={friendRequests}
         />
         </View>
     )
