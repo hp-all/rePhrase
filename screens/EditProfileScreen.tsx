@@ -20,7 +20,7 @@ export default function EditProfile ({navigation}: any) {
 		if (userName == thisAppUser.username){
 			alert("Cannot be same username");
 		} else {
-			Axios.post('https://rephrase-cs750.herokuapp.com/updateUsername', {
+			Axios.post('https://rephrase-cs4750.herokuapp.com/updateUsername', {
 				UID: thisAppUser.uid,
 				Username: userName
 			}).then((response)=> {
