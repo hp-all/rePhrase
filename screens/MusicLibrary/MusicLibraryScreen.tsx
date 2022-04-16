@@ -19,11 +19,13 @@ import {
 	searchForSongs, 
 	getSongsByAlbumFromPlaylists, 
 	getSongsByArtistFromPlaylists, 
-	getAllSongs
+	getAllSongs,
+	selectedSongID,
+	setSelectedSong,
+	getSelectedSong
 } from '../../DatabaseWrappers/SongStuff';
 import { UploadMP3, UploadMP3Popup } from './UploadMP3';
 import { RootTabScreenProps } from '../../types';
-
 
 export default function MusicLibraryScreen({navigation, route}: any) {
 	console.log("---------- Start Music Library Screen ------------");
@@ -34,7 +36,7 @@ export default function MusicLibraryScreen({navigation, route}: any) {
   	return (
 		<View style={[styles.container, styles.darkbg, {}]}>
 			<Text style={styles.title}>{title}</Text>
-			<PlaylistView navigateToSectionScreen={(song: SongListItem)=>{navigation.navigate("AssignScreen")}}/>
+			<PlaylistView navigateToSectionScreen={(song: SongListItem)=>{navigation.navigate("AssignSection")}}/>
 		<StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
 		</View>
   	);
@@ -44,8 +46,8 @@ type PVP = {navigateToSectionScreen?: (song: SongListItem)=>void}
 type PVS = {listTypeShowing: SongListTypes, showMP3Popup: boolean}
 
 class PlaylistView extends React.Component<PVP, PVS> {
-	visibleSsongList: Playlist[] | Playlist = new Playlist("");
-	searchPhrase:string = "";
+	visibleSongList: Playlist[] | Playlist = new Playlist("");
+	searchPhrase: string = "";
 
 	constructor(props: any) {
 		super(props);
@@ -63,26 +65,27 @@ class PlaylistView extends React.Component<PVP, PVS> {
 	setList = (type: SongListTypes, playlist: Playlist|undefined = undefined) => {
 		var uid = 0;
 		if(type == SongListTypes.Search) {
-			this.visibleSsongList = searchForSongs(this.searchPhrase);
+			this.visibleSongList = searchForSongs(this.searchPhrase);
 		} else if(type == SongListTypes.Specific && playlist) {
-			this.visibleSsongList = playlist;
+			this.visibleSongList = playlist;
 		} else if(type == SongListTypes.Albums) {
-			this.visibleSsongList = getSongsByAlbumFromPlaylists(uid);
+			this.visibleSongList = getSongsByAlbumFromPlaylists(uid);
 		} else if(type == SongListTypes.Artists) {
-			this.visibleSsongList = getSongsByArtistFromPlaylists(uid);
+			this.visibleSongList = getSongsByArtistFromPlaylists(uid);
 		} else if(type == SongListTypes.Playlists) {
-			this.visibleSsongList = getUsersPlaylists(uid);
+			this.visibleSongList = getUsersPlaylists(uid);
 		} else if(type == SongListTypes.AllSongs) {
-			// is this what is clicked on all songs? yes
+			// fetch all songs from data base and create "playlist" so they can be viewed in 
+			// PlaylistView
 			getAllSongs().then(res => {
 				var allSongs = new Playlist("All Songs");
 				allSongs.setSongsFromJSON(res.data);
-				this.visibleSsongList = allSongs;
+				this.visibleSongList = allSongs;
 				
 			}, err => {
 				console.log(err);
 			});
-			// this.visibleSsongList = getAllFromPlaylists(uid);
+			// this.visibleSongList = getAllFromPlaylists(uid);
 		}
 		this.setState({listTypeShowing: type});
 	}
@@ -100,10 +103,17 @@ class PlaylistView extends React.Component<PVP, PVS> {
 			this.setList(SongListTypes.None);
 		}
 	}
+
+	// function that is called when song is clicked
 	songClickListener = (song: SongListItem) => {
+		// log for debugging purposes
 		console.log("Song " + song.name + " picked!");
-		if(this.props.navigateToSectionScreen)
-			this.props.navigateToSectionScreen(song);
+
+		// set local variable selectedSongID to selected song
+		setSelectedSong(song.track_id);
+
+		// navigate to the AssignSection screen
+		if (this.props.navigateToSectionScreen) this.props.navigateToSectionScreen(song);
 	}
 	
 	render() {
@@ -112,14 +122,14 @@ class PlaylistView extends React.Component<PVP, PVS> {
 		var popupView: JSX.Element | null = null;
 
 		var listTitle: string = "";
-		if(listTypeShowing == SongListTypes.Specific && this.visibleSsongList instanceof Playlist) {
-			listTitle = this.visibleSsongList.name;
+		if(listTypeShowing == SongListTypes.Specific && this.visibleSongList instanceof Playlist) {
+			listTitle = this.visibleSongList.name;
 		} else {
 			listTitle = listTypeShowing;
 		}
 
 		if(listTypeShowing != SongListTypes.None) {
-			songListView = (<SongGroup title = {listTitle} songList = {this.visibleSsongList} listListener = {this.subListListener} songListener={this.songClickListener}/>)
+			songListView = (<SongGroup title = {listTitle} songList = {this.visibleSongList} listListener = {this.subListListener} songListener={this.songClickListener}/>)
 		} else {
 			songListView = (
 				<View>
@@ -151,7 +161,7 @@ function MainOptionList(props: {listListener: (type: SongListTypes, search: stri
 				selectTextOnFocus= {true}
 				clearButtonMode= 'always'
 			/>
-			<SongGroupButton name= 'Playlists'
+			<SongGroupButton name='Playlists'
 				onPress= {()=>{props.listListener(SongListTypes.Playlists, undefined)}}
 				hideBar= {true}
 				style={{marginTop: 20}}
