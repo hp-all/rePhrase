@@ -19,7 +19,7 @@ export type RootStackParamList = {
   NotFound: undefined;
   Login: undefined;
   Signup: undefined;
-  Friends: undefined;
+  FriendViews: undefined;
   EditProfile: undefined;
 };
 
@@ -36,6 +36,10 @@ export type RootTabParamList = {
   ProfileInfo: undefined;
   TestWhatever: undefined;
 };
+export type FriendTabParamList = {
+  Friends: undefined;
+  OneFriend: undefined;
+}
 
 export type RootTabScreenProps<Screen extends keyof RootTabParamList> = CompositeScreenProps<
   BottomTabScreenProps<RootTabParamList, Screen>,

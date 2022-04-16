@@ -31,8 +31,10 @@ export default class AddMenu extends React.Component<tcP, tcS> {
 	}
     hideButtonForm = (hideAllTheWay?: boolean) => {
         this.setState({buttonShowing: AddButtonTypes.None});
-        if(hideAllTheWay)
+        if(hideAllTheWay) {
+            console.log("Hide all the way");
             this.props.hide();
+        }
     }
     setSelectedArea = () => {
 
@@ -44,13 +46,17 @@ export default class AddMenu extends React.Component<tcP, tcS> {
                 formView = (<AddLoopForm 
                         hide={this.hideButtonForm} 
                         selectedArea={this.props.selectedArea} 
-                        setSelectedArea={this.props.setSelectedArea}
                         createLoop={this.props.createLoop}
-                        createSection={this.props.createSection}
+                        // setSelectedArea={this.props.setSelectedArea}
                         />)
                 break;
             case AddButtonTypes.AddSection: 
-                formView = (<AddSectionForm hide={this.hideButtonForm} selectedArea={this.props.selectedArea}/>)
+                formView = (<AddSectionForm 
+                        hide={this.hideButtonForm} 
+                        selectedArea={this.props.selectedArea}
+
+                        createSection={this.props.createSection}
+                    />)
                 break;
             default:
                 buddonsView = (<AddButtons showSectionForm={()=>this.setState({buttonShowing: AddButtonTypes.AddSection})} showLoopForm={()=>this.setState({buttonShowing: AddButtonTypes.AddLoop})} />)
@@ -79,11 +85,19 @@ export default class AddMenu extends React.Component<tcP, tcS> {
 type lfP = {
     hide: (allTheWay?: boolean)=>void, 
     selectedArea: Bounds, 
-    setSelectedArea?: (a: Bounds)=>void, 
     createLoop?: (loop: LoopSkelly)=>void,
-    createSection?: (section: SectionSkelly)=>void,
+    // setSelectedArea?: (a: Bounds)=>void, 
 };
-class AddLoopForm extends React.Component<lfP, {showError: boolean, startTime: number, endTime: number}> {
+/** Add Loop Form: Used in the Add Menu View
+ *  @props 
+ *      hide: hide the add loop component
+ *      selectedarea: the area selected of the song from the main screen view
+ *      createLoop: Creates a Loop based on the form entries
+ *  @state
+ *      showError:
+ *          true if errors within the form should be shown
+ */
+class AddLoopForm extends React.Component<lfP, {showError: boolean}> {
     loopName: TextField;
     constructor(props: any) {
         super(props);
@@ -102,8 +116,6 @@ class AddLoopForm extends React.Component<lfP, {showError: boolean, startTime: n
             end = this.props.selectedArea.max;
         this.state = {
             showError: false,
-            startTime: start, 
-            endTime: end,
         }
     }
     checkEntries = () => {
@@ -127,7 +139,7 @@ class AddLoopForm extends React.Component<lfP, {showError: boolean, startTime: n
                 <Buddon
                     style={{position: 'absolute', left: 0, top: 0, padding: 5}}
                     label="< back"
-                    onPress={this.props.hide}
+                    onPress={()=>this.props.hide(false)}
                 />
                 <Text style={[styles.header, styles.centerSelf, {marginBottom: 15}]}>Add Loop</Text>
                 {this.loopName.getLabelView(styles.subheader)}
@@ -138,8 +150,6 @@ class AddLoopForm extends React.Component<lfP, {showError: boolean, startTime: n
                     unit= "s"
                     labels = {{min: "Start Time", max: "End Time"}}
                     keyboardDifference={169}
-                    setLower={(n: number)=>{this.props.setSelectedArea && this.props.setSelectedArea({min: n})}}
-                    setUpper={(n: number)=>{this.props.setSelectedArea && this.props.setSelectedArea({max: n})}}
                 />
                 <Buddon 
                     style={[styles.centerSelf, {width: 100, marginTop: 15, height: 35, padding: 6}]}
@@ -152,15 +162,22 @@ class AddLoopForm extends React.Component<lfP, {showError: boolean, startTime: n
 }
 
 
+type sfP = {
+    hide: (allTheWay?: boolean)=>void, 
+    selectedArea: Bounds, 
+    createSection?: (sect: SectionSkelly)=>void,
+    // setSelectedArea?: (a: Bounds)=>void, 
+};
 /** Add Section Form: Used in the Add Menu View
  *  @props 
  *      hide: hide the add section component
  *      selectedarea: the area selected of the song from the main screen view
+ *      createSection: Creates a Section based on the form inputs
  *  @state
  *      showError:
  *          true if errors within the form should be shown
  */
-class AddSectionForm extends React.Component<{hide: ()=>void, selectedArea: Bounds}, {showError: boolean}> {
+class AddSectionForm extends React.Component<sfP, {showError: boolean}> {
 
     constructor(props: any) {
         super(props);
