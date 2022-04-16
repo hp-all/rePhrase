@@ -23,7 +23,7 @@ export default function FriendDisplay ({navigation}: any) {
 
     React.useEffect(()=> {
         for (var i = 0; i < thisAppUser.friends.length; i++){
-            Axios.post('http://localhost:3001/getUsername', {
+            Axios.post('https://rephrase-cs750.herokuapp.com/getUsername', {
                 UID: thisAppUser.friends[i] // the current UID
             }).then((response)=>{
                 FriendsNames.push(response.data.Username);

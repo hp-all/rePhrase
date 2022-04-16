@@ -19,7 +19,7 @@ export default function ProfileInfoScreen({navigation}: any) {
     var friends:any = [];
 
     const loadFriends = () => {
-        Axios.post('http://localhost:3001/Friends', {
+        Axios.post('https://rephrase-cs750.herokuapp.com/Friends', {
             UID: thisAppUser.uid
         }).then((response)=>{
             if(response.data.message == "You have no friends!"){

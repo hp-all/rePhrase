@@ -25,7 +25,7 @@ export default function Login ({navigation}: any) {
 
 	}
 	const login = () => {
-		Axios.post("http://localhost:3001/login", {
+		Axios.post('https://rephrase-cs750.herokuapp.com/login', {
 			Username: Username,
 			Password: Password
 		}).then((response) => {
