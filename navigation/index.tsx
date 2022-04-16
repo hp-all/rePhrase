@@ -25,9 +25,9 @@ import MusicLibraryScreen from '../screens/MusicLibrary/MusicLibraryScreen';
 import PlayMusicScreen from '../screens/PlayMusicScreen';
 import AssignSectionScreen from '../screens/AssignSection/AssignSectionScreen';
 import ProfileInfoScreen from '../screens/ProfileInfoScreen';
-import TestWhateverScreen from '../screens/TestWhateverScreen';
+import FriendDisplay from '../screens/ViewAFriendScreen';
 
-import { RootStackParamList, RootTabParamList, RootTabScreenProps } from '../types';
+import { FriendTabParamList, RootStackParamList, RootTabParamList, RootTabScreenProps } from '../types';
 import LinkingConfiguration from './LinkingConfiguration';
 import UserProfile from '../DatabaseWrappers/Profiles';
 
@@ -76,12 +76,7 @@ function RootNavigator() {
           <Header title=''/>
         ),
       }}/>
-      <Stack.Screen name="Friends" component={Friends} options={{
-        title: '',
-        header: () => (
-          <Header title=''/>
-        ),
-      }}/>
+      <Stack.Screen name="FriendViews" component={FriendsNavigator} options={{headerShown: false}}/>
       <Stack.Screen name="EditProfile" component={EditProfile} options={{
         title: '',
         header: () => (
@@ -98,13 +93,8 @@ function RootNavigator() {
  */
 const BottomTab = createBottomTabNavigator<RootTabParamList>();
 
-function BottomTabNavigator({navigation, route}: {navigation: any, route: any}) {
-  const colorScheme = useColorScheme();
-  var userProfile = undefined;
-  if(route.params) {
-    userProfile = UserProfile.parseJSON(route.params);
-    // console.log(userProfile);
-  }
+function BottomTabNavigator() {
+ 
   return (
     <BottomTab.Navigator
       initialRouteName="MusicLibrary"
@@ -138,7 +128,6 @@ function BottomTabNavigator({navigation, route}: {navigation: any, route: any}) 
             <Header title=''/>
           ),
         })}
-        initialParams={route.params}
       />
       <BottomTab.Screen
         name="PlayMusic"
@@ -150,7 +139,6 @@ function BottomTabNavigator({navigation, route}: {navigation: any, route: any}) 
             <Header title=''/>
           ),
         }}
-        initialParams={route.params}
       />
       <BottomTab.Screen
         name="AssignSection"
@@ -162,7 +150,6 @@ function BottomTabNavigator({navigation, route}: {navigation: any, route: any}) 
             <Header title=''/>
           ),
         }}
-        initialParams={route.params}
       />
       <BottomTab.Screen
         name="ProfileInfo"
@@ -174,22 +161,29 @@ function BottomTabNavigator({navigation, route}: {navigation: any, route: any}) 
             <Header title=''/>
           ),
         }}
-        initialParams={route.params}
       />
-      {/* <BottomTab.Screen
-        name="TestWhatever"
-        component={TestWhateverScreen}
-        options={{
-          title: '',
-          headerLeft: () => (
-            <Image source={require("../assets/images/logos/icon.png")} style={{resizeMode: 'contain', height: 48, width: '100%', marginVertical: 5, marginLeft: -20}}/>
-          ),
-          header: () => (
-            <Header title=''/>
-          ),
-        }}
-      /> */}
     </BottomTab.Navigator>
+  );
+}
+
+const FriendTab = createBottomTabNavigator<FriendTabParamList>();
+
+function FriendsNavigator() {
+  return (
+    <FriendTab.Navigator
+      initialRouteName='Friends'
+    >
+      <FriendTab.Screen
+        name = "Friends"
+        component={Friends}
+        options={{header: () => (<Header title=''/>),}}
+      />
+      <FriendTab.Screen
+        name = "OneFriend"
+        component={FriendDisplay}
+        options={{header: () => (<Header title=''/>),}}
+      />
+    </FriendTab.Navigator>
   );
 }
 

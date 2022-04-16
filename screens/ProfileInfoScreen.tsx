@@ -18,7 +18,7 @@ export default function ProfileInfoScreen({navigation}: any) {
 
     const loadFriends = () => {
         if(thisAppUser.uid < 0) {
-            navigation.navigate("Friends");
+            navigation.navigate("FriendViews");
             return;
         }
         Axios.post('https://rephrase-cs750.herokuapp.com/Friends', {
@@ -45,8 +45,7 @@ export default function ProfileInfoScreen({navigation}: any) {
                 }
                 console.log(friends);
                 thisAppUser.friends = friends;
-                navigation.navigate("Friends");
-
+                navigation.navigate("FriendViews");
             }
         })
         
