@@ -10,32 +10,20 @@ import Axios from "axios"
 // Components
 import { Buddon } from '../components/Buddons';
 import { FormInputError, FormField, TextField } from '../components/Form';
-import UserProfile, { FriendProfile, thisAppUser } from '../DatabaseWrappers/Profiles';
+import UserProfile, { thisAppUser } from '../DatabaseWrappers/Profiles';
 
-export default function Login ({navigation}: any) {
+export default function EditProfile ({navigation}: any) {
 	// hooks that are used to change the state of the login parameters
 	const [Username, setUsername] = React.useState("");
 	const [Password, setPassword] = React.useState("");
 
 	const [LoginStatus, setLoginStatus] = React.useState("");
 
-
-	/** Login with "admin" profile that contains dummy data simply for quickly viewing the app */
 	const deleteThisLogin = () => {
-		thisAppUser.copy(new UserProfile(-1, "Admin", "AdminP_word"));
-		thisAppUser.friends = [
-			new FriendProfile(-2, "Friend 1"), 
-			new FriendProfile(-3, "Friend 2"), 
-			new FriendProfile(-4, "Friend 3"),
-			new FriendProfile(-5, "Friend 4"),
-			new FriendProfile(-6, "Friend 5"),
-			new FriendProfile(-7, "Friend 6"),
-
-		]
+		thisAppUser.copy(new UserProfile(0, "Admin", "AdminP_word"));
 		navigation.navigate("Root");
-	}
 
-	/** Connects to the MySQL Database to check the login information, then navigate to the app */
+	}
 	const login = () => {
 		Axios.post("http://localhost:3001/login", {
 			Username: Username,
@@ -77,18 +65,8 @@ export default function Login ({navigation}: any) {
 			/>
 			<Buddon
 				style={[styles.submitBuddon, {margin: 15}]}
-				label = "Login"
+				label = "Set Information"
 				onPress={login}
-			/>
-			<Buddon
-				style={[styles.submitBuddon, {margin: 15, backgroundColor: colorTheme['t_white']}]}
-				label = "Delete This"
-				onPress={deleteThisLogin}
-			/>
-			<Buddon
-				style={[styles.submitBuddon, {margin: 15, backgroundColor: colorTheme['t_white']}]}
-				label = "Register"
-				onPress={()=>navigation.navigate("Signup")}
 			/>
 			<Text>{LoginStatus}</Text>
 		</View>

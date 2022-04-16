@@ -4,15 +4,53 @@ import { Text, View } from '../components/Themed';
 
 import { appStyles as styles, bottomBorderRadius, colorTheme, leftBorderRadius, rightBorderRadius, topBorderRadius } from '../components/AppStyles';
 import { Buddon } from '../components/Buddons';
-import { thisAppUser } from '../DatabaseWrappers/Profiles';
+import { FriendProfile, thisAppUser } from '../DatabaseWrappers/Profiles';
 import { Spacer } from '../components/MusicComponents';
 
-
+import Axios from 'axios';
 
 
 export default function ProfileInfoScreen({navigation}: any) {  
     var username = thisAppUser.username;
     var password = thisAppUser.password;
+
+    var friends:FriendProfile[] = [];
+
+    const loadFriends = () => {
+        if(thisAppUser.uid < 0) {
+            navigation.navigate("Friends");
+            return;
+        }
+        Axios.post('http://localhost:3001/Friends', {
+            UID: thisAppUser.uid
+        }).then((response)=>{
+            if(response.data.message == "You have no friends!"){
+                console.log("haha loser");
+                alert("hahah loser, you have no friends");
+            }
+            else {
+                console.log(response.data);
+                console.log(response.data[0]["UserID1"]);
+    
+                // want to iterate over the 
+                for (var i = 0; i<response.data.length; i++){
+                    var uid = response.data[i]["UserID1"];
+                    var uid = response.data[i]["UserID2"];
+    
+                    if (uid != thisAppUser.uid){
+                        friends.push(new FriendProfile(uid, ""));
+                    } else {
+                        friends.push(new FriendProfile(uid, ""));    
+                    }
+                }
+                console.log(friends);
+                thisAppUser.friends = friends;
+                navigation.navigate("Friends");
+
+            }
+        })
+        
+    }
 
     return (
         <View style={{padding: 10}}>
@@ -36,15 +74,21 @@ export default function ProfileInfoScreen({navigation}: any) {
                 <View style={{backgroundColor: colorTheme['t_light'], borderRadius: 8, padding: 6}}>
                     <Text style={styles.subheader}>{password}</Text>
                 </View>
+                <Buddon
+                    style={[{alignSelf: 'flex-end', width: 150, padding: 8, marginTop: 30}]}
+                    label = "Edit Profile"
+                    altbg={'t_light'}
+                    isSelected={true}
+                    onPress={()=>navigation.navigate("EditProfile")}
+                />
             </View>
-            <View style={{backgroundColor: colorTheme['t_med'], height: 200, borderRadius: 8}}>
-
-            </View>
-            <Buddon
-                style={[styles.centerSelf, {padding: 10, margin: 15}]}
-                label="Add Friends"
-                onPress={()=>navigation.navigate("AddFriend")}
-            />
+        <Buddon
+            style={[styles.centerSelf, {width: 150, padding: 13, margin: 20}]}
+            label = "View Friends"
+            altbg={'t_med'}
+            isSelected={true}
+            onPress={loadFriends}
+        />
         </View>
     )
 }

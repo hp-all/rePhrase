@@ -68,7 +68,8 @@ export default function SignUp ({navigation}: any) {
 		<View style={{width: 290, alignSelf: 'center', margin: 20, padding: 20, backgroundColor: colorTheme['t_med'], borderRadius: 10}}>
 			<TextInput
 			style={[styles.textInput, {width: '100%'}]}
-			placeholder="Username"
+            placeholder="username..."
+            placeholderTextColor={'#888'}
             autoCorrect={false}
             autoCapitalize='none'
 			onChange={(e)=>{
@@ -77,7 +78,8 @@ export default function SignUp ({navigation}: any) {
 			/>
 			<TextInput
 			style={[styles.textInput, {width: '100%'}, {margin:20}]}
-			placeholder="Password"
+			placeholder="password..."
+            placeholderTextColor={'#888'}
             autoCorrect={false}
             autoCapitalize='none'
 			onChange={(e)=>{
@@ -86,7 +88,8 @@ export default function SignUp ({navigation}: any) {
 			/>
             <TextInput
 			style={[styles.textInput, {width: '100%'}, {margin:20}]}
-			placeholder="Confirm Password"
+			placeholder="confirm password..."
+            placeholderTextColor={'#888'}
             autoCorrect={false}
             autoCapitalize='none'
 			onChange={(e)=>{
