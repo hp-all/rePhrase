@@ -33,7 +33,7 @@ export default function AssignSectionScreen() {
 
 	const [isLoading, setLoading] = React.useState(true); // set as loading first
 
-	var trackInfo = {};
+	var trackInfo:any = {};
 
 	React.useEffect(() => {
 		axios.get(`http://localhost:3001/track/${getSelectedSong()}`)
@@ -45,12 +45,16 @@ export default function AssignSectionScreen() {
 		setLoading(false); // track info has been fetched and is ready to render
 	}, []);
 
+	var selectedTrack = new Track(
+		Source.MP3, require(trackInfo.mp3_url), 
+		{name: trackInfo.name, artist: trackInfo.artist, album: trackInfo.album, length: trackInfo.duration*1000});
 
 	// fetch track and then set to track
-	var frootSongTrack = new Track(Source.MP3, frootSongSource, 
-			{name: "Froot Song (ft. Jazz)", artist: "Test Track", album: "from SoundCloud", length: 203000}
-		);
-	frootSongTrack.name = "Froot Song (ft. Jazz)"
+
+
+	// var frootSongTrack = new Track(Source.MP3, frootSongSource, 
+	// 		{name: "Froot Song (ft. Jazz)", artist: "Test Track", album: "from SoundCloud", length: 203000}
+	// 	);
 
 	/*
 	frootSongTrack.addSection("First Song", SectionType.A, 0, 98000, true, 120);
@@ -73,8 +77,8 @@ export default function AssignSectionScreen() {
 	} else {
 		return (
 			<View style={[styles.container, styles.darkbg]}>
-				<Text style={styles.title}>{frootSongTrack.name}</Text>
-				<TrackAssignView track= {frootSongTrack}/>
+				<Text style={styles.title}>{selectedTrack.name}</Text>
+				<TrackAssignView track= {selectedTrack}/>
 			<StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
 			</View>
 		);
