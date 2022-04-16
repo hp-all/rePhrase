@@ -4,21 +4,23 @@ import { Text, View } from '../components/Themed';
 
 import { appStyles as styles, bottomBorderRadius, colorTheme, leftBorderRadius, rightBorderRadius, topBorderRadius } from '../components/AppStyles';
 import { Buddon } from '../components/Buddons';
-import { thisAppUser } from '../DatabaseWrappers/Profiles';
-
+import { FriendProfile, thisAppUser } from '../DatabaseWrappers/Profiles';
+import { Spacer } from '../components/MusicComponents';
 
 import Axios from 'axios';
-
-
 
 
 export default function ProfileInfoScreen({navigation}: any) {  
     var username = thisAppUser.username;
     var password = thisAppUser.password;
 
-    var friends:any = [];
+    var friends:FriendProfile[] = [];
 
     const loadFriends = () => {
+        if(thisAppUser.uid < 0) {
+            navigation.navigate("Friends");
+            return;
+        }
         Axios.post('https://rephrase-cs750.herokuapp.com/Friends', {
             UID: thisAppUser.uid
         }).then((response)=>{
@@ -32,13 +34,13 @@ export default function ProfileInfoScreen({navigation}: any) {
     
                 // want to iterate over the 
                 for (var i = 0; i<response.data.length; i++){
-                    var UserID1 = response.data[i]["UserID1"];
-                    var UserID2 = response.data[i]["UserID2"];
+                    var uid = response.data[i]["UserID1"];
+                    var uid = response.data[i]["UserID2"];
     
-                    if (UserID1 != thisAppUser.uid){
-                        friends.push(UserID1);
+                    if (uid != thisAppUser.uid){
+                        friends.push(new FriendProfile(uid, ""));
                     } else {
-                        friends.push(UserID2);    
+                        friends.push(new FriendProfile(uid, ""));    
                     }
                 }
                 console.log(friends);
@@ -52,37 +54,40 @@ export default function ProfileInfoScreen({navigation}: any) {
 
     return (
         <View style={{padding: 10}}>
-        <Text style={styles.title}>Profile</Text>
-		<View style={{width: '100%', alignSelf: 'center', margin: 20, padding: 20, backgroundColor: colorTheme['t_med'], borderRadius: 10}}>
-			<Text style={[styles.header]}>Username</Text>
-            <View style={{backgroundColor: colorTheme['t_light'], borderRadius: 8, padding: 6}}>
-                <Text style={styles.subheader}>{username}</Text>
+            <View style={{flexDirection: "row"}}>
+                <Text style={[styles.title, {flex: 1}]}>Profile</Text>
+                <Spacer/>
+                <Buddon
+                    style={[styles.centerSelf, {width: 150, padding: 8, flex: 1, marginRight: 20}]}
+                    label = "logout"
+                    altbg={'t_med'}
+                    isSelected={true}
+                    onPress={()=>navigation.navigate("Login")}
+                />
             </View>
-			<Text style={[styles.header, {paddingTop: 15}]}>Password</Text>
-            <View style={{backgroundColor: colorTheme['t_light'], borderRadius: 8, padding: 6}}>
-                <Text style={styles.subheader}>{password}</Text>
+            <View style={{width: '100%', alignSelf: 'center', margin: 20, padding: 20, backgroundColor: colorTheme['t_med'], borderRadius: 10}}>
+                <Text style={[styles.header]}>Username</Text>
+                <View style={{backgroundColor: colorTheme['t_light'], borderRadius: 8, padding: 6}}>
+                    <Text style={styles.subheader}>{username}</Text>
+                </View>
+                <Text style={[styles.header, {paddingTop: 15}]}>Password</Text>
+                <View style={{backgroundColor: colorTheme['t_light'], borderRadius: 8, padding: 6}}>
+                    <Text style={styles.subheader}>{password}</Text>
+                </View>
+                <Buddon
+                    style={[{alignSelf: 'flex-end', width: 150, padding: 8, marginTop: 30}]}
+                    label = "Edit Profile"
+                    altbg={'t_light'}
+                    isSelected={true}
+                    onPress={()=>navigation.navigate("EditProfile")}
+                />
             </View>
-        </View>
         <Buddon
-            style={[styles.centerSelf, {width: 150, padding: 8}]}
-            label = "logout"
-            altbg={'t_med'}
-            isSelected={true}
-            onPress={()=>navigation.navigate("Login")}
-        />
-        <Buddon
-            style={[styles.centerSelf, {width: 150, padding: 8, margin: 20}]}
+            style={[styles.centerSelf, {width: 150, padding: 13, margin: 20}]}
             label = "View Friends"
             altbg={'t_med'}
             isSelected={true}
             onPress={loadFriends}
-        />
-        <Buddon
-            style={[styles.centerSelf, {width: 150, padding: 8}]}
-            label = "Edit Profile"
-            altbg={'t_med'}
-            isSelected={true}
-            onPress={()=>navigation.navigate("EditProfile")}
         />
         </View>
     )

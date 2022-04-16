@@ -15,7 +15,7 @@ import { Platform, ScrollView, TouchableOpacity, TouchableOpacityBase } from 're
 import { Spacer } from '../components/MusicComponents';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-export default function FriendDisplay ({navigation}: any) {
+export default function FriendDisplay ({navigation, route}: any) {
 	// hooks that are used to change the state of the login parameters
 
     const [isLoading, setLoading] = React.useState(true); // set as loading first
@@ -25,13 +25,15 @@ export default function FriendDisplay ({navigation}: any) {
             setLoading(false);
             return;
         }
-        for (var i = 0; i < thisAppUser.friends.length; i++){
-            Axios.post('https://rephrase-cs750.herokuapp.com/getUsername', {
-                UID: thisAppUser.friends[i] // the current UID
+        
+        // GET THE FRIEND's DATA LIKE PLAYLISTS AND STUFF
+        Axios.post('http://localhost:3001/getUsername', {
+                UID: thisAppUser.friends[i].uid // the current UID
             }).then((response)=>{
                 thisAppUser.friends[i].setUsername(response.data.Username);
             });
-        }
+        
+        
         setLoading(false); // usernames have been collected and ready to render
     }, []); // only gets called once since empty param
 
@@ -47,11 +49,7 @@ export default function FriendDisplay ({navigation}: any) {
     // Creates the views for all of the friends
     var friendsViews = [];
     for(var i = 0; i<thisAppUser.friends.length; i++) {
-        friendsViews.push(<FriendView 
-            friend={thisAppUser.friends[i]} 
-            selectFriend={(friend: FriendProfile)=>{navigation.navigate("Friend")}}
-            key={i}
-        />)
+        friendsViews.push(<FriendView friend={thisAppUser.friends[i]} key={i}/>)
     }
 
 	return (
@@ -68,7 +66,7 @@ export default function FriendDisplay ({navigation}: any) {
                 />
             </View>
             <SafeAreaView>
-                <ScrollView style={{backgroundColor: colorTheme['t_med'], borderRadius: 8}} horizontal={true}>
+                <ScrollView style={{backgroundColor: colorTheme['t_med'], borderRadius: 8}}>
                     {friendsViews}
                 </ScrollView>
             </SafeAreaView>            

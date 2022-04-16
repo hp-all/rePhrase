@@ -189,7 +189,7 @@ class TrackAssignView extends React.Component<tavP, tavS>{
 			}
 		}
 	}
-	showToolComponent = () => {
+	showAddMenu = () => {
 		this.setState({
 			showToolMenu: true,
 			highlightState: 'waiting',
@@ -200,7 +200,7 @@ class TrackAssignView extends React.Component<tavP, tavS>{
 			useNativeDriver: true,
 		}).start();
 	}
-	hideToolComponent = () => {
+	hideAddMenu = () => {
 		this.setState({
 			showToolMenu: false,
 			highlightState: 'not',
@@ -346,7 +346,7 @@ class TrackAssignView extends React.Component<tavP, tavS>{
 					selectedSize= {this.state.selectedViewSize}
 					showLines= {!this.state.simpleView} toggleLines= {this.toggleSimpleView}
 					editBlock= {this.state.editMode}
-					showToolComponent= {this.showToolComponent}
+					showToolComponent= {this.showAddMenu}
 				/>
 				{/* Track View */}
 				<BorsView 
@@ -364,7 +364,7 @@ class TrackAssignView extends React.Component<tavP, tavS>{
 				{/* Tool Component */}
 				<AddMenu 
 					style= {{position: 'absolute', bottom: -this.toolComponentHeight, height: this.toolComponentHeight}}
-					hide={this.hideToolComponent}
+					hide={this.hideAddMenu}
 					selectedArea={this.state.highlight}
 					setSelectedArea={this.setHighlight}
 					createLoop={l=>{this.addLoop(l)}}

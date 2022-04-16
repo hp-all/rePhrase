@@ -70,4 +70,7 @@ export class FriendProfile extends Profile {
     constructor(uid: number, username: string) {
         super(uid, username);
     }
+    setUsername = (username: string) => {
+        this.username = username;
+    }
 }
