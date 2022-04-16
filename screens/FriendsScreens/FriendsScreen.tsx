@@ -2,17 +2,17 @@
 import { StatusBar } from 'expo-status-bar';
 import * as React from 'react';
 // Theme and Styles
-import { Text, View } from '../components/Themed';
-import { appStyles as styles, colorTheme} from '../components/AppStyles';
+import { Text, View } from '../../components/Themed';
+import { appStyles as styles, colorTheme} from '../../components/AppStyles';
 import Axios from "axios"
 
 // Components
-import { Buddon } from '../components/Buddons';
-import { FormInputError, FormField, TextField } from '../components/Form';
-import UserProfile, { FriendProfile, thisAppUser } from '../DatabaseWrappers/Profiles';
+import { Buddon } from '../../components/Buddons';
+import { FormInputError, FormField, TextField } from '../../components/Form';
+import UserProfile, { FriendProfile, thisAppUser } from '../../DatabaseWrappers/Profiles';
 import axios from 'axios';
 import { Platform, ScrollView, TouchableOpacity, TouchableOpacityBase } from 'react-native';
-import { Spacer } from '../components/MusicComponents';
+import { Spacer } from '../../components/MusicComponents';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function FriendDisplay ({navigation}: any) {

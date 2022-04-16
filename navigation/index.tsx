@@ -18,14 +18,14 @@ import ModalScreen from '../screens/ModalScreen';
 import LoginScreen from '../screens/LoginScreen';
 import SignUpScreen from '../screens/SignUpScreen';
 import EditProfile from '../screens/EditProfileScreen';
-import Friends from '../screens/FriendsScreen';
+import Friends from '../screens/FriendsScreens/FriendsScreen';
 
 import NotFoundScreen from '../screens/NotFoundScreen';
 import MusicLibraryScreen from '../screens/MusicLibrary/MusicLibraryScreen';
 import PlayMusicScreen from '../screens/PlayMusicScreen';
 import AssignSectionScreen from '../screens/AssignSection/AssignSectionScreen';
 import ProfileInfoScreen from '../screens/ProfileInfoScreen';
-import FriendDisplay from '../screens/ViewAFriendScreen';
+import FriendDisplay from '../screens/FriendsScreens/OneFriendScreen';
 
 import { FriendTabParamList, RootStackParamList, RootTabParamList, RootTabScreenProps } from '../types';
 import LinkingConfiguration from './LinkingConfiguration';
@@ -178,6 +178,7 @@ function FriendsNavigator() {
         component={Friends}
         options={{header: () => (<Header title=''/>),}}
       />
+      
       <FriendTab.Screen
         name = "OneFriend"
         component={FriendDisplay}
