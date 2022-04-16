@@ -1,23 +1,22 @@
 // React Native & Expo
 import { StatusBar } from 'expo-status-bar';
 import * as React from 'react';
+import axios from 'axios';
+
 // Theme and Styles
-import { Text, View } from '../components/Themed';
-import { appStyles as styles, colorTheme} from '../components/AppStyles';
+import { Text, View } from '../../components/Themed';
+import { appStyles as styles, colorTheme} from '../../components/AppStyles';
 import Axios from "axios"
 
 // Components
-import { Buddon } from '../components/Buddons';
-import { FormInputError, FormField, TextField } from '../components/Form';
-import UserProfile, { FriendProfile, Profile, thisAppUser } from '../DatabaseWrappers/Profiles';
-import axios from 'axios';
-import { Platform, ScrollView, TouchableOpacity, TouchableOpacityBase } from 'react-native';
-import { Spacer } from '../components/MusicComponents';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Playlist } from '../DatabaseWrappers/SongStuff';
+import { Buddon } from '../../components/Buddons';
+import { FriendProfile, thisAppUser } from '../../DatabaseWrappers/Profiles';
+import { Platform, TouchableOpacity } from 'react-native';
+import { Spacer } from '../../components/MusicComponents';
+import { Playlist } from '../../DatabaseWrappers/SongStuff';
 import { ViewUsersFriends } from './FriendsScreen';
 
-export default function FriendDisplay ({navigation, route}: any) {
+export default function OneFriendScreen ({navigation, route}: any) {
 
     var friend = new FriendProfile(-1, "");
     if(route && route.params) {

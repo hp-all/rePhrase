@@ -25,11 +25,16 @@ Profile.prototype.toString = function toString() {
 export default class UserProfile extends Profile {
     // point of this is just so that only the userprofile has a password value
     password: string;
+    friendRequests: FriendProfile[];
     constructor(uid: number, username: string, password: string) {
         super(uid, username);
         this.password = password;
+        this.friendRequests = [];
     }
 
+    setFriendRequests(friends: FriendProfile[]) {
+        this.friendRequests = friends;
+    }
     addFriend(friend: FriendProfile) {
         // Somehow this is gonna interact with the database
     }
