@@ -18,7 +18,6 @@ export default class TrackyPlayer {
     playMode: PlayMode = PlayMode.Loop;
     statusUpdate: (s: any)=>void;
 
-
     constructor(statusUpdate:(s:any)=>void) {
         this.statusUpdate = (s: any) => {
             statusUpdate(s);
