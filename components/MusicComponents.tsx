@@ -530,9 +530,14 @@ export class MeasureMaker {
 	}
 }
 
-export function Spacer (props: {children?: any, flex?: number}) {
+export function Spacer (props: {children?: any, flex?: number, flexBasis?: number}) {
+	var flexThing = null;
+	if(props.flex)
+		flexThing = {flex: props.flex}
+	else if(props.flexBasis)
+		flexThing = {flexBasis: props.flexBasis}
 	return (
-		<View style={{flex: (props.flex)?props.flex:1}}>
+		<View style={flexThing}>
 			{props.children}
 		</View>
 	)

@@ -65,9 +65,12 @@ UserProfile.prototype.toString = function toString() {
 
 export const thisAppUser: UserProfile = new UserProfile(-1, "", "");
 
-export class FriendProfile { 
+export class FriendProfile extends Profile { 
     // Um idk, he baby
-    constructor() {
-        
+    constructor(uid: number, username: string) {
+        super(uid, username);
+    }
+    setUsername = (username: string) => {
+        this.username = username;
     }
 }
