@@ -16,12 +16,9 @@ export function getSongMP3Data(songname: string) {
 }
 
 export function getAllSongs() {
-    // get all song metadat from mysql database
-    axios.get("/tracks").then(res => {
-        var tracks = res;
-        console.log(tracks);
-    });
-
+    // get all song metadata from mysql database
+    // returns Promise
+    return axios.get("http://localhost:3001/tracks");
 }
 
 export function searchForSongs(searchterm: string) {
@@ -100,6 +97,7 @@ export function getAllFromPlaylists(userID: number) {
 
     return allsongs;
 }
+
 export function UploadMP3ToDB(userID: number, songName: string, albumName: string, artistName: string, mp3: any) {
     console.log("Uploading " + songName + "!");
 }
@@ -109,6 +107,7 @@ export class SongListItem {
     album: string;
     artist: string;
     albumImg: any = null;
+
     constructor(name: string, album: string, artist: string) {
         this.name = name;
         this.album = album;
@@ -128,20 +127,28 @@ export class Playlist {
         this.name = name;
         this.songs = [];
     }
+
     setSongsFromList(songs: SongListItem[]) {
         this.songs = songs;
     }
-    setSongsFromJSON(json: JSON) {
 
+    setSongsFromJSON(json: any) {
+        // converts JSON data from GET /tracks response into a list of SongListItem
+        this.songs = json.map((d: { artist_name: string, album: string, duration: number, interest: number, mp3_url: string, title: string, track_id: number }) => {
+            return new SongListItem(d.title, d.album, d.artist_name);
+        });
     }
+
     getPlaylist() {
         // TODO:: Get song from SQL Playlist
     }
+
     addSong(item: SongListItem) {
         this.songs.push(item);
 
         // TODO:: Add song to SQL playlist
     }
+
     removeSong(item: SongListItem) {
         var index = this.songs.indexOf(item);
         if(index >= 0)

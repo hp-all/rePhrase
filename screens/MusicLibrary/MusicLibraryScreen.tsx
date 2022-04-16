@@ -11,9 +11,19 @@ import { appStyles as styles, colorTheme } from '../../components/AppStyles';
 import { SongGroup, SongGroupButton, SongListTypes } from './SongListViews';
 
 // Objects & Wrappers
-import { SongListItem, Playlist, getUsersPlaylists, getAllFromPlaylists, searchForSongs, getSongsByAlbumFromPlaylists, getSongsByArtistFromPlaylists } from '../../DatabaseWrappers/SongStuff';
+import { 
+	SongListItem,
+	Playlist,
+	getUsersPlaylists, 
+	getAllFromPlaylists, 
+	searchForSongs, 
+	getSongsByAlbumFromPlaylists, 
+	getSongsByArtistFromPlaylists, 
+	getAllSongs
+} from '../../DatabaseWrappers/SongStuff';
 import { UploadMP3, UploadMP3Popup } from './UploadMP3';
 import { RootTabScreenProps } from '../../types';
+
 
 export default function MusicLibraryScreen({navigation, route}: any) {
 	console.log("---------- Start Music Library Screen ------------");
@@ -32,6 +42,7 @@ export default function MusicLibraryScreen({navigation, route}: any) {
 
 type PVP = {navigateToSectionScreen?: (song: SongListItem)=>void}
 type PVS = {listTypeShowing: SongListTypes, showMP3Popup: boolean}
+
 class PlaylistView extends React.Component<PVP, PVS> {
 	visibleSsongList: Playlist[] | Playlist = new Playlist("");
 	searchPhrase:string = "";
@@ -43,6 +54,7 @@ class PlaylistView extends React.Component<PVP, PVS> {
 			showMP3Popup: false,
 		}
 	}
+
 	showMP3Upload = () => {this.setState({showMP3Popup: true})}
 	closeMP3Upload = () => {this.setState({showMP3Popup: false})}
 	lookupSongs = (searchPhrase: string) => {
@@ -61,7 +73,16 @@ class PlaylistView extends React.Component<PVP, PVS> {
 		} else if(type == SongListTypes.Playlists) {
 			this.visibleSsongList = getUsersPlaylists(uid);
 		} else if(type == SongListTypes.AllSongs) {
-			this.visibleSsongList = getAllFromPlaylists(uid);
+			// is this what is clicked on all songs? yes
+			getAllSongs().then(res => {
+				var allSongs = new Playlist("All Songs");
+				allSongs.setSongsFromJSON(res.data);
+				this.visibleSsongList = allSongs;
+				
+			}, err => {
+				console.log(err);
+			});
+			// this.visibleSsongList = getAllFromPlaylists(uid);
 		}
 		this.setState({listTypeShowing: type});
 	}
@@ -73,7 +94,7 @@ class PlaylistView extends React.Component<PVP, PVS> {
 		this.setList(type);
 	}
 	subListListener = (p: any) => {
-		if(p instanceof Playlist) {
+		if (p instanceof Playlist) {
 			this.setList(SongListTypes.Specific, p);
 		} else if(p == "back") {
 			this.setList(SongListTypes.None);
