@@ -18,6 +18,7 @@ export default function Login ({navigation}: any) {
 	const [Password, setPassword] = React.useState("");
 
 	const [LoginStatus, setLoginStatus] = React.useState("");
+	const [passwordVisible, setVisibility] = React.useState(true);
 
 
 	/** Login with "admin" profile that contains dummy data simply for quickly viewing the app */
@@ -67,6 +68,7 @@ export default function Login ({navigation}: any) {
 			/>
 			<TextInput
 				style={[styles.textInput, {width: '100%'}, {margin:20}]}
+				secureTextEntry={passwordVisible}
 				placeholder="password..."
 				placeholderTextColor={'#888'}
 				autoCorrect={false}

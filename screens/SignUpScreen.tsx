@@ -20,6 +20,7 @@ export default function SignUp ({navigation}: any) {
     const [ConfirmPw, setConfirmPw] = React.useState("");
 
 	const [RegisterStatus, setRegisterStatus] = React.useState("");
+    const [passwordVisible, setVisibility] = React.useState(true);
 
 	const signup = () => {
         console.log("Pre api call");
@@ -79,6 +80,7 @@ export default function SignUp ({navigation}: any) {
 			<TextInput
 			style={[styles.textInput, {width: '100%'}, {margin:20}]}
 			placeholder="password..."
+            secureTextEntry={passwordVisible}
             placeholderTextColor={'#888'}
             autoCorrect={false}
             autoCapitalize='none'
@@ -89,6 +91,7 @@ export default function SignUp ({navigation}: any) {
             <TextInput
 			style={[styles.textInput, {width: '100%'}, {margin:20}]}
 			placeholder="confirm password..."
+            secureTextEntry={passwordVisible}
             placeholderTextColor={'#888'}
             autoCorrect={false}
             autoCapitalize='none'
