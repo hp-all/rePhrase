@@ -180,6 +180,7 @@ function FriendsNavigator() {
         component={FriendsScreen}
         options={{header: () => (<Header title=''/>),}}
       />
+      
       <FriendTab.Screen
         name = "OneFriend"
         component={OneFriendScreen}
