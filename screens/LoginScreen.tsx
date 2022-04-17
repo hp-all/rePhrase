@@ -31,7 +31,6 @@ export default function Login ({navigation}: any) {
 			// new FriendProfile(-5, "Friend 4"),
 			// new FriendProfile(-6, "Friend 5"),
 			// new FriendProfile(-7, "Friend 6"),
-
 		]
 		navigation.navigate("Root");
 	}

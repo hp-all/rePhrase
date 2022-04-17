@@ -38,7 +38,7 @@ export default function AssignSectionScreen() {
 			{name: "Froot Song (ft. Jazz)", artist: "Test Track", album: "from SoundCloud", length: 203000}
 		);
 	React.useEffect(() => {
-		axios.get(`http://localhost:3001/track/${getSelectedSong()}`)
+		axios.get(`https://rephrase-cs4750.herokuapp.com/track/${getSelectedSong()}`)
 			.then(res => { 
 				trackInfo = res.data;
 				// selectedTrack = new Track(
@@ -47,11 +47,10 @@ export default function AssignSectionScreen() {
 				// );			
 			}, err => { 
 				console.log("Error fetching track with id=" + getSelectedSong());
+				trackInfo = {name: "", artist: "", album: "", length: 1}
 			});
 		setLoading(false); // track info has been fetched and is ready to render
 	}, []);
-
-
 	// fetch track and then set to track
 
 

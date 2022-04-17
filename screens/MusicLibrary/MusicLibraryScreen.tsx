@@ -76,9 +76,9 @@ class PlaylistView extends React.Component<PVP, PVS> {
 			// PlaylistView
 			getAllSongs().then(res => {
 				var allSongs = new Playlist("All Songs");
+				console.log(res.data);
 				allSongs.setSongsFromJSON(res.data);
 				this.visibleSongList = allSongs;
-				
 			}, err => {
 				console.log(err);
 			});
@@ -153,7 +153,7 @@ function MainOptionList(props: {listListener: (type: SongListTypes, search: stri
 		<View style= {{backgroundColor: colorTheme['gray'], flexShrink: 1, padding: 20, borderRadius: 8}}>
 			<TextInput 
 				style={[styles.textInput, {width: '100%'}]}
-				defaultValue= "search"
+				placeholder= "search"
 				onEndEditing={(e)=>{props.listListener(SongListTypes.Search, e.nativeEvent.text)}}
 				selectTextOnFocus= {true}
 				clearButtonMode= 'always'

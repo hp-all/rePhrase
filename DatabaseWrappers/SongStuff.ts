@@ -34,7 +34,8 @@ export function getSongMP3Data(songname: string) {
 export function getAllSongs() {
     // get all song metadata from mysql database
     // returns Promise
-    return axios.get("http://localhost:3001/tracks");
+    console.log("Getting all songs");
+    return axios.get("https://rephrase-cs4750.herokuapp.com/tracks");
 }
 
 export function searchForSongs(searchterm: string) {
