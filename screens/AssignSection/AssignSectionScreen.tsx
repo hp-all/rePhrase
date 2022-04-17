@@ -19,6 +19,8 @@ import { getSelectedSong, getSelectedTrackInfo } from '../../DatabaseWrappers/So
 import axios from 'axios';
 import { Audio } from 'expo-av';
 import { backendURLPrefix } from '../../DatabaseWrappers/DatabaseRequest';
+import { saveLoopsToDatabase, saveSectionsToDatabase } from '../../DatabaseWrappers/savingSections';
+import { thisAppUser } from '../../DatabaseWrappers/Profiles';
 
 const frootSongSource = require('../../assets/soundFiles/lofi_fruits_jazz.mp3');
 const windowWidth = Layout.window.width;
@@ -44,6 +46,7 @@ export default function AssignSectionScreen({navigation, route}: any) {
 		);
 	} else {
 		var selectedTrack = new Track(
+			trackInfo.track_id,
 			Source.MP3, 
 			trackInfo.mp3_url, 
 			{ 
@@ -244,6 +247,12 @@ class TrackAssignView extends React.Component<tavP, tavS>{
 		this.changeLog.undo();
 		this.updateTrack()
 	}
+
+	// Saves the current state of the track, sections and loops to the Database!
+	save = () => {
+		saveSectionsToDatabase(thisAppUser.uid, this.state.trackPlayerController.track.track_id, this.state.trackPlayerController.getSectionJSONs());
+		saveLoopsToDatabase(thisAppUser.uid, this.state.trackPlayerController.track.track_id, this.state.trackPlayerController.getSectionJSONs());
+	}
 	addTrackChange = () => {
 		this.changeLog.addChange(this.props.track.getJSON());
 	}
@@ -385,6 +394,7 @@ class TrackAssignView extends React.Component<tavP, tavS>{
 					showToolComponent= {this.showAddMenu}
 					undo={this.undo}
 					redo={this.redo}
+					save={this.save}
 				/>
 				{/* Track View */}
 				<BorsView 

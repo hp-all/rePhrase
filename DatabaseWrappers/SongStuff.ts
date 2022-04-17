@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { thisAppUser } from './Profiles';
-import axios from "axios";
-import Axios from "axios"
+import Axios from "axios";
 import { backendURLPrefix } from './DatabaseRequest';
 
 
 // adding variable to keep track of what song the user has selected
 // in the application
 let selectedSongID: string = "";
-let selectedTrackInfo= {title: "", artist_name: "", album: "", duration: 0, mp3_url: ""}
+let selectedTrackInfo= {track_id: "", title: "", artist_name: "", album: "", duration: 0, mp3_url: ""}
 // accessor method to change the value of the selected song id
 export function setSelectedSong(id: string) {
     selectedSongID = id;
@@ -24,7 +23,7 @@ export function getSelectedSong() {
 
 
 export function getSongByID(trackID: string) {
-    return axios.get(backendURLPrefix + `track/${trackID}`)
+    return Axios.get(backendURLPrefix + `track/${trackID}`)
         .then(res => { 
             console.log('Successfully loaded data!');
             selectedTrackInfo = res.data[0];
@@ -40,14 +39,14 @@ export function getAllSongs() {
     // get all song metadata from mysql database
     // returns Promise
     console.log("Getting all songs");
-    return axios.get(backendURLPrefix + "tracks");
+    return Axios.get(backendURLPrefix + "tracks");
 }
 
 export function searchForSongs(searchterm: string) {
     // Search for songs based on a searchterm here
     // Return a list of SongListItems
 
-    return axios.get(backendURLPrefix + `tracks/search/${searchterm}`);
+    return Axios.get(backendURLPrefix + `tracks/search/${searchterm}`);
 }
 
 export function getUsersPlaylists(userID: number) {
@@ -126,10 +125,6 @@ export function addPlaylist(playlistID: number) {
 
 }
 
-export function UploadMP3ToDB(userID: number, songName: string, albumName: string, artistName: string, mp3: any) {
-    console.log("Uploading " + songName + "!");
-}
-
 export class SongListItem {
     track_id: string;
     name: string;
@@ -163,6 +158,7 @@ export class Playlist {
     }
 
     setSongsFromJSON(json: any) {
+        console.log(json.message);
         // converts JSON data from GET /tracks response into a list of SongListItem
         this.songs = json.map((d: { artist_name: string, album: string, duration: number, interest: number, mp3_url: string, title: string, track_id: string }) => {
             return new SongListItem(d.track_id, d.title, d.album, d.artist_name);

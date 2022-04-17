@@ -194,7 +194,7 @@ export class TrackPlayerController {
 		return this.track.getSnappedMilli(milli, specificity);
 	}
 
-	// TODO BRANDON JSON Getters
+	// JSON Getters for the Sections array
 	getSectionJSONs = () => {
 		var sections = this.track.sectionList;
 		var sectJSONs = [];
@@ -203,16 +203,16 @@ export class TrackPlayerController {
 			// MAYBE?
 			sectJSONs.push(sections[i].getJSON());
 		}
+		return sectJSONs;
 	}
 	// TODO BRANDON JSON Getters
 	getLoopJSONs = () => {
-		var sections = this.track.sectionList;
-		var sectJSONs = [];
-		for(var i = 0; i<sections.length; i++) {
-
-			// MAYBE?
-			sectJSONs.push(sections[i].getJSON());
+		var loops = this.track.loopList;
+		var loopJSONs = [];
+		for(var i = 0; i<loops.length; i++) {
+			loopJSONs.push(loops[i].getJSON());
 		}
+		return loopJSONs;
 	}
 
 }
