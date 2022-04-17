@@ -31,7 +31,8 @@ const thumbOffY = -300;
 
 export default function AssignSectionScreen({navigation, route}: any) {
 	console.log("---------- Start Assign Section Screen -----");
-	console.log(route.params.song.name);
+	if(route.params)
+		console.log(route.params.song.name);
 
 	var trackInfo = getSelectedTrackInfo();
 	console.log("Loading in : " + trackInfo.title);
@@ -52,6 +53,7 @@ export default function AssignSectionScreen({navigation, route}: any) {
 				length: trackInfo.duration*1000
 			}
 		);
+		console.log("Ab to pass in track: " + selectedTrack.name);
 
 		return (
 			<View style={[styles.container, styles.darkbg]}>
@@ -90,6 +92,9 @@ class TrackAssignView extends React.Component<tavP, tavS>{
 		this.popupHeight= 150;
 		this.popupSelectedOption= "";
 
+		// If an audio.sound exists already, clear it
+		if(this.state)
+			console.log(this.state.trackPlayer)
 		//Passed to Track Player so it can modify the state of the song
 		this.updateStatus = (s:any) => {
 			if(this.state) {
@@ -107,8 +112,9 @@ class TrackAssignView extends React.Component<tavP, tavS>{
 			}
 		};
 
-		//Initializes the state variables for the View
 		var trackPlayer = new TrackyPlayer(this.updateStatus);
+		//Initializes the state variables for the View
+		console.log("In constructor");
 		this.state = {
 			trackPlayer: trackPlayer,
 			trackPlayerController: new TrackPlayerController(this.props.track, trackPlayer),
@@ -122,7 +128,7 @@ class TrackAssignView extends React.Component<tavP, tavS>{
 			showPopup: false,
 		}
 
-		console.log("Track name: " + this.state.trackPlayerController.track.name);
+		console.log("Track name in big: " + this.state.trackPlayerController.track.name);
 		
 
 		var callback = (value: any) => {this.setState({toolTransitionYVal: value.y})};    
@@ -341,6 +347,7 @@ class TrackAssignView extends React.Component<tavP, tavS>{
 	addSection = (s: SectionSkelly) => {
 		this.state.trackPlayerController.addSection(s);
 		this.addTrackChange();
+		console.log(this.state.trackPlayerController.track.name);
 	}
 
 	render() {
@@ -354,6 +361,9 @@ class TrackAssignView extends React.Component<tavP, tavS>{
 					select= {this.popupSet}
 				/>
 			);
+		}
+		if(this.props.track != this.state.trackPlayerController.track) {
+			this.state.trackPlayerController.setTrack(this.props.track);
 		}
 		return (
 			<Animated.View style={[styles.container, {backgroundColor: colorTheme['t_dark'], top: this.state.toolTransitionYVal, width: '100%', height: '100%'}]}>

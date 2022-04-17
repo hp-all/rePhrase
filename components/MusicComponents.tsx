@@ -85,6 +85,8 @@ export class TrackPlayerController {
 
 		this.measureMaker = new MeasureMaker(track, "large");
 		this.measureMaker.reset();
+
+		console.log("Track name: " + this.track.name);
 	}
 
 	setTrack = (track: Track) => {
@@ -92,6 +94,7 @@ export class TrackPlayerController {
 		this.sectionStart = track.getSection(0).getStart();
 		this.sectionEnd = track.getSection(0).getEndTime();
 		this.trackPlayer.setTrack(track);
+		this.measureMaker.reset();
 	}
 	setState = (s: any) => {
 		this.isLoaded = s.isLoaded;
