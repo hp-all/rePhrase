@@ -16,8 +16,10 @@ import { thisAppUser } from '../../DatabaseWrappers/Profiles';
 
 import ButtonMenu from './ButtonMenu';
 import AddMenu from './AddMenu';
-import { getSelectedSong } from '../../DatabaseWrappers/SongStuff';
+import { getSelectedSong, getSelectedTrackInfo } from '../../DatabaseWrappers/SongStuff';
 import axios from 'axios';
+import { Audio } from 'expo-av';
+import { backendURLPrefix } from '../../DatabaseWrappers/DatabaseRequest';
 
 const frootSongSource = require('../../assets/soundFiles/lofi_fruits_jazz.mp3');
 const windowWidth = Layout.window.width;
@@ -28,62 +30,36 @@ const thumbOffX = -30;
 const thumbOffY = -300;
 
 
-export default function AssignSectionScreen() {
+export default function AssignSectionScreen({navigation, route}: any) {
 	console.log("---------- Start Assign Section Screen -----");
-	console.log(getSelectedSong());
+	if(route.params)
+		console.log(route.params.song.name);
 
-	const [isLoading, setLoading] = React.useState(true); // set as loading first
-
-	var trackInfo:any = {};
-
-	React.useEffect(() => {
-		axios.get(`http://localhost:3001/track/${getSelectedSong()}`, {
-			headers: {
-                "x-access-token": thisAppUser.token,
-            }
-		})
-			.then(res => { 
-				trackInfo = res.data;
-			}, err => { 
-				console.log("Error fetching track with id=" + getSelectedSong());
-			});
-		setLoading(false); // track info has been fetched and is ready to render
-	}, []);
-
-	var selectedTrack = new Track(
-		Source.MP3, "",
-		{name: trackInfo.name, artist: trackInfo.artist, album: trackInfo.album, length: trackInfo.duration*1000});
-
-	// fetch track and then set to track
-
-
-	// var frootSongTrack = new Track(Source.MP3, frootSongSource, 
-	// 		{name: "Froot Song (ft. Jazz)", artist: "Test Track", album: "from SoundCloud", length: 203000}
-	// 	);
-
-	/*
-	frootSongTrack.addSection("First Song", SectionType.A, 0, 98000, true, 120);
-	frootSongTrack.addSection("Solo", SectionType.Verse, 56000, 80000, true, 120);
-	frootSongTrack.addSection("Second Song", SectionType.B, 98000, 1000000, true, 70, "4:4", true);
-
-	frootSongTrack.addLoop("small boy", 10000, 14000);
-	frootSongTrack.addLoop("solo snip", 56000, 68000);
-	*/
-
-
-	// var trackController: TrackPlayerController = new TrackPlayerController();
-
-	if (isLoading) {
+	var trackInfo = getSelectedTrackInfo();
+	console.log("Loading in : " + trackInfo.title);
+	if (trackInfo.title == "") {
 		return (
 			<View style={[styles.container, styles.darkbg]}>
-			<Text>Loading...</Text>
+				<Text>Loading...</Text>
 			</View>
 		);
 	} else {
+		var selectedTrack = new Track(
+			Source.MP3, 
+			trackInfo.mp3_url, 
+			{ 
+				name: trackInfo.title, 
+				artist: trackInfo.artist_name, 
+				album: trackInfo.album, 
+				length: trackInfo.duration*1000
+			}
+		);
+		console.log("Ab to pass in track: " + selectedTrack.name);
+
 		return (
 			<View style={[styles.container, styles.darkbg]}>
 				<Text style={styles.title}>{selectedTrack.name}</Text>
-				<TrackAssignView track= {selectedTrack}/>
+				<TrackAssignView track={selectedTrack}/>
 			<StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
 			</View>
 		);
@@ -117,6 +93,9 @@ class TrackAssignView extends React.Component<tavP, tavS>{
 		this.popupHeight= 150;
 		this.popupSelectedOption= "";
 
+		// If an audio.sound exists already, clear it
+		if(this.state)
+			console.log(this.state.trackPlayer)
 		//Passed to Track Player so it can modify the state of the song
 		this.updateStatus = (s:any) => {
 			if(this.state) {
@@ -134,8 +113,9 @@ class TrackAssignView extends React.Component<tavP, tavS>{
 			}
 		};
 
-		//Initializes the state variables for the View
 		var trackPlayer = new TrackyPlayer(this.updateStatus);
+		//Initializes the state variables for the View
+		console.log("In constructor");
 		this.state = {
 			trackPlayer: trackPlayer,
 			trackPlayerController: new TrackPlayerController(this.props.track, trackPlayer),
@@ -148,6 +128,9 @@ class TrackAssignView extends React.Component<tavP, tavS>{
 			reRenderThing: false,
 			showPopup: false,
 		}
+
+		console.log("Track name in big: " + this.state.trackPlayerController.track.name);
+		
 
 		var callback = (value: any) => {this.setState({toolTransitionYVal: value.y})};    
 		this.state.animateTool.setValue({x: 0, y: 0});
@@ -253,10 +236,12 @@ class TrackAssignView extends React.Component<tavP, tavS>{
 		}).start();
 	}
 	redo = () => {
+		console.log("Redoing");
 		this.changeLog.redo();
 		this.updateTrack()
 	}
 	undo = () => {
+		console.log("Undoing");
 		this.changeLog.undo();
 		this.updateTrack()
 	}
@@ -358,11 +343,12 @@ class TrackAssignView extends React.Component<tavP, tavS>{
 	}
 	addLoop = (l: LoopSkelly) => {
 		this.state.trackPlayerController.track.addLoop(l.loopName, l.start, l.end);
+		this.addTrackChange();
 	}
 	addSection = (s: SectionSkelly) => {
-		console.log("Adding Section");
-		var isSnapped = s.type == SectionType.IDK;
-		this.state.trackPlayerController.track.addSection(s.sectionName, s.type, s.start, s.end, isSnapped, s.tempo, s.timeSig);
+		this.state.trackPlayerController.addSection(s);
+		this.addTrackChange();
+		console.log(this.state.trackPlayerController.track.name);
 	}
 
 	render() {
@@ -377,6 +363,9 @@ class TrackAssignView extends React.Component<tavP, tavS>{
 				/>
 			);
 		}
+		if(this.props.track != this.state.trackPlayerController.track) {
+			this.state.trackPlayerController.setTrack(this.props.track);
+		}
 		return (
 			<Animated.View style={[styles.container, {backgroundColor: colorTheme['t_dark'], top: this.state.toolTransitionYVal, width: '100%', height: '100%'}]}>
 				{/* Options */}
@@ -387,6 +376,7 @@ class TrackAssignView extends React.Component<tavP, tavS>{
 					showLines= {!this.state.simpleView} toggleLines= {this.toggleSimpleView}
 					editBlock= {this.state.editMode}
 					showToolComponent= {this.showAddMenu}
+
 				/>
 				{/* Track View */}
 				<BorsView 
@@ -448,7 +438,7 @@ export class BorsView extends React.Component<bvP, bvS> {
 			scrollOffset: 0,
 		};
 		this.editMode = this.props.editMode;
-		this.measureMaker = new MeasureMaker(this.props.trackPlayerController.track, this.props.size);
+		this.measureMaker = this.props.trackPlayerController.measureMaker;
 	}
 	componentDidMount() {
 		this.measureMaker.recompute();

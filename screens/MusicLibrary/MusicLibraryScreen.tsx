@@ -15,17 +15,18 @@ import {
 	SongListItem,
 	Playlist,
 	getUsersPlaylists, 
-	getAllFromPlaylists, 
 	searchForSongs, 
 	getSongsByAlbumFromPlaylists, 
 	getSongsByArtistFromPlaylists, 
 	getAllSongs,
-	selectedSongID,
 	setSelectedSong,
-	getSelectedSong
+	addSongToPlaylist,
+	getSongByID,
+	getSelectedSong,
 } from '../../DatabaseWrappers/SongStuff';
 import { UploadMP3, UploadMP3Popup } from './UploadMP3';
 import { RootTabScreenProps } from '../../types';
+import { thisAppUser } from '../../DatabaseWrappers/Profiles';
 
 export default function MusicLibraryScreen({navigation, route}: any) {
 	console.log("---------- Start Music Library Screen ------------");
@@ -36,36 +37,55 @@ export default function MusicLibraryScreen({navigation, route}: any) {
   	return (
 		<View style={[styles.container, styles.darkbg, {}]}>
 			<Text style={styles.title}>{title}</Text>
-			<PlaylistView navigateToSectionScreen={(song: SongListItem)=>{navigation.navigate("AssignSection")}}/>
+			<PlaylistView navigateToSectionScreen={(song: SongListItem)=>{navigation.navigate("AssignSection", {song: song})}}/>
 		<StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
 		</View>
   	);
 }
 
 type PVP = {navigateToSectionScreen?: (song: SongListItem)=>void}
-type PVS = {listTypeShowing: SongListTypes, showMP3Popup: boolean}
+type PVS = {
+	listTypeShowing: SongListTypes, 
+	addToPlaylistPopup: boolean,
+	isLoading: boolean
+}
 
 class PlaylistView extends React.Component<PVP, PVS> {
+
 	visibleSongList: Playlist[] | Playlist = new Playlist("");
 	searchPhrase: string = "";
+	songToAdd?: SongListItem; 
 
 	constructor(props: any) {
 		super(props);
 		this.state = {
 			listTypeShowing: SongListTypes.None,
-			showMP3Popup: false,
+			addToPlaylistPopup: false,
+			isLoading: false,
 		}
 	}
-
-	showMP3Upload = () => {this.setState({showMP3Popup: true})}
-	closeMP3Upload = () => {this.setState({showMP3Popup: false})}
 	lookupSongs = (searchPhrase: string) => {
 		this.searchPhrase = searchPhrase
 	}
 	setList = (type: SongListTypes, playlist: Playlist|undefined = undefined) => {
-		var uid = 0;
+		var uid = thisAppUser.uid;
 		if(type == SongListTypes.Search) {
-			this.visibleSongList = searchForSongs(this.searchPhrase);
+			console.log('Searching for songs!');
+			// fetch filtered version of all songs from database based on search parameter searchPhrase
+			// set isLoading to true while beginning request
+			this.setState({isLoading: true});
+			searchForSongs(this.searchPhrase).then(res => {
+				console.log('in song search');
+				// store results in playlist
+				var songs = new Playlist("Search Results");
+				songs.setSongsFromJSON(res.data);
+				this.visibleSongList = songs;
+
+				// set isLoading to false once request is finished
+				this.setState({isLoading: false});
+			}, err => {
+				console.log(err);
+			});
 		} else if(type == SongListTypes.Specific && playlist) {
 			this.visibleSongList = playlist;
 		} else if(type == SongListTypes.Albums) {
@@ -77,16 +97,23 @@ class PlaylistView extends React.Component<PVP, PVS> {
 		} else if(type == SongListTypes.AllSongs) {
 			// fetch all songs from data base and create "playlist" so they can be viewed in 
 			// PlaylistView
+			// set isLoading to true while beginning request
+			this.setState({isLoading: true});
+
+			// fetch all songs
 			getAllSongs().then(res => {
 				var allSongs = new Playlist("All Songs");
 				allSongs.setSongsFromJSON(res.data);
 				this.visibleSongList = allSongs;
+
+				// set isLoading to false once data has been retrieved
+				this.setState({isLoading: false});
 				
 			}, err => {
 				console.log(err);
 			});
-			// this.visibleSongList = getAllFromPlaylists(uid);
 		}
+		console.log(type);
 		this.setState({listTypeShowing: type});
 	}
 	
@@ -111,15 +138,48 @@ class PlaylistView extends React.Component<PVP, PVS> {
 
 		// set local variable selectedSongID to selected song
 		setSelectedSong(song.track_id);
-
+		getSongByID(song.track_id).then(()=>{
+			if (this.props.navigateToSectionScreen) this.props.navigateToSectionScreen(song);
+		});
+		
 		// navigate to the AssignSection screen
-		if (this.props.navigateToSectionScreen) this.props.navigateToSectionScreen(song);
 	}
 	
+	showAddToPlaylist = (song: SongListItem) => {
+		console.log("Adding song: " + song); 
+		this.songToAdd = song; 
+		this.setState({
+			addToPlaylistPopup: true,
+			listTypeShowing: SongListTypes.None,
+		});
+
+	}
+	addSongToPlaylist = (p: string | Playlist) => {
+		console.log(p);
+		if(p instanceof Playlist && this.songToAdd) {
+			this.setState({isLoading: true})
+			console.log("Adding " + this.songToAdd.name + " to playlist " + p.name);
+			addSongToPlaylist(p.pid, this.songToAdd.track_id).then( res => {
+				this.setState({isLoading: false})
+			})
+		}
+		this.setList(SongListTypes.None);
+		this.setState({addToPlaylistPopup: false})
+	}
+
 	render() {
 		var listTypeShowing = this.state.listTypeShowing;
 		var songListView: JSX.Element | null = null;
 		var popupView: JSX.Element | null = null;
+
+		// display Loading ... view if component is still fetching data
+		if (this.state.isLoading) {
+			return (
+				<View>
+					<Text>Loading ...</Text>
+				</View>
+			)
+		}
 
 		var listTitle: string = "";
 		if(listTypeShowing == SongListTypes.Specific && this.visibleSongList instanceof Playlist) {
@@ -129,18 +189,31 @@ class PlaylistView extends React.Component<PVP, PVS> {
 		}
 
 		if(listTypeShowing != SongListTypes.None) {
-			songListView = (<SongGroup title = {listTitle} songList = {this.visibleSongList} listListener = {this.subListListener} songListener={this.songClickListener}/>)
+			// Main Song List View
+			songListView = (<SongGroup 
+				title = {listTitle} 
+				songList = {this.visibleSongList} 
+				listListener = {this.subListListener} 
+				songListener={this.songClickListener}
+				addSong= {(song)=>this.showAddToPlaylist(song)}
+			/>)
 		} else {
 			songListView = (
 				<View>
 					<MainOptionList listListener={this.mainListListener} />
-					<UploadMP3 style= {{marginTop: 15, alignSelf: 'center'}} onPress={this.showMP3Upload}/>
 				</View>
 			)
 		}
 
-		if(this.state.showMP3Popup) {
-			popupView = (<UploadMP3Popup closePopup={this.closeMP3Upload}/>);
+		if(this.state.addToPlaylistPopup) {
+			// Popup to add song to playlist
+			popupView = (<SongGroup
+				title = "Add to Playlist"
+				songList = {getUsersPlaylists(thisAppUser.uid)}
+				listListener= {(p: any)=>{this.addSongToPlaylist(p)}}
+				songListener= {()=>{}}
+			/>)
+			songListView = null;
 		}
 		return (
 			<View style={[styles.container, {flexShrink: 1}]}>
@@ -152,12 +225,19 @@ class PlaylistView extends React.Component<PVP, PVS> {
 }
 
 function MainOptionList(props: {listListener: (type: SongListTypes, search: string | undefined)=>void}) {
+	
+	// hook to handle changes to text input text
+	var [searchText, onChangeSearchText] = React.useState("search");
+	
 	return (
 		<View style= {{backgroundColor: colorTheme['gray'], flexShrink: 1, padding: 20, borderRadius: 8}}>
 			<TextInput 
 				style={[styles.textInput, {width: '100%'}]}
-				placeholder= "search"
-				onEndEditing={(e)=>{props.listListener(SongListTypes.Search, e.nativeEvent.text)}}
+				placeholder={searchText}
+				onChangeText={onChangeSearchText}
+				onSubmitEditing={(e)=> {
+					props.listListener(SongListTypes.Search, e.nativeEvent.text);
+				}}
 				selectTextOnFocus= {true}
 				clearButtonMode= 'always'
 			/>

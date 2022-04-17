@@ -3,21 +3,19 @@ import { Source } from "./Track";
 import SongSection, { SectionType } from "./SongSection";
 import Loop from "./Loop";
 import { Audio } from 'expo-av';
-//var Sound = require('react-native-sound');
 
 export default class TrackyPlayer {
     currentTrack?: Track;
     currentTempo?: number;
-    currentLoop?: Loop|undefined;
+    currentLoop?: Loop;
 
-    queuedLoop?: Loop|undefined;
+    queuedLoop?: Loop;
     isQueued: boolean = false;
 
     // Some field variable to keep track of where in the song the player is
     mediaPlayer: MediaPlayer;
     playMode: PlayMode = PlayMode.Loop;
     statusUpdate: (s: any)=>void;
-
 
     constructor(statusUpdate:(s:any)=>void) {
         this.statusUpdate = (s: any) => {
@@ -45,6 +43,10 @@ export default class TrackyPlayer {
                 if(track.uri != boy) {
                     // only reset the actual player if the uri source is different (i.e. a different song source)
                     console.log("Setting new distinct Track");
+
+                    // create new MP3Player with  
+                    if(this.mediaPlayer)
+                        this.mediaPlayer.unload();
                     this.mediaPlayer = new MP3Player(track.uri, this.statusUpdate);
                     //Loads track in its construction based on track.uri
                 }
@@ -157,7 +159,7 @@ export class MediaPlayer {
 
     sourceType: Source = Source.MP3;
 
-    constructor(statusUpdate: (d:any)=>void) {
+    constructor(statusUpdate: (d:any) => void) {
         this.statusUpdate = statusUpdate;
     }
     loadTrack(track: Track) {}
@@ -255,8 +257,12 @@ export class MP3Player extends MediaPlayer {
             }
         } 
     } 
+
     async loadUri(uri: any) {
-        var loaded = (await this.track.loadAsync(uri)).isLoaded;
+        console.log('in loadUri');
+        console.log(uri);
+        var loaded = (await this.track.loadAsync({uri: uri})).isLoaded;
+        console.log(loaded);
         this.isLoaded = loaded;
         this.update();
     }
@@ -326,7 +332,7 @@ MP3Player.prototype.setQueuedLoopEnd = async function setQueuedLoopEnd(timestamp
     }
 }
 MP3Player.prototype.setUpdateIntervalMilli = async function setUpdateIntervalMilli(milli: number) {await this.track.setProgressUpdateIntervalAsync(milli);}
-MP3Player.prototype.unload = async function unload() {this.track.unloadAsync();}
+MP3Player.prototype.unload = async function unload() {console.log("Unloading"); this.track.unloadAsync();}
 MP3Player.prototype.getStatus = function getStatus() {
     return {
         isPlaying: this.isPlaying,

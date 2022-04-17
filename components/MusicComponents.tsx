@@ -68,6 +68,7 @@ export class TrackPlayerController {
 	songLen: number; 	songPos = 0; 		songFrac = 0;
 	doLoop = false;		loopStart = 10250; 	loopEnd = 14000; 	selectedLoop: Loop;
 	sectionStart = 0; 	sectionEnd = 1;
+	measureMaker: MeasureMaker;
 
 	viewPos = 0; isMoving: boolean;
 
@@ -81,6 +82,11 @@ export class TrackPlayerController {
 		this.selectedLoop = Loop.NullLoop();
 		this.sectionStart = track.getSection(0).getStart();
 		this.sectionEnd = track.getSection(0).getEndTime();
+
+		this.measureMaker = new MeasureMaker(track, "large");
+		this.measureMaker.reset();
+
+		console.log("Track name: " + this.track.name);
 	}
 
 	setTrack = (track: Track) => {
@@ -88,6 +94,7 @@ export class TrackPlayerController {
 		this.sectionStart = track.getSection(0).getStart();
 		this.sectionEnd = track.getSection(0).getEndTime();
 		this.trackPlayer.setTrack(track);
+		this.measureMaker.reset();
 	}
 	setState = (s: any) => {
 		this.isLoaded = s.isLoaded;
@@ -131,6 +138,8 @@ export class TrackPlayerController {
 			this.setMoving(milli);
 		}
 	}
+
+	// Loop Getters and Setters
 	setLoop = (loop: Loop) => {
 		this.selectedLoop = loop;
 		if(loop.isNull()) {
@@ -153,21 +162,49 @@ export class TrackPlayerController {
 		this.track.setLoopEnd(loop, milli, specificity);
 		this.trackPlayer.updateLoop(loop);
 	}
+
+	// Section Getters and Setters
 	editSectionEnd = (milli: number, index: number) => {
 		this.track.shiftSectionEnds(milli, index);
 	}
-
 	getSection = (index: number) => {
 		return this.track.getSection(index);
 	}
 	getSectionIndex = (milli: number) => {
 		return this.track.getSectionFromMilli(milli);
 	}
+	addSection = (s: SectionSkelly) => {
+		this.track.addSection(s.sectionName, s.type, s.start, s.end, true, s.tempo, s.timeSig);
+		console.log("Resetting the measure maker");
+		this.measureMaker.reset();
+	}
 	snapMilli = (milli: number, specificity: number) => {
 		if(specificity == -2)
 			return milli;
 		return this.track.getSnappedMilli(milli, specificity);
 	}
+
+	// TODO BRANDON JSON Getters
+	getSectionJSONs = () => {
+		var sections = this.track.sectionList;
+		var sectJSONs = [];
+		for(var i = 0; i<sections.length; i++) {
+
+			// MAYBE?
+			sectJSONs.push(sections[i].getJSON());
+		}
+	}
+	// TODO BRANDON JSON Getters
+	getLoopJSONs = () => {
+		var sections = this.track.sectionList;
+		var sectJSONs = [];
+		for(var i = 0; i<sections.length; i++) {
+
+			// MAYBE?
+			sectJSONs.push(sections[i].getJSON());
+		}
+	}
+
 }
 
 export class MeasureMaker {
