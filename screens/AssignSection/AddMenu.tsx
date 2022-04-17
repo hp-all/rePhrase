@@ -136,7 +136,7 @@ class AddLoopForm extends React.Component<lfP, {showError: boolean}> {
     }
     render() {
         return (
-            <View>
+            <View style={{padding: 20}}>
                 <Buddon
                     style={{position: 'absolute', left: 0, top: 0, padding: 5}}
                     label="< back"
@@ -316,19 +316,24 @@ class AddSectionForm extends React.Component<sfP, {showError: boolean, tempo: nu
 function AddButtons(props: {showSectionForm: ()=>void, showLoopForm: ()=>void}) {
     return (
         <View>
-            {/* Add Section Button */}
-            <Buddon
-                style={[styles.buttonSize, {width: 140, padding: 12, marginVertical: 10}]}
-                label='Add Section'
-                onPress={props.showSectionForm}
-            />
-            {/* Add Loop Button */}
-            <Buddon
-                style={[styles.buttonSize, {width: 140, padding: 12}]}
-                label='Add Loop'
-                onPress={props.showLoopForm}
-            />
+            <Text style={[styles.title, styles.centerSelf, {marginTop: 20}]}>Add Sections Menu</Text>
+            <View style={[styles.horzLine, {borderWidth: 2}]}></View>
+            <View style={{flexDirection: 'row', marginTop: 0}}>
+                {/* Add Section Button */}
+                <Buddon
+                    style={[styles.buttonSize, {padding: 12, margin: 20, marginRight: 10, flex: 1}]}
+                    label='Add Section'
+                    onPress={props.showSectionForm}
+                />
+                {/* Add Loop Button */}
+                <Buddon
+                    style={[styles.buttonSize, {padding: 12, margin: 20, marginLeft: 10, flex: 1}]}
+                    label='Add Loop'
+                    onPress={props.showLoopForm}
+                />
+            </View>
         </View>
+        
     );
 }
 
