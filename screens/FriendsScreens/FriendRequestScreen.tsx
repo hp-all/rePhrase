@@ -15,10 +15,11 @@ import { Platform, ScrollView, TouchableOpacity, TouchableOpacityBase } from 're
 import { Spacer } from '../../components/MusicComponents';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ViewUsersFriends } from './FriendsScreen';
+import { backendURLPrefix } from '../../DatabaseWrappers/DatabaseRequest';
 
 export default function FriendRequestScreen ({navigation}: any) {
 	// hooks that are used to change the state of the login parameters
-
+    /*
     const [isLoading, setLoading] = React.useState(true); // set as loading first
 
     React.useEffect(()=> {
@@ -27,7 +28,7 @@ export default function FriendRequestScreen ({navigation}: any) {
             return;
         }
         for (var i = 0; i < thisAppUser.friends.length; i++){
-            Axios.post('https://rephrase-cs4750.herokuapp.com/getUsername', {
+            Axios.post(backendURLPrefix + 'getUsername/' + thisAppUser, {
                 UID: thisAppUser.friends[i] // the current UID
             }).then((response)=>{
                 // thisAppUser.friends[i].setUsername(response.data.Username);
@@ -42,7 +43,8 @@ export default function FriendRequestScreen ({navigation}: any) {
                 <Text>Loading...</Text>
             </View>
         )
-    }
+    } 
+    */
 
 	return (
 		<View style={[styles.container, styles.darkbg, {}]}>

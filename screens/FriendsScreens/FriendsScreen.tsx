@@ -22,6 +22,8 @@ export default function FriendsScreen ({navigation}: any) {
         navigation.goBack();
     }
 
+    console.log(thisAppUser);
+
 	return (
 		<View style={[styles.container, styles.darkbg, {}]}>
             <View style={{flexDirection: "row"}}>
