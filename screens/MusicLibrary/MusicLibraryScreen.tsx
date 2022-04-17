@@ -20,9 +20,11 @@ import {
 	getSongsByArtistFromPlaylists, 
 	getAllSongs,
 	setSelectedSong,
+	addSongToPlaylist,
 } from '../../DatabaseWrappers/SongStuff';
 import { UploadMP3, UploadMP3Popup } from './UploadMP3';
 import { RootTabScreenProps } from '../../types';
+import { thisAppUser } from '../../DatabaseWrappers/Profiles';
 
 export default function MusicLibraryScreen({navigation, route}: any) {
 	console.log("---------- Start Music Library Screen ------------");
@@ -42,7 +44,7 @@ export default function MusicLibraryScreen({navigation, route}: any) {
 type PVP = {navigateToSectionScreen?: (song: SongListItem)=>void}
 type PVS = {
 	listTypeShowing: SongListTypes, 
-	showMP3Popup: boolean,
+	addToPlaylistPopup: boolean,
 	isLoading: boolean
 }
 
@@ -50,23 +52,21 @@ class PlaylistView extends React.Component<PVP, PVS> {
 
 	visibleSongList: Playlist[] | Playlist = new Playlist("");
 	searchPhrase: string = "";
+	songToAdd?: SongListItem; 
 
 	constructor(props: any) {
 		super(props);
 		this.state = {
 			listTypeShowing: SongListTypes.None,
-			showMP3Popup: false,
+			addToPlaylistPopup: false,
 			isLoading: false,
 		}
 	}
-
-	showMP3Upload = () => {this.setState({showMP3Popup: true})}
-	closeMP3Upload = () => {this.setState({showMP3Popup: false})}
 	lookupSongs = (searchPhrase: string) => {
 		this.searchPhrase = searchPhrase
 	}
 	setList = (type: SongListTypes, playlist: Playlist|undefined = undefined) => {
-		var uid = 0;
+		var uid = thisAppUser.uid;
 		if(type == SongListTypes.Search) {
 			console.log('Searching for songs!');
 			// fetch filtered version of all songs from database based on search parameter searchPhrase
@@ -101,7 +101,6 @@ class PlaylistView extends React.Component<PVP, PVS> {
 			// fetch all songs
 			getAllSongs().then(res => {
 				var allSongs = new Playlist("All Songs");
-				console.log(res.data);
 				allSongs.setSongsFromJSON(res.data);
 				this.visibleSongList = allSongs;
 
@@ -141,6 +140,26 @@ class PlaylistView extends React.Component<PVP, PVS> {
 		if (this.props.navigateToSectionScreen) this.props.navigateToSectionScreen(song);
 	}
 	
+	showAddToPlaylist = (song: SongListItem) => {
+		console.log("Adding song: " + song); 
+		this.songToAdd = song; 
+		this.setState({
+			addToPlaylistPopup: true,
+			listTypeShowing: SongListTypes.None,
+		});
+
+	}
+	addSongToPlaylist = (p: string | Playlist) => {
+		if(p instanceof Playlist && this.songToAdd) {
+			this.setState({isLoading: true})
+			console.log("Adding " + this.songToAdd.name + " to playlist " + p.name);
+			addSongToPlaylist(p.pid, this.songToAdd.track_id).then( res => {
+				this.setState({isLoading: false})
+			})
+		}
+		this.setList(SongListTypes.None);
+	}
+
 	render() {
 		var listTypeShowing = this.state.listTypeShowing;
 		var songListView: JSX.Element | null = null;
@@ -163,18 +182,31 @@ class PlaylistView extends React.Component<PVP, PVS> {
 		}
 
 		if(listTypeShowing != SongListTypes.None) {
-			songListView = (<SongGroup title = {listTitle} songList = {this.visibleSongList} listListener = {this.subListListener} songListener={this.songClickListener}/>)
+			// Main Song List View
+			songListView = (<SongGroup 
+				title = {listTitle} 
+				songList = {this.visibleSongList} 
+				listListener = {this.subListListener} 
+				songListener={this.songClickListener}
+				addSong= {(song)=>this.showAddToPlaylist(song)}
+			/>)
 		} else {
 			songListView = (
 				<View>
 					<MainOptionList listListener={this.mainListListener} />
-					<UploadMP3 style= {{marginTop: 15, alignSelf: 'center'}} onPress={this.showMP3Upload}/>
 				</View>
 			)
 		}
 
-		if(this.state.showMP3Popup) {
-			popupView = (<UploadMP3Popup closePopup={this.closeMP3Upload}/>);
+		if(this.state.addToPlaylistPopup) {
+			// Popup to add song to playlist
+			popupView = (<SongGroup
+				title = "Add to Playlist"
+				songList = {getUsersPlaylists(thisAppUser.uid)}
+				listListener= {(p: any)=>{this.addSongToPlaylist(p)}}
+				songListener= {()=>{}}
+			/>)
+			songListView = null;
 		}
 		return (
 			<View style={[styles.container, {flexShrink: 1}]}>

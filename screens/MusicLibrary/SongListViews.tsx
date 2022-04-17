@@ -8,15 +8,15 @@ import { Text, View } from '../../components/Themed';
 import { appStyles as styles, colorTheme } from '../../components/AppStyles';
 
 // Objects & Wrappers
-import { SongListItem, Playlist, getUsersPlaylists, getAllFromPlaylists, searchForSongs, getSongsByAlbumFromPlaylists, getSongsByArtistFromPlaylists } from '../../DatabaseWrappers/SongStuff';
+import { SongListItem, Playlist, getUsersPlaylists, getAllFromPlaylists, searchForSongs, getSongsByAlbumFromPlaylists, getSongsByArtistFromPlaylists, addSongToPlaylist } from '../../DatabaseWrappers/SongStuff';
 import { Buddon } from '../../components/Buddons';
 
-export function SongGroup (props: {title: string, songList: Playlist | Playlist[], listListener: (p: any)=>void, songListener: (song: SongListItem)=>void}) {
+export function SongGroup (props: {title: string, songList: Playlist | Playlist[], listListener: (p: any)=>void, songListener: (song: SongListItem)=>void, addSong?: (song: SongListItem)=>void}) {
 	var items = []; 
 	if(props.songList instanceof Playlist) {
 		for(var i = 0; i<props.songList.songs.length; i++) {
             var song = props.songList.songs[i];
-            items.push( <SongButton song = {song} onPress = {props.songListener} hideBar = {i==0} key= {i}/> )
+            items.push( <SongButton song = {song} onPress = {props.songListener} hideBar = {i==0} addSong={props.addSong} key= {i}/> )
         }
 	} else {
 		for(var i = 0; i<props.songList.length; i++) {
@@ -46,18 +46,16 @@ export function SongGroup (props: {title: string, songList: Playlist | Playlist[
 	)
 }
 
-export function SongGroupButton(props: {name: string, onPress: (playlist?: Playlist)=>void, style?: any, hideBar?: boolean, key?: number, color?: string, playlist?: Playlist}) {
+export function SongGroupButton(props: {name: string, onPress: (playlist?: Playlist)=>void, style?: any, hideBar?: boolean, key?: React.Key, color?: string, playlist?: Playlist}) {
 	var bar = null;
 	if(!props.hideBar)
 		bar = <View style={[styles.horzLine]}/>
-    var key = props.key;
     var color = {};
     if(props.color) {
         color = {color: props.color};
     }
 	return (
 		<TouchableOpacity
-            key = {key}
             style= {props.style}
 			onPress={()=>{
                 if(props.playlist) {
@@ -73,15 +71,22 @@ export function SongGroupButton(props: {name: string, onPress: (playlist?: Playl
 	);
 }
 
-function SongButton(props: {key: React.Key, song: SongListItem, onPress: (song: SongListItem)=>void, hideBar ?: boolean}) {
+function SongButton(props: {key: React.Key, song: SongListItem, onPress: (song: SongListItem)=>void, addSong?: (song: SongListItem)=>void, hideBar ?: boolean}) {
     var song = props.song;
     var bar = (props.hideBar) ? null: (<View style={[styles.horzLine, {flexShrink: 1}]}/>);
+    const addSong = () => {console.log("PRessed: " + props.song); props.addSong && props.addSong(props.song)};
     return (
         <TouchableOpacity onPress = {()=>{props.onPress(song)}}>
             {bar}
             <View style={[styles.rowContainer, {flexBasis: 40, alignItems: 'flex-end', marginBottom: 10}]}>
                 <Text style={[styles.header, {flex: 1.1, color: colorTheme['t_dark']}]}>{song.name}</Text>
-                <Buddon label="Add" onPress={() => console.log("add clicked1")}></Buddon>
+                <Buddon 
+                    label="Add" 
+                    style={{padding: 5}}
+                    isSelected={true}
+                    altbg={'t_med'}
+                    onPress={addSong}
+                />
                 {/* 
                 <Text style={[styles.subheader, {flex: 1, color: colorTheme['t_med']}]}>{song.album}</Text>
                 <Text style={[styles.subheader, {flex: 1, color: colorTheme['t_med']}]}>{song.artist}</Text>
