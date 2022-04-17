@@ -28,16 +28,10 @@ export function getAllSongs() {
 export function searchForSongs(searchterm: string) {
     // Search for songs based on a searchterm here
     // Return a list of SongListItems
-    var resultList = new Playlist(searchterm);
-    var Data = {
-        searchterm: searchterm,
-    }
-    // MYSQLRequest("_________.php", Data).then((Response)=>{
 
-    // });
-    
-    return resultList;
+    return axios.get(backendURLPrefix + `tracks/search/${searchterm}`);
 }
+
 export function getUsersPlaylists(userID: number) {
     // Get all playlists for a given user
     // Return a list of SongListItems
