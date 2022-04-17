@@ -20,7 +20,6 @@ import {
 	getSongsByAlbumFromPlaylists, 
 	getSongsByArtistFromPlaylists, 
 	getAllSongs,
-	selectedSongID,
 	setSelectedSong,
 	getSelectedSong
 } from '../../DatabaseWrappers/SongStuff';

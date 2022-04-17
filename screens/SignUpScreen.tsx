@@ -32,7 +32,7 @@ export default function SignUp ({navigation}: any) {
                 // console.log(Password);
                 // console.log(ConfirmPw);
                 console.log("passwords match");
-                Axios.post("https://rephrase-cs750.herokuapp.com/register", {
+                Axios.post("https://rephrase-cs4750.herokuapp.com/register", {
                     Username: Username,
                     Password: Password
                 }).then((response) => {
@@ -54,7 +54,7 @@ export default function SignUp ({navigation}: any) {
 
     React.useEffect(() => {
         if(RegisterStatus == "Successfully Registered"){
-            Axios.post("https://rephrase-cs750.herokuapp.com/getUID", {
+            Axios.post("https://rephrase-cs4750.herokuapp.com/getUID", {
                 Username: Username
             }).then((response) => {
                 console.log(response.data.UID);

@@ -17,6 +17,7 @@ import ButtonMenu from './ButtonMenu';
 import AddMenu from './AddMenu';
 import { getSelectedSong } from '../../DatabaseWrappers/SongStuff';
 import axios from 'axios';
+import { Audio } from 'expo-av';
 
 const frootSongSource = require('../../assets/soundFiles/lofi_fruits_jazz.mp3');
 const windowWidth = Layout.window.width;
@@ -31,26 +32,47 @@ export default function AssignSectionScreen() {
 	console.log("---------- Start Assign Section Screen -----");
 	console.log(getSelectedSong());
 
-	const [isLoading, setLoading] = React.useState(true); // set as loading first
 
-	var trackInfo = {};
+	var [trackInfo, setTrackInfo] = React.useState(
+		{ 
+			title: "", 
+			artist_name: "",
+			album: "",
+			duration: 0,
+			mp3_url: ""
+		}
+	); // set as loading first
 
+	// fetching metadata and mp3 data for selected song
 	React.useEffect(() => {
 		axios.get(`http://localhost:3001/track/${getSelectedSong()}`)
 			.then(res => { 
-				trackInfo = res.data;
-			}, err => { 
-				console.log("Error fetching track with id=" + getSelectedSong());
+				console.log('Successfully loaded data!');
+				setTrackInfo(res.data[0]);
+
+				// create selected track once track metadata is loaded
+
+
+				// track info has been fetched and is ready to render
+				// setLoading(false);
+
+			}, err => {
+				console.log(err);
 			});
-		setLoading(false); // track info has been fetched and is ready to render
 	}, []);
 
+	if (trackInfo.title != "") {
+
+	}
+
+	
 
 	// fetch track and then set to track
-	var frootSongTrack = new Track(Source.MP3, frootSongSource, 
-			{name: "Froot Song (ft. Jazz)", artist: "Test Track", album: "from SoundCloud", length: 203000}
-		);
-	frootSongTrack.name = "Froot Song (ft. Jazz)"
+
+
+	// var frootSongTrack = new Track(Source.MP3, frootSongSource, 
+	// 		{name: "Froot Song (ft. Jazz)", artist: "Test Track", album: "from SoundCloud", length: 203000}
+	// 	);
 
 	/*
 	frootSongTrack.addSection("First Song", SectionType.A, 0, 98000, true, 120);
@@ -64,17 +86,29 @@ export default function AssignSectionScreen() {
 
 	// var trackController: TrackPlayerController = new TrackPlayerController();
 
-	if (isLoading) {
+	// console.log(isLoading);
+	if (trackInfo.title == "") {
 		return (
 			<View style={[styles.container, styles.darkbg]}>
-			<Text>Loading...</Text>
+				<Text>Loading...</Text>
 			</View>
 		);
 	} else {
+		var selectedTrack = new Track(
+			Source.MP3, 
+			trackInfo.mp3_url, 
+			{ 
+				name: trackInfo.title, 
+				artist: trackInfo.artist_name, 
+				album: trackInfo.album, 
+				length: trackInfo.duration*1000
+			}
+		);
+
 		return (
 			<View style={[styles.container, styles.darkbg]}>
-				<Text style={styles.title}>{frootSongTrack.name}</Text>
-				<TrackAssignView track= {frootSongTrack}/>
+				<Text style={styles.title}>{selectedTrack.name}</Text>
+				<TrackAssignView track={selectedTrack}/>
 			<StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
 			</View>
 		);

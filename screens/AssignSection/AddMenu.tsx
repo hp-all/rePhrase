@@ -149,7 +149,7 @@ class AddLoopForm extends React.Component<lfP, {showError: boolean}> {
                     values = {this.props.selectedArea}
                     unit= "s"
                     labels = {{min: "Start Time", max: "End Time"}}
-                    keyboardDifference={169}
+                    keyboardYOffset={169}
                 />
                 <Buddon 
                     style={[styles.centerSelf, {width: 100, marginTop: 15, height: 35, padding: 6}]}
@@ -222,11 +222,13 @@ class AddSectionForm extends React.Component<sfP, {showError: boolean}> {
                             values = {this.props.selectedArea}
                             unit= "s"
                             labels = {{min: "Start Time", max: "End Time"}}
-                            keyboardDifference={169}
+                            keyboardYOffset={169}
                         />
                     </View>
                     <View style={{flex: 1}}>
-                        
+                        {/* <NumberField
+                            value={}
+                        /> */}
                     </View>
                 </View>
                 <Buddon 

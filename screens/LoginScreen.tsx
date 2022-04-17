@@ -38,7 +38,7 @@ export default function Login ({navigation}: any) {
 
 	/** Connects to the MySQL Database to check the login information, then navigate to the app */
 	const login = () => {
-		Axios.post('https://rephrase-cs750.herokuapp.com/login', {
+		Axios.post('https://rephrase-cs4750.herokuapp.com/login', {
 			Username: Username,
 			Password: Password
 		}).then((response) => {

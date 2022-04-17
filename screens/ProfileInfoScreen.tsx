@@ -21,7 +21,7 @@ export default function ProfileInfoScreen({navigation}: any) {
             navigation.navigate("FriendViews");
             return;
         }
-        Axios.post('https://rephrase-cs750.herokuapp.com/Friends', {
+        Axios.post('https://rephrase-cs4750.herokuapp.com/Friends', {
             UID: thisAppUser.uid
         }).then((response)=>{
             if(response.data.message == "You have no friends!"){

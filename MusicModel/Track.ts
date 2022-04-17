@@ -277,9 +277,11 @@ export default class Track {
     getUri() {
         return this.uri;
     }
+
     getDefaultTempo() {
         return this.defaultTempo;
     }
+
     setDefaultTempo(tempo: number) {
         for(var section of this.sectionList) {
             if(section.getTempo() === this.defaultTempo) {
@@ -288,12 +290,15 @@ export default class Track {
         }
         this.defaultTempo = tempo;  
     }
+
     getDefaultBeatsPerMeasure() {
         return this.defaultBeatsPerMeasure;
     }
+
     getDefaultTimeSig() {
         return this.defaultTimeSig;
     }
+
     setDefaultTimeSig(timeSig: string) {
         for(var section of this.sectionList) {
             if(section.getTimeSig() === this.defaultTimeSig) {
@@ -303,6 +308,7 @@ export default class Track {
         this.defaultTimeSig = timeSig;  
         this.defaultBeatsPerMeasure = Number(timeSig.split(":")[0]);
     }
+
     setLength(len: number) {
         this.timeLen = len;
         
@@ -315,12 +321,15 @@ export default class Track {
         this.sectionList.splice(toKeep, this.sectionCount()-toKeep);
         this.extendSectionToTimestamp(len, toKeep-1);
     }
+
     getLength() {
         return this.timeLen;
     }
+
     getLoops() {
         return this.loopList;
     }
+    
     getLoopNames() {
         var names: string[] = [];
         var index = 0;
