@@ -181,11 +181,11 @@ function FriendsNavigator() {
         options={{header: () => (<Header title=''/>),}}
       />
       
-      <FriendTab.Screen
+      {/* <FriendTab.Screen
         name = "OneFriend"
         component={OneFriendScreen}
         options={{header: () => (<Header title=''/>),}}
-      />
+      /> */}
       <FriendTab.Screen
         name= "FriendRequests"
         component={FriendRequestScreen}

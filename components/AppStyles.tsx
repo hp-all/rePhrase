@@ -89,12 +89,10 @@ export const appStyles = StyleSheet.create({
 	container: {
 		flex: 1,
 		justifyContent: 'flex-start',
-		backgroundColor: 'transparent',
 	},
 	rowContainer: {
 		flex: 1,
 		flexDirection: "row", 
-		backgroundColor: 'transparent',
 	},
 	darkbg: {
 		backgroundColor: colorTheme['t_dark'],

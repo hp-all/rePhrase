@@ -21,6 +21,49 @@ export default function FriendRequestScreen ({navigation}: any) {
 	// hooks that are used to change the state of the login parameters
     /*
     const [isLoading, setLoading] = React.useState(true); // set as loading first
+    const accept = (friend: FriendProfile) => {
+        console.log("Accepting req");
+        setLoading(true); // IDK If it needs to go back to loading state?
+        Axios.post(backendURLPrefix + 'acceptRequest', {
+            UID1: thisAppUser.uid, // the app user UID
+            UID2: friend.uid, // the UID of the friend who sent the request
+        }).then((response)=>{
+            // thisAppUser.friends[i].setUsername(response.data.Username);
+        });
+        Axios.post(backendURLPrefix + 'updateFriendship', {
+            UID1: friend.uid, // the UID of the friend who sent the request
+            UID2: thisAppUser.uid, // the app user UID
+        }).then((response)=>{
+            // thisAppUser.friends[i].setUsername(response.data.Username);
+            console.log(response.data.message);
+        });
+        setLoading(false);
+
+    }
+    const reject = (friend: FriendProfile) => {
+        console.log("Rejecting req");
+        setLoading(true); // IDK If it needs to go back to loading state?
+        Axios.post(backendURLPrefix + 'deletePendingRequest', {
+            UID1: friend.uid, // the UID of the friend who sent the request
+            UID2: thisAppUser.uid, // the app user UID
+        }).then((response)=>{
+            // thisAppUser.friends[i].setUsername(response.data.Username);
+            console.log(response.data.message);
+        });
+        setLoading(false);
+    }
+    const sendReq = (friend: FriendProfile) => {
+        console.log("Sendign req");
+        setLoading(true); // IDK If it needs to go back to loading state?
+        Axios.post(backendURLPrefix + 'sendRequest', {
+            UID1: thisAppUser.uid, // the app user UID
+            UID2: friend.uid, // the UID of the friend who sent the request
+        }).then((response)=>{
+            // thisAppUser.friends[i].setUsername(response.data.Username);
+            console.log(response.data.message);
+        });
+        setLoading(false);
+    }
 
     React.useEffect(()=> {
         if(thisAppUser.uid < 0) {
@@ -28,6 +71,7 @@ export default function FriendRequestScreen ({navigation}: any) {
             return;
         }
         for (var i = 0; i < thisAppUser.friends.length; i++){
+
             Axios.post(backendURLPrefix + 'getUsername/' + thisAppUser, {
                 UID: thisAppUser.friends[i] // the current UID
             }).then((response)=>{
@@ -35,7 +79,7 @@ export default function FriendRequestScreen ({navigation}: any) {
             });
         }
         setLoading(false); // usernames have been collected and ready to render
-    }, []); // only gets called once since empty param
+    }, [isLoading]); // only gets called once since empty param
 
     if (isLoading){
         return (
@@ -61,11 +105,9 @@ export default function FriendRequestScreen ({navigation}: any) {
             </View>
             <ViewUsersFriends
                 friends={thisAppUser.friendRequests}
-                onFriendSelect={(friend: FriendProfile)=>{
-                    // TODO FUNCTION to accept friend request
-
-
-                }}
+                onAccept={accept}
+                onReject={reject}
+                onReturnReq={sendReq}
             />       
 		<StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
 		</View>

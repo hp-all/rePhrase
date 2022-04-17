@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { thisAppUser } from './Profiles';
 import axios from "axios";
+import Axios from "axios"
 import { backendURLPrefix } from './DatabaseRequest';
 
 
@@ -94,6 +95,18 @@ export function getAllFromPlaylists(userID: number) {
     }
 
     return allsongs;
+}
+
+export function addSongToPlaylist(playlistID: number, trackID: string) {
+    console.log("Adding track " + trackID + ", to playlist " + playlistID);
+    return Axios.post(backendURLPrefix + "playlists/track/add", {
+        playlist_id: playlistID,
+        track_id: trackID,
+    });
+}
+export function addPlaylist(playlistID: number) {
+    var userID = thisAppUser.uid;
+
 }
 
 export function UploadMP3ToDB(userID: number, songName: string, albumName: string, artistName: string, mp3: any) {

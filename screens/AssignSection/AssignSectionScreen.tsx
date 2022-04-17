@@ -57,7 +57,6 @@ export default function AssignSectionScreen() {
 				console.log("Could not load song " + getSelectedSong());
 			});
 	}, []);
-	
 	// fetch track and then set to track
 
 
