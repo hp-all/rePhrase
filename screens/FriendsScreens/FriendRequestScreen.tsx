@@ -69,3 +69,20 @@ export default function FriendRequestScreen ({navigation}: any) {
 		</View>
 	)
 }
+
+/** FriendView: creates the view for a friend's profile
+ * 
+ * @param props friend: the friend profile to display, selectfriend, the function to go the the friend's page
+ * @returns a view for a specific friend
+ */
+ function RequestView(props: {friend: FriendProfile, onSelect?: (friend: FriendProfile)=>void, key: React.Key}) {
+    console.log(props.key);
+    return (
+        <TouchableOpacity
+            onPress={()=>{props.onSelect && props.onSelect(props.friend)}}
+            style={{backgroundColor: colorTheme['t_light'], flex: 1, margin: 10, padding: 20, borderRadius: 5}}
+        >
+            <Text style={styles.header}>{props.friend.username}</Text>
+        </TouchableOpacity>
+    )
+}

@@ -17,6 +17,8 @@ import ButtonMenu from './ButtonMenu';
 import AddMenu from './AddMenu';
 import { getSelectedSong } from '../../DatabaseWrappers/SongStuff';
 import axios from 'axios';
+import { Audio } from 'expo-av';
+import { backendURLPrefix } from '../../DatabaseWrappers/DatabaseRequest';
 
 const frootSongSource = require('../../assets/soundFiles/lofi_fruits_jazz.mp3');
 const windowWidth = Layout.window.width;
@@ -31,30 +33,34 @@ export default function AssignSectionScreen() {
 	console.log("---------- Start Assign Section Screen -----");
 	console.log(getSelectedSong());
 
-	const [isLoading, setLoading] = React.useState(true); // set as loading first
+	var [trackInfo, setTrackInfo] = React.useState(
+		{ 
+			title: "", 
+			artist_name: "",
+			album: "",
+			duration: 0,
+			mp3_url: ""
+		}
+	); // set as loading first
 
-	var trackInfo:any = {};
-	var selectedTrack = new Track(Source.MP3, frootSongSource, 
-			{name: "Froot Song (ft. Jazz)", artist: "Test Track", album: "from SoundCloud", length: 203000}
-		);
+	// fetching metadata and mp3 data for selected song
 	React.useEffect(() => {
-		axios.get(`https://rephrase-cs4750.herokuapp.com/track/${getSelectedSong()}`)
+		axios.get(backendURLPrefix + `track/${getSelectedSong()}`)
 			.then(res => { 
-				trackInfo = res.data;
-				// selectedTrack = new Track(
-				// 	Source.MP3, require(trackInfo.mp3_url), 
-				// 	{name: trackInfo.name, artist: trackInfo.artist, album: trackInfo.album, length: trackInfo.duration*1000}
-				// );			
-			}, err => { 
-				console.log("Error fetching track with id=" + getSelectedSong());
-				trackInfo = {name: "", artist: "", album: "", length: 1}
-			});
-		setLoading(false); // track info has been fetched and is ready to render
-	}, []);
+				console.log('Successfully loaded data!');
+				setTrackInfo(res.data[0]);
 
-	var selectedTrack = new Track(
-		Source.MP3, "",
-		{name: trackInfo.name, artist: trackInfo.artist, album: trackInfo.album, length: trackInfo.duration*1000});
+				// create selected track once track metadata is loaded
+
+
+				// track info has been fetched and is ready to render
+				// setLoading(false);
+
+			}, err => {
+				console.log(err);
+				console.log("Could not load song " + getSelectedSong());
+			});
+	}, []);
 
 	// fetch track and then set to track
 
@@ -75,17 +81,29 @@ export default function AssignSectionScreen() {
 
 	// var trackController: TrackPlayerController = new TrackPlayerController();
 
-	if (isLoading) {
+	// console.log(isLoading);
+	if (trackInfo.title == "") {
 		return (
 			<View style={[styles.container, styles.darkbg]}>
-			<Text>Loading...</Text>
+				<Text>Loading...</Text>
 			</View>
 		);
 	} else {
+		var selectedTrack = new Track(
+			Source.MP3, 
+			trackInfo.mp3_url, 
+			{ 
+				name: trackInfo.title, 
+				artist: trackInfo.artist_name, 
+				album: trackInfo.album, 
+				length: trackInfo.duration*1000
+			}
+		);
+
 		return (
 			<View style={[styles.container, styles.darkbg]}>
 				<Text style={styles.title}>{selectedTrack.name}</Text>
-				<TrackAssignView track= {selectedTrack}/>
+				<TrackAssignView track={selectedTrack}/>
 			<StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
 			</View>
 		);
