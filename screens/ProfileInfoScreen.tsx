@@ -23,13 +23,10 @@ export default function ProfileInfoScreen({navigation}: any) {
     const loadFriends = () => {
         Axios.get('https://rephrase-cs4750.herokuapp.com/getUsername/'+thisAppUser.uid)
         .then((response)=> {
-            console.log("Here");
-            console.log(response.data.length)
             for (var i = 0; i < response.data.length; i++){
                 thisAppUser.friends[i] = new FriendProfile(response.data[i]["UserID"], response.data[i]["Username"]);
             }           
         }).finally(() => {
-            console.log("Please god work: " + thisAppUser.friends);
             navigation.navigate("FriendViews");
         })
         
@@ -38,13 +35,10 @@ export default function ProfileInfoScreen({navigation}: any) {
     const friendRequests = () => {
         Axios.get('https://rephrase-cs4750.herokuapp.com/pendingRequests/'+thisAppUser.uid)
         .then((response)=> {
-            console.log("Here");
-            console.log(response.data.length)
             for (var i = 0; i < response.data.length; i++){
                 thisAppUser.friendRequests[i] = new FriendProfile(response.data[i]["UserID"], response.data[i]["Username"]);
             }           
         }).finally(() => {
-            console.log("Please god work: " + thisAppUser.friends);
             navigation.navigate("FriendViews");
         })
         navigation.navigate("FriendViews", {screen: 'FriendRequests'});
