@@ -27,7 +27,7 @@ export default function FriendsScreen ({navigation}: any) {
             return;
         }
         for (var i = 0; i < thisAppUser.friends.length; i++){
-            Axios.post('http://localhost:8080/getUsername', {
+            Axios.post('https://rephrase-cs4750.herokuapp.com/getUsername', {
                 UID: thisAppUser.friends[i] // the current UID
             }).then((response)=>{
                 console.log(response.data);

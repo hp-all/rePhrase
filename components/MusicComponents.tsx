@@ -134,6 +134,8 @@ export class TrackPlayerController {
 			this.setMoving(milli);
 		}
 	}
+
+	// Loop Getters and Setters
 	setLoop = (loop: Loop) => {
 		this.selectedLoop = loop;
 		if(loop.isNull()) {
@@ -156,10 +158,11 @@ export class TrackPlayerController {
 		this.track.setLoopEnd(loop, milli, specificity);
 		this.trackPlayer.updateLoop(loop);
 	}
+
+	// Section Getters and Setters
 	editSectionEnd = (milli: number, index: number) => {
 		this.track.shiftSectionEnds(milli, index);
 	}
-
 	getSection = (index: number) => {
 		return this.track.getSection(index);
 	}
@@ -176,6 +179,28 @@ export class TrackPlayerController {
 			return milli;
 		return this.track.getSnappedMilli(milli, specificity);
 	}
+
+	// TODO BRANDON JSON Getters
+	getSectionJSONs = () => {
+		var sections = this.track.sectionList;
+		var sectJSONs = [];
+		for(var i = 0; i<sections.length; i++) {
+
+			// MAYBE?
+			sectJSONs.push(sections[i].getJSON());
+		}
+	}
+	// TODO BRANDON JSON Getters
+	getLoopJSONs = () => {
+		var sections = this.track.sectionList;
+		var sectJSONs = [];
+		for(var i = 0; i<sections.length; i++) {
+
+			// MAYBE?
+			sectJSONs.push(sections[i].getJSON());
+		}
+	}
+
 }
 
 export class MeasureMaker {
