@@ -111,6 +111,7 @@ class PlaylistView extends React.Component<PVP, PVS> {
 				console.log(err);
 			});
 		}
+		console.log(type);
 		this.setState({listTypeShowing: type});
 	}
 	
@@ -150,6 +151,7 @@ class PlaylistView extends React.Component<PVP, PVS> {
 
 	}
 	addSongToPlaylist = (p: string | Playlist) => {
+		console.log(p);
 		if(p instanceof Playlist && this.songToAdd) {
 			this.setState({isLoading: true})
 			console.log("Adding " + this.songToAdd.name + " to playlist " + p.name);
@@ -158,6 +160,7 @@ class PlaylistView extends React.Component<PVP, PVS> {
 			})
 		}
 		this.setList(SongListTypes.None);
+		this.setState({addToPlaylistPopup: false})
 	}
 
 	render() {
