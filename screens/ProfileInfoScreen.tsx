@@ -16,6 +16,8 @@ export default function ProfileInfoScreen({navigation}: any) {
 
     var friends:FriendProfile[] = [];
 
+    const [isLoading, setLoading] = React.useState(false);
+
     const loadFriends = () => {
         if(thisAppUser.uid < 0) {
             navigation.navigate("FriendViews");
@@ -31,21 +33,33 @@ export default function ProfileInfoScreen({navigation}: any) {
             else {
                 console.log(response.data);
                 console.log(response.data[0]["UserID1"]);
+
+                console.log("getting friend usernames");
     
                 // want to iterate over the 
                 for (var i = 0; i<response.data.length; i++){
-                    var uid = response.data[i]["UserID1"];
-                    var uid = response.data[i]["UserID2"];
+                    var uID1 = response.data[i]["UserID1"];
+                    var uID2 = response.data[i]["UserID2"];
+                    var UID: number;
     
-                    if (uid != thisAppUser.uid){
-                        friends.push(new FriendProfile(uid, ""));
-                    } else {
-                        friends.push(new FriendProfile(uid, ""));    
+                    if (uID1 != thisAppUser.uid){
+                        UID = uID1;
+                    } else {   
+                        UID = uID2
                     }
+                    console.log(UID);
+                    Axios.post('http://localhost:8080/getUsername', {
+                        UID: UID // the current UID
+                    }).then((response)=>{
+                        console.log(response.data);
+                        friends.push(new FriendProfile(UID, response.data));
+                        //console.log("Friends[i] = " + friends[i]);
+                    }).finally(()=>{
+                        console.log("Friends = " + friends);
+                        thisAppUser.friends = friends;
+                        console.log("Global Friends = " + thisAppUser.friends);
+                    });
                 }
-                console.log(friends);
-                thisAppUser.friends = friends;
-                navigation.navigate("FriendViews");
             }
         })
         
@@ -56,6 +70,14 @@ export default function ProfileInfoScreen({navigation}: any) {
         // Send to page where they can see all of their incoming requests
         // Make navigation track for this page
         navigation.navigate("FriendViews", {screen: 'FriendRequests'});
+    }
+
+    if (isLoading){
+        return (
+            <View>
+                <Text>Loading...</Text>
+            </View>
+        )
     }
 
     return (
