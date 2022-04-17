@@ -38,26 +38,18 @@ export default function ProfileInfoScreen({navigation}: any) {
     }
 
     const friendRequests = () => {
-        Axios.get(backendURLPrefix + 'pendingRequests/'+thisAppUser.uid), {
-            headers: {
-                "x-access-token": thisAppUser.token,
-            }
-        })
-        .then((response)=> {
-            for (var i = 0; i < response.data.length; i++){
-                thisAppUser.friendRequests[i] = new FriendProfile(response.data[i]["UserID"], response.data[i]["Username"]);
-            }           
-        }).finally(() => {
-            navigation.navigate("FriendViews", {screen: 'FriendRequests'});
-        });
-    }
-
-    if (isLoading){
-        return (
-            <View>
-                <Text>Loading...</Text>
-            </View>
-        )
+        // Axios.get(backendURLPrefix + 'pendingRequests/'+thisAppUser.uid), {
+        //     headers: {
+        //         "x-access-token": thisAppUser.token,
+        //     }
+        // })
+        // .then((response)=> {
+        //     for (var i = 0; i < response.data.length; i++){
+        //         thisAppUser.friendRequests[i] = new FriendProfile(response.data[i]["UserID"], response.data[i]["Username"]);
+        //     }           
+        // }).finally(() => {
+        //     navigation.navigate("FriendViews", {screen: 'FriendRequests'});
+        // });
     }
 
     return (

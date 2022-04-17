@@ -40,7 +40,7 @@ export function getAllSongs() {
     // get all song metadata from mysql database
     // returns Promise
     return ( 
-        axios.get((backendURLPrefix + "tracks", {
+        axios.get(backendURLPrefix + "tracks", {
             headers: {
                 "x-access-token": thisAppUser.token,
             }
