@@ -11,6 +11,7 @@ import Axios from "axios"
 import { Buddon } from '../components/Buddons';
 import { FormInputError, FormField, TextField } from '../components/Form';
 import UserProfile, { FriendProfile, thisAppUser } from '../DatabaseWrappers/Profiles';
+import { backendURLPrefix } from '../DatabaseWrappers/DatabaseRequest';
 
 export default function Login ({navigation}: any) {
 	// hooks that are used to change the state of the login parameters
@@ -40,7 +41,7 @@ export default function Login ({navigation}: any) {
 
 	/** Connects to the MySQL Database to check the login information, then navigate to the app */
 	const login = () => {
-		Axios.post('https://rephrase-cs4750.herokuapp.com/login', {
+		Axios.post(backendURLPrefix + 'login', {
 			Username: Username,
 			Password: Password
 		}).then((response) => {

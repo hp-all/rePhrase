@@ -111,7 +111,7 @@ export class TextField extends FormField<string> {
 
 type Bounds = {min?: number, max?: number}
 
-type nfP = {bounds: Bounds, value: number, setValue?:(n: number)=>void, keyboardYOffset?: number, unit?: string, label?: string}
+type nfP = {bounds: Bounds, value: number, setValue?:(n: number)=>void, keyboardYOffset?: number, unit?: string, label?: string, style?:any}
 type nfS = {offset: number, animatedV: Animated.Value}
 export class NumberField extends React.Component<nfP, nfS> {
     animTime = 350;
@@ -119,7 +119,6 @@ export class NumberField extends React.Component<nfP, nfS> {
     constructor(props: any) {
         super(props);
         this.bounds = props.Bounds;
-        this
         this.state = {
             animatedV: new Animated.Value(0),
             offset: 0
@@ -163,27 +162,23 @@ export class NumberField extends React.Component<nfP, nfS> {
             }).start();
     }
     render() {
-        var minLabel = null, maxLabel = null;
+        var label = null;
         if(this.props.label) {
-            maxLabel = <Text style={styles.subheader}>{this.props.label}</Text>
+            label = <Text style={styles.subheader}>{this.props.label}</Text>
         }
         return (
             <Animated.View 
-                style={[{marginTop: this.state.offset, backgroundColor: colorTheme['gray'], borderRadius: 5, paddingHorizontal: 10}]}
+                style={[{marginTop: this.state.offset, backgroundColor: colorTheme['gray'], borderRadius: 5}, this.props.style]}
             >
-                <View 
-                    style={[{marginRight: 10}]}
-                >
-                    {minLabel}
-                    <TextInput 
-                        value={this.props.value + ""}
-                        style={styles.inputBox}
-                        onChangeText={(text)=>{this.setNum(text)}}
-                        onEndEditing={this.lowerOnUnfocus}
-                        keyboardType={'numeric'}
-                        onFocus={this.raiseOnFocus}
-                    />
-                </View>
+                {label}
+                <TextInput 
+                    value={this.props.value + ""}
+                    style={styles.inputBox}
+                    onChangeText={(text)=>{this.setNum(text)}}
+                    onEndEditing={this.lowerOnUnfocus}
+                    keyboardType={'numeric'}
+                    onFocus={this.raiseOnFocus}
+                />
             </Animated.View>
         );
     }
@@ -260,8 +255,8 @@ export class NumberPairField extends React.Component<npfP, npfS> {
     render() {
         var minLabel = null, maxLabel = null;
         if(this.props.labels) {
-            maxLabel = <Text style={[styles.subheader, {fontSize: 10}]}>{this.props.labels.max}</Text>
-            minLabel = <Text style={[styles.subheader, {fontSize: 10}]}>{this.props.labels.min}</Text>
+            maxLabel = <Text style={[styles.subheader, {fontSize: 17}]}>{this.props.labels.max}</Text>
+            minLabel = <Text style={[styles.subheader, {fontSize: 17}]}>{this.props.labels.min}</Text>
         }
         var minVal = "", maxVal = "";
         if(this.props.values.min != undefined) {
