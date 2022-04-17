@@ -51,6 +51,9 @@ export default function AssignSectionScreen() {
 		setLoading(false); // track info has been fetched and is ready to render
 	}, []);
 
+	var selectedTrack = new Track(
+		Source.MP3, "",
+		{name: trackInfo.name, artist: trackInfo.artist, album: trackInfo.album, length: trackInfo.duration*1000});
 
 	// fetch track and then set to track
 
