@@ -21,35 +21,6 @@ export default function FriendsScreen ({navigation}: any) {
         thisAppUser.friends = [];
         navigation.goBack();
     }
-    
-    const [isLoading, setLoading] = React.useState(true); // set as loading first
-    var friendUsers: string[] = [];
-
-    React.useEffect(()=> {
-        if(thisAppUser.uid < 0) {
-            setLoading(false);
-            return;
-        }
-        for (var i = 0; i < thisAppUser.friends.length; i++){
-            Axios.post(backendURLPrefix + 'getUsername', {
-                UID: thisAppUser.friends[i] // the current UID
-            }).then((response)=>{
-                console.log(response.data);
-                //thisAppUser.friends[i].setUsername(response.data.Username);
-                friendUsers.push(response.data);
-            });
-        }
-        console.log(friendUsers);
-        setLoading(false); // usernames have been collected and ready to render
-    }, []); // only gets called once since empty param
-
-    if (isLoading){
-        return (
-            <View style={{width: 290, alignSelf: 'center', margin: 20, padding: 20, backgroundColor: colorTheme['t_med'], borderRadius: 10}}>
-                <Text>Loading...</Text>
-            </View>
-        )
-    }
 
 	return (
 		<View style={[styles.container, styles.darkbg, {}]}>

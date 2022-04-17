@@ -17,14 +17,16 @@ export default function Login ({navigation}: any) {
 	// hooks that are used to change the state of the login parameters
 	const [Username, setUsername] = React.useState("");
 	const [Password, setPassword] = React.useState("");
+	const [UserID, setUserID] = React.useState(0);
+	const [hash, SetHash] = React.useState("");
 
-	const [LoginStatus, setLoginStatus] = React.useState("");
+	//const [LoginStatus, setLoginStatus] = React.useState("");
 	const [passwordVisible, setVisibility] = React.useState(true);
 
 
 	/** Login with "admin" profile that contains dummy data simply for quickly viewing the app */
 	const deleteThisLogin = () => {
-		thisAppUser.copy(new UserProfile(-1, "Admin", "AdminP_word"));
+		thisAppUser.copy(new UserProfile(-1, "Admin", "AdminP_word", ""));
 		thisAppUser.friends = [
 			// new FriendProfile(-2, "Friend 1"), 
 			// new FriendProfile(-3, "Friend 2"), 
@@ -43,14 +45,13 @@ export default function Login ({navigation}: any) {
 			Username: Username,
 			Password: Password
 		}).then((response) => {
-			if (response.data.message == "Success"){
-				thisAppUser.copy(new UserProfile(response.data.UID, Username, Password));
- 				setLoginStatus(response.data.UID); // login is successful
+			if (response.data["message"] == "Success"){
+				thisAppUser.copy(new UserProfile(response.data["UID"], Username, Password, response.data["Hash"]));
+				console.log(thisAppUser);
 				navigation.navigate("Root");
-				// want to navigate to the users page from here
-				console.log(LoginStatus);
 			} else {
-				setLoginStatus(response.data.message);
+				//setLoginStatus(response.data.message);
+				alert(response.data.message);
 			}
 		})
 	}
@@ -93,7 +94,6 @@ export default function Login ({navigation}: any) {
 				label = "Register"
 				onPress={()=>navigation.navigate("Signup")}
 			/>
-			<Text>{LoginStatus}</Text>
 		</View>
 	)
 }

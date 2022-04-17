@@ -27,11 +27,13 @@ Profile.prototype.toString = function toString() {
 export default class UserProfile extends Profile {
     // point of this is just so that only the userprofile has a password value
     password: string;
+    hash: string;
     friendRequests: FriendProfile[];
-    constructor(uid: number, username: string, password: string) {
+    constructor(uid: number, username: string, password: string, hash:string) {
         super(uid, username);
         this.password = password;
         this.friendRequests = [];
+        this.hash = hash;
     }
 
     setFriendRequests(friends: FriendProfile[]) {
@@ -56,14 +58,14 @@ export default class UserProfile extends Profile {
         this.password = u.password;
     }
     static parseJSON(json: any) {
-        return new UserProfile(json.uid, json.username, json.password);
+        return new UserProfile(json.uid, json.username, json.password, json.hash);
     }
 }
 UserProfile.prototype.toString = function toString() {
     return "Profile -> uid: " + this.uid + ", username: " + this.username + ", password: " + this.password;
 }
 
-export const thisAppUser: UserProfile = new UserProfile(-1, "", "");
+export const thisAppUser: UserProfile = new UserProfile(-1, "", "", "");
 
 export class FriendProfile extends Profile { 
     // Um idk, he baby
