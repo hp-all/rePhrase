@@ -22,6 +22,7 @@ export default function FriendRequestScreen ({navigation}: any) {
 
     const [isLoading, setLoading] = React.useState(true); // set as loading first
     const accept = (friend: FriendProfile) => {
+        console.log("Accepting req");
         setLoading(true); // IDK If it needs to go back to loading state?
         Axios.post(backendURLPrefix + 'acceptRequest', {
             UID1: thisAppUser.uid, // the app user UID
@@ -34,27 +35,32 @@ export default function FriendRequestScreen ({navigation}: any) {
             UID2: thisAppUser.uid, // the app user UID
         }).then((response)=>{
             // thisAppUser.friends[i].setUsername(response.data.Username);
+            console.log(response.data.message);
         });
         setLoading(false);
 
     }
     const reject = (friend: FriendProfile) => {
+        console.log("Rejecting req");
         setLoading(true); // IDK If it needs to go back to loading state?
         Axios.post(backendURLPrefix + 'deletePendingRequest', {
             UID1: friend.uid, // the UID of the friend who sent the request
             UID2: thisAppUser.uid, // the app user UID
         }).then((response)=>{
             // thisAppUser.friends[i].setUsername(response.data.Username);
+            console.log(response.data.message);
         });
         setLoading(false);
     }
     const sendReq = (friend: FriendProfile) => {
+        console.log("Sendign req");
         setLoading(true); // IDK If it needs to go back to loading state?
         Axios.post(backendURLPrefix + 'sendRequest', {
             UID1: thisAppUser.uid, // the app user UID
             UID2: friend.uid, // the UID of the friend who sent the request
         }).then((response)=>{
             // thisAppUser.friends[i].setUsername(response.data.Username);
+            console.log(response.data.message);
         });
         setLoading(false);
     }
