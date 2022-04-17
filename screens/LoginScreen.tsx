@@ -25,6 +25,7 @@ export default function Login ({navigation}: any) {
 
 
 	/** Login with "admin" profile that contains dummy data simply for quickly viewing the app */
+	/*
 	const deleteThisLogin = () => {
 		Axios.post(backendURLPrefix + 'login', {
 			Username: "Brandon",
@@ -41,6 +42,7 @@ export default function Login ({navigation}: any) {
 			}
 		})
 	}
+	*/
 
 	/** Connects to the MySQL Database to check the login information, then navigate to the app */
 	const login = () => {
@@ -90,7 +92,7 @@ export default function Login ({navigation}: any) {
 			<Buddon
 				style={[styles.submitBuddon, {margin: 15, backgroundColor: colorTheme['t_white']}]}
 				label = "Delete This"
-				onPress={deleteThisLogin}
+				onPress={() => console.log("delete this!")}
 			/>
 			<Buddon
 				style={[styles.submitBuddon, {margin: 15, backgroundColor: colorTheme['t_white']}]}
