@@ -10,14 +10,18 @@ import Axios from "axios"
 import { Buddon } from '../../components/Buddons';
 import { FormInputError, FormField, TextField } from '../../components/Form';
 import UserProfile, { FriendProfile, thisAppUser } from '../../DatabaseWrappers/Profiles';
-import axios from 'axios';
 import { Platform, ScrollView, TouchableOpacity, TouchableOpacityBase } from 'react-native';
 import { Spacer } from '../../components/MusicComponents';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { backendURLPrefix } from '../../DatabaseWrappers/DatabaseRequest';
 
 export default function FriendsScreen ({navigation}: any) {
-	// hooks that are used to change the state of the login parameters
 
+    const goBack = () => {
+        thisAppUser.friends = [];
+        navigation.goBack();
+    }
+    
     const [isLoading, setLoading] = React.useState(true); // set as loading first
     var friendUsers: string[] = [];
 
@@ -27,7 +31,7 @@ export default function FriendsScreen ({navigation}: any) {
             return;
         }
         for (var i = 0; i < thisAppUser.friends.length; i++){
-            Axios.post('https://rephrase-cs4750.herokuapp.com/getUsername', {
+            Axios.post(backendURLPrefix + 'getUsername', {
                 UID: thisAppUser.friends[i] // the current UID
             }).then((response)=>{
                 console.log(response.data);
@@ -57,15 +61,12 @@ export default function FriendsScreen ({navigation}: any) {
                     label = "Back"
                     altbg={'t_med'}
                     isSelected={true}
-                    onPress={()=>navigation.goBack()}
+                    onPress={goBack}
                 />
             </View>
-            {/* <ViewUsersFriends
-                //friends={thisAppUser.friends}
-                onFriendSelect={(friend: FriendProfile)=>{
-                    navigation.navigate("OneFriend", {friendData: friend.toJSON()})
-                }}
-            />        */}
+            <ViewUsersFriends
+                friends={thisAppUser.friends}
+            />       
 		<StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
 		</View>
 	)
@@ -90,7 +91,7 @@ export function ViewUsersFriends(props: {friends: FriendProfile[], onFriendSelec
             friendsViews.push(<FriendView 
                 friend={props.friends[i]} 
                 onSelect={props.onFriendSelect}
-                listKey={"Friend"+i}
+                key={"Friend"+i}
             />)
         }
     }
@@ -114,15 +115,15 @@ export function ViewUsersFriends(props: {friends: FriendProfile[], onFriendSelec
  * @param props friend: the friend profile to display, selectfriend, the function to go the the friend's page
  * @returns a view for a specific friend
  */
-function FriendView(props: {friend: FriendProfile, onSelect?: (friend: FriendProfile)=>void, listKey?: React.Key}) {
-    console.log(props.listKey);
+function FriendView(props: {friend: FriendProfile, onSelect?: (friend: FriendProfile)=>void, key: React.Key}) {
+    console.log(props.key);
     return (
         <TouchableOpacity
-            key={props.listKey}
+            key={props.key}
             onPress={()=>{props.onSelect && props.onSelect(props.friend)}}
             style={{backgroundColor: colorTheme['t_light'], flex: 1, margin: 10, padding: 20, borderRadius: 5}}
         >
             <Text style={styles.header}>{props.friend.username}</Text>
         </TouchableOpacity>
-    )
+    );
 }

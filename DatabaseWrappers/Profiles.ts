@@ -2,6 +2,8 @@ export class Profile {
     uid: number = 0;
     username: string;
     friends: FriendProfile[] = [];
+    friendRequests: FriendProfile[] = [];
+
     
     constructor(uid: number, username: string) {
         this.uid = uid;

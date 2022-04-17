@@ -8,6 +8,7 @@ import { FriendProfile, thisAppUser } from '../DatabaseWrappers/Profiles';
 import { Spacer } from '../components/MusicComponents';
 
 import Axios from 'axios';
+import { NavigationHelpersContext } from '@react-navigation/native';
 
 
 export default function ProfileInfoScreen({navigation}: any) {  
@@ -17,58 +18,35 @@ export default function ProfileInfoScreen({navigation}: any) {
     var friends:FriendProfile[] = [];
 
     const [isLoading, setLoading] = React.useState(false);
+    const [tempFriends, setTempFriends] = React.useState([]);
 
     const loadFriends = () => {
-        if(thisAppUser.uid < 0) {
+        Axios.get('https://rephrase-cs4750.herokuapp.com/getUsername/'+thisAppUser.uid)
+        .then((response)=> {
+            console.log("Here");
+            console.log(response.data.length)
+            for (var i = 0; i < response.data.length; i++){
+                thisAppUser.friends[i] = new FriendProfile(response.data[i]["UserID"], response.data[i]["Username"]);
+            }           
+        }).finally(() => {
+            console.log("Please god work: " + thisAppUser.friends);
             navigation.navigate("FriendViews");
-            return;
-        }
-        Axios.post('https://rephrase-cs4750.herokuapp.com/Friends', {
-            UID: thisAppUser.uid
-        }).then((response)=>{
-            if(response.data.message == "You have no friends!"){
-                console.log("haha loser");
-                alert("hahah loser, you have no friends");
-            }
-            else {
-                console.log(response.data);
-                console.log(response.data[0]["UserID1"]);
-
-                console.log("getting friend usernames");
-    
-                // want to iterate over the 
-                for (var i = 0; i<response.data.length; i++){
-                    var uID1 = response.data[i]["UserID1"];
-                    var uID2 = response.data[i]["UserID2"];
-                    var UID: number;
-    
-                    if (uID1 != thisAppUser.uid){
-                        UID = uID1;
-                    } else {   
-                        UID = uID2
-                    }
-                    console.log(UID);
-                    Axios.post('http://localhost:8080/getUsername', {
-                        UID: UID // the current UID
-                    }).then((response)=>{
-                        console.log(response.data);
-                        friends.push(new FriendProfile(UID, response.data));
-                        //console.log("Friends[i] = " + friends[i]);
-                    }).finally(()=>{
-                        console.log("Friends = " + friends);
-                        thisAppUser.friends = friends;
-                        console.log("Global Friends = " + thisAppUser.friends);
-                    });
-                }
-            }
         })
         
     }
 
     const friendRequests = () => {
-        // TODO: need to ping the API to get all the incoming friend requests
-        // Send to page where they can see all of their incoming requests
-        // Make navigation track for this page
+        Axios.get('https://rephrase-cs4750.herokuapp.com/pendingRequests/'+thisAppUser.uid)
+        .then((response)=> {
+            console.log("Here");
+            console.log(response.data.length)
+            for (var i = 0; i < response.data.length; i++){
+                thisAppUser.friendRequests[i] = new FriendProfile(response.data[i]["UserID"], response.data[i]["Username"]);
+            }           
+        }).finally(() => {
+            console.log("Please god work: " + thisAppUser.friends);
+            navigation.navigate("FriendViews");
+        })
         navigation.navigate("FriendViews", {screen: 'FriendRequests'});
     }
 
