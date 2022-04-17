@@ -46,7 +46,7 @@ export default function AssignSectionScreen() {
 	}, []);
 
 	var selectedTrack = new Track(
-		Source.MP3, require(trackInfo.mp3_url), 
+		Source.MP3, "",
 		{name: trackInfo.name, artist: trackInfo.artist, album: trackInfo.album, length: trackInfo.duration*1000});
 
 	// fetch track and then set to track
