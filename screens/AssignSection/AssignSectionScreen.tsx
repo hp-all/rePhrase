@@ -12,6 +12,7 @@ import SongSection, { SectionType } from '../../MusicModel/SongSection';
 import Track, { Source } from '../../MusicModel/Track';
 import Loop from '../../MusicModel/Loop';
 import TrackyPlayer from '../../MusicModel/TrackPlayer';
+import { thisAppUser } from '../../DatabaseWrappers/Profiles';
 
 import ButtonMenu from './ButtonMenu';
 import AddMenu from './AddMenu';

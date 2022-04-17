@@ -22,7 +22,11 @@ export default function ProfileInfoScreen({navigation}: any) {
     const [tempFriends, setTempFriends] = React.useState([]);
 
     const loadFriends = () => {
-        Axios.get(backendURLPrefix + 'getUsername/'+thisAppUser.uid)
+        Axios.get(backendURLPrefix + 'getUsername/'+thisAppUser.uid, {
+            headers: {
+                "x-access-token": thisAppUser.token,
+            }
+        })
         .then((response)=> {
             for (var i = 0; i < response.data.length; i++){
                 thisAppUser.friends[i] = new FriendProfile(response.data[i]["UserID"], response.data[i]["Username"]);
@@ -34,7 +38,11 @@ export default function ProfileInfoScreen({navigation}: any) {
     }
 
     const friendRequests = () => {
-        Axios.get(backendURLPrefix + 'pendingRequests/'+thisAppUser.uid)
+        Axios.get(backendURLPrefix + 'pendingRequests/'+thisAppUser.uid), {
+            headers: {
+                "x-access-token": thisAppUser.token,
+            }
+        })
         .then((response)=> {
             for (var i = 0; i < response.data.length; i++){
                 thisAppUser.friendRequests[i] = new FriendProfile(response.data[i]["UserID"], response.data[i]["Username"]);

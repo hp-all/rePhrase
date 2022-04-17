@@ -39,8 +39,13 @@ export function getSongByID(trackID: string) {
 export function getAllSongs() {
     // get all song metadata from mysql database
     // returns Promise
-    console.log("Getting all songs");
-    return axios.get(backendURLPrefix + "tracks");
+    return ( 
+        axios.get((backendURLPrefix + "tracks", {
+            headers: {
+                "x-access-token": thisAppUser.token,
+            }
+        })
+    );
 }
 
 export function searchForSongs(searchterm: string) {
