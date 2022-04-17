@@ -15,14 +15,11 @@ import {
 	SongListItem,
 	Playlist,
 	getUsersPlaylists, 
-	getAllFromPlaylists, 
 	searchForSongs, 
 	getSongsByAlbumFromPlaylists, 
 	getSongsByArtistFromPlaylists, 
 	getAllSongs,
-	selectedSongID,
 	setSelectedSong,
-	getSelectedSong
 } from '../../DatabaseWrappers/SongStuff';
 import { UploadMP3, UploadMP3Popup } from './UploadMP3';
 import { RootTabScreenProps } from '../../types';
