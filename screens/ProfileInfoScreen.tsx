@@ -21,7 +21,11 @@ export default function ProfileInfoScreen({navigation}: any) {
     const [tempFriends, setTempFriends] = React.useState([]);
 
     const loadFriends = () => {
-        Axios.get('https://rephrase-cs4750.herokuapp.com/getUsername/'+thisAppUser.uid)
+        Axios.get('https://rephrase-cs4750.herokuapp.com/getUsername/'+thisAppUser.uid, {
+            headers: {
+                "x-access-token": thisAppUser.token,
+            }
+        })
         .then((response)=> {
             console.log("Here");
             console.log(response.data.length)
@@ -36,7 +40,11 @@ export default function ProfileInfoScreen({navigation}: any) {
     }
 
     const friendRequests = () => {
-        Axios.get('https://rephrase-cs4750.herokuapp.com/pendingRequests/'+thisAppUser.uid)
+        Axios.get('https://rephrase-cs4750.herokuapp.com/pendingRequests/'+thisAppUser.uid, {
+            headers: {
+                "x-access-token": thisAppUser.token,
+            }
+        })
         .then((response)=> {
             console.log("Here");
             console.log(response.data.length)

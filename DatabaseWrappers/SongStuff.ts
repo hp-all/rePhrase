@@ -34,7 +34,13 @@ export function getSongMP3Data(songname: string) {
 export function getAllSongs() {
     // get all song metadata from mysql database
     // returns Promise
-    return axios.get("http://localhost:3001/tracks");
+    return ( 
+        axios.get("http://localhost:8080/tracks", {
+            headers: {
+                "x-access-token": thisAppUser.token,
+            }
+        })
+    );
 }
 
 export function searchForSongs(searchterm: string) {

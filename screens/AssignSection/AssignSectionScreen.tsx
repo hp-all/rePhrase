@@ -12,6 +12,7 @@ import SongSection, { SectionType } from '../../MusicModel/SongSection';
 import Track, { Source } from '../../MusicModel/Track';
 import Loop from '../../MusicModel/Loop';
 import TrackyPlayer from '../../MusicModel/TrackPlayer';
+import { thisAppUser } from '../../DatabaseWrappers/Profiles';
 
 import ButtonMenu from './ButtonMenu';
 import AddMenu from './AddMenu';
@@ -36,7 +37,11 @@ export default function AssignSectionScreen() {
 	var trackInfo:any = {};
 
 	React.useEffect(() => {
-		axios.get(`http://localhost:3001/track/${getSelectedSong()}`)
+		axios.get(`http://localhost:3001/track/${getSelectedSong()}`, {
+			headers: {
+                "x-access-token": thisAppUser.token,
+            }
+		})
 			.then(res => { 
 				trackInfo = res.data;
 			}, err => { 

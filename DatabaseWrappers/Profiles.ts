@@ -4,7 +4,6 @@ export class Profile {
     friends: FriendProfile[] = [];
     friendRequests: FriendProfile[] = [];
 
-    
     constructor(uid: number, username: string) {
         this.uid = uid;
         this.username = username;
@@ -29,11 +28,13 @@ export default class UserProfile extends Profile {
     password: string;
     hash: string;
     friendRequests: FriendProfile[];
+    token: string;
     constructor(uid: number, username: string, password: string, hash:string) {
         super(uid, username);
         this.password = password;
         this.friendRequests = [];
         this.hash = hash;
+        this.token = "";
     }
 
     setFriendRequests(friends: FriendProfile[]) {
@@ -56,6 +57,7 @@ export default class UserProfile extends Profile {
         this.uid = u.uid;
         this.username = u.username;
         this.password = u.password;
+        this.hash = u.hash;
     }
     static parseJSON(json: any) {
         return new UserProfile(json.uid, json.username, json.password, json.hash);
