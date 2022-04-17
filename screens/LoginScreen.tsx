@@ -27,18 +27,19 @@ export default function Login ({navigation}: any) {
 	/** Login with "admin" profile that contains dummy data simply for quickly viewing the app */
 	/*
 	const deleteThisLogin = () => {
+		var u = "Brandon";
+		var p = "123"
 		Axios.post(backendURLPrefix + 'login', {
-			Username: "Brandon",
-			Password: "123"
+			Username: u,
+			Password: p
 		}).then((response) => {
-			if (response.data.message == "Success"){
-				thisAppUser.copy(new UserProfile(response.data.UID, Username, Password));
- 				setLoginStatus(response.data.UID); // login is successful
+			if (response.data["message"] == "Success"){
+				thisAppUser.copy(new UserProfile(response.data["UID"], u, p, response.data["Hash"]));
+				console.log(thisAppUser);
 				navigation.navigate("Root");
-				// want to navigate to the users page from here
-				console.log(LoginStatus);
 			} else {
-				setLoginStatus(response.data.message);
+				//setLoginStatus(response.data.message);
+				alert(response.data.message);
 			}
 		})
 	}
