@@ -20,24 +20,21 @@ export default function SignUp ({navigation}: any) {
     const [ConfirmPw, setConfirmPw] = React.useState("");
 
 	const [RegisterStatus, setRegisterStatus] = React.useState("");
-    const [passwordVisible, setVisibility] = React.useState(true);
+    const [hash, setHash] = React.useState("");
 
 	const signup = () => {
         console.log("Pre api call");
         console.log(Password);
         console.log(ConfirmPw);
-        if (Password.length <= 10){
+        if (Password.length <= 15 && Password.length >= 8){
             if (ConfirmPw == Password){
-                // console.log("Pre api call");
-                // console.log(Password);
-                // console.log(ConfirmPw);
                 console.log("passwords match");
                 Axios.post("https://rephrase-cs4750.herokuapp.com/register", {
                     Username: Username,
                     Password: Password
                 }).then((response) => {
-                    if (response.data.message == "Successfully Registered"){
-                        setRegisterStatus(response.data.message); //register successful
+                    if (response.data["message"] == "Successfully Registered"){
+                        setRegisterStatus(response.data["message"]); //register successful
                     } else {
                         setRegisterStatus(response.data.message);
                     }
@@ -48,7 +45,7 @@ export default function SignUp ({navigation}: any) {
             }
         }
         else {
-            console.log("Password Too Long");
+            console.log("Passwords must be between 8 to 15 characters");
         }
 	}
 
@@ -58,7 +55,7 @@ export default function SignUp ({navigation}: any) {
                 Username: Username
             }).then((response) => {
                 console.log(response.data.UID);
-                thisAppUser.copy(new UserProfile(response.data.UID, Username, Password));
+                thisAppUser.copy(new UserProfile(response.data.UID, Username, Password, response.data["Hash"]));
                 navigation.navigate("Root");
             })
         }
@@ -80,7 +77,7 @@ export default function SignUp ({navigation}: any) {
 			<TextInput
 			style={[styles.textInput, {width: '100%'}, {margin:20}]}
 			placeholder="password..."
-            secureTextEntry={passwordVisible}
+            secureTextEntry={true}
             placeholderTextColor={'#888'}
             autoCorrect={false}
             autoCapitalize='none'
@@ -91,7 +88,7 @@ export default function SignUp ({navigation}: any) {
             <TextInput
 			style={[styles.textInput, {width: '100%'}, {margin:20}]}
 			placeholder="confirm password..."
-            secureTextEntry={passwordVisible}
+            secureTextEntry={true}
             placeholderTextColor={'#888'}
             autoCorrect={false}
             autoCapitalize='none'

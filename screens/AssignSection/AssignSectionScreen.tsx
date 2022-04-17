@@ -52,10 +52,6 @@ export default function AssignSectionScreen() {
 
 				// create selected track once track metadata is loaded
 
-
-				// track info has been fetched and is ready to render
-				// setLoading(false);
-
 			}, err => {
 				console.log(err);
 				console.log("Could not load song " + getSelectedSong());
