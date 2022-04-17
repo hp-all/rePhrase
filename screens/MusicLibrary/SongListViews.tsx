@@ -81,6 +81,7 @@ function SongButton(props: {key: React.Key, song: SongListItem, onPress: (song: 
             {bar}
             <View style={[styles.rowContainer, {flexBasis: 40, alignItems: 'flex-end', marginBottom: 10}]}>
                 <Text style={[styles.header, {flex: 1.1, color: colorTheme['t_dark']}]}>{song.name}</Text>
+                <Buddon label="Add" onPress={() => console.log("add clicked1")}></Buddon>
                 {/* 
                 <Text style={[styles.subheader, {flex: 1, color: colorTheme['t_med']}]}>{song.album}</Text>
                 <Text style={[styles.subheader, {flex: 1, color: colorTheme['t_med']}]}>{song.artist}</Text>
