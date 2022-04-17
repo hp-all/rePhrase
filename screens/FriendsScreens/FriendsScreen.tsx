@@ -19,6 +19,7 @@ export default function FriendsScreen ({navigation}: any) {
 	// hooks that are used to change the state of the login parameters
 
     const [isLoading, setLoading] = React.useState(true); // set as loading first
+    var friendUsers: string[] = [];
 
     React.useEffect(()=> {
         if(thisAppUser.uid < 0) {
@@ -26,12 +27,15 @@ export default function FriendsScreen ({navigation}: any) {
             return;
         }
         for (var i = 0; i < thisAppUser.friends.length; i++){
-            Axios.post('https://rephrase-cs4750.herokuapp.com/getUsername', {
+            Axios.post('http://localhost:8080/getUsername', {
                 UID: thisAppUser.friends[i] // the current UID
             }).then((response)=>{
-                thisAppUser.friends[i].setUsername(response.data.Username);
+                console.log(response.data);
+                //thisAppUser.friends[i].setUsername(response.data.Username);
+                friendUsers.push(response.data);
             });
         }
+        console.log(friendUsers);
         setLoading(false); // usernames have been collected and ready to render
     }, []); // only gets called once since empty param
 
@@ -56,12 +60,12 @@ export default function FriendsScreen ({navigation}: any) {
                     onPress={()=>navigation.goBack()}
                 />
             </View>
-            <ViewUsersFriends
-                friends={thisAppUser.friends}
+            {/* <ViewUsersFriends
+                //friends={thisAppUser.friends}
                 onFriendSelect={(friend: FriendProfile)=>{
                     navigation.navigate("OneFriend", {friendData: friend.toJSON()})
                 }}
-            />       
+            />        */}
 		<StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
 		</View>
 	)

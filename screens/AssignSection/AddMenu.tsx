@@ -3,11 +3,14 @@ import * as React from 'react';
 
 // Themes and Styles
 import { Text, View } from '../../components/Themed';
-import { appStyles as styles, Bounds, colorTheme } from '../../components/AppStyles';
+import { appStyles as styles, Bounds, colorTheme, SectionColor } from '../../components/AppStyles';
 import { Buddon } from '../../components/Buddons';
 import { NumberField, NumberPairField, TextField } from '../../components/Form';
 import Loop from '../../MusicModel/Loop';
 import { LoopSkelly, SectionSkelly } from '../../components/MusicComponents';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { ScrollView, TouchableOpacity, TouchableOpacityBase } from 'react-native';
+import { SectionType } from '../../MusicModel/SongSection';
 
 // Elements & Components
 
@@ -32,7 +35,6 @@ export default class AddMenu extends React.Component<tcP, tcS> {
     hideButtonForm = (hideAllTheWay?: boolean) => {
         this.setState({buttonShowing: AddButtonTypes.None});
         if(hideAllTheWay) {
-            console.log("Hide all the way");
             this.props.hide();
         }
     }
@@ -54,7 +56,6 @@ export default class AddMenu extends React.Component<tcP, tcS> {
                 formView = (<AddSectionForm 
                         hide={this.hideButtonForm} 
                         selectedArea={this.props.selectedArea}
-
                         createSection={this.props.createSection}
                     />)
                 break;
@@ -67,7 +68,7 @@ export default class AddMenu extends React.Component<tcP, tcS> {
 			<View style={[styles.container, styles.toolComponentStyle,
 			{...this.props.style}]}>
 				<Buddon
-					style= {{position: 'absolute', top: 6, right: 4, height: 20, width: 20, borderRadius: 10, paddingLeft: 1, backgroundColor: colorTheme['t_dark']}}
+					style= {{position: 'absolute', zIndex: 11, top: 6, right: 4, height: 20, width: 20, borderRadius: 10, paddingLeft: 1, backgroundColor: colorTheme['t_dark']}}
 					label= "close"
 					fontAwesome= {{name: 'close', size: 19, color: colorTheme['gray']}}
 					onPress= {()=>{this.setState(this.initState); this.props.hide()}}
@@ -135,7 +136,7 @@ class AddLoopForm extends React.Component<lfP, {showError: boolean}> {
     }
     render() {
         return (
-            <View>
+            <View style={{padding: 20}}>
                 <Buddon
                     style={{position: 'absolute', left: 0, top: 0, padding: 5}}
                     label="< back"
@@ -177,7 +178,7 @@ type sfP = {
  *      showError:
  *          true if errors within the form should be shown
  */
-class AddSectionForm extends React.Component<sfP, {showError: boolean}> {
+class AddSectionForm extends React.Component<sfP, {showError: boolean, tempo: number, timeSig: string, type: SectionType}> {
     sectionName: TextField;
 
     constructor(props: any) {
@@ -189,7 +190,7 @@ class AddSectionForm extends React.Component<sfP, {showError: boolean}> {
         if(props.selectedArea.end) {
             end = props.selectedArea.end;
         }
-        this.sectionName = new TextField("Section Name", "", [{val: "", msg: "Enter a name for the section"}])
+        this.sectionName = new TextField("Name", "", [{val: "", msg: "Enter a name for the section"}])
         var start = 0, end = 0;
         if(this.props.selectedArea.min)
             start = this.props.selectedArea.min;
@@ -197,13 +198,55 @@ class AddSectionForm extends React.Component<sfP, {showError: boolean}> {
             end = this.props.selectedArea.max;
         this.state = {
             showError: false,
+            tempo: 120,
+            timeSig: "4:4",
+            type: SectionType.IDK,
         }
 
     }
+    setTimeSig = (ts: string) => {
+        this.setState({timeSig: ts});
+    }
     submitForm = () => {
-
+        console.log("Submitting form " + this.props.createSection);
+        if(this.props.createSection && this.props.selectedArea.min && this.props.selectedArea.max) {
+            this.props.createSection({
+                sectionName: this.sectionName.value, 
+                start: this.props.selectedArea.min, 
+                end: this.props.selectedArea.max, 
+                type: this.state.type,
+                tempo: this.state.tempo,
+                timeSig: this.state.timeSig,
+            });
+            this.props.hide(true);
+        }
     }
     render() {
+        var timeSigs = ["2:4", "3:4", "4:4", "6:8", "9:8", "12:8"];
+        var timeSigView = [];
+        var sectTypeView = [];
+        for(var i = 0; i<timeSigs.length; i++) {
+            timeSigView.push(
+                <TimeSigButton
+                    timeSig={timeSigs[i]} 
+                    selectedTimeSig={this.state.timeSig}
+                    setTimeSig={(ts: string) => {this.setTimeSig(ts)}}
+                    key={i}            
+                />
+            );
+        }
+        for(var i = 0; i<Object.values(SectionType).length; i++) {
+            sectTypeView.push(
+                <SectionTypeButton
+                    type={Object.values(SectionType)[i]}
+                    selectedType={this.state.type}
+                    setType = {st=>this.setState({type: st})}
+                    key = {i}
+                />
+            )
+        }
+
+
         return (
             <View>
                 <Buddon
@@ -211,53 +254,111 @@ class AddSectionForm extends React.Component<sfP, {showError: boolean}> {
                         label="< back"
                         onPress={()=>this.props.hide(false)}
                 />
-                <Text style={[styles.header, styles.centerSelf, {marginBottom: 15}]}>Add Loop</Text>
-
+                <Text style={[styles.header, styles.centerSelf, {marginBottom: 15}]}>Add Section</Text>
                 <View style={{flexDirection: 'row'}}>
-                    <View style={{flex: 1}}>
-                        {this.sectionName.getLabelView(styles.subheader)}
-                        {this.sectionName.getView()}
-                        <NumberPairField
-                            bounds = {{min: undefined, max: undefined}}
-                            values = {this.props.selectedArea}
-                            unit= "s"
-                            labels = {{min: "Start Time", max: "End Time"}}
-                            keyboardYOffset={169}
+                    <View style={{flex: 1.8, paddingLeft: 8}}>
+                        <View style={{flexDirection: 'row'}}>
+                            <View style={{flex: 2, marginRight: 10}}>
+                                {this.sectionName.getLabelView(styles.subheader)}
+                                {this.sectionName.getView()}
+                            </View>
+                            <NumberField
+                                style={{flex: 1}}
+                                value={this.state.tempo}
+                                bounds={{min: 0, max: 400}}
+                                label={"BPM"}
+                                keyboardYOffset={110}
+                                setValue={(num: number)=>this.setState({tempo: num})}
+                            />
+                        </View>
+                        <View style={{flexDirection: 'row'}}>
+                            <View style={{flex: 1}}>
+                                
+                                <NumberPairField
+                                    bounds = {{min: undefined, max: undefined}}
+                                    values = {this.props.selectedArea}
+                                    unit= "s"
+                                    labels = {{min: "Start Time", max: "End Time"}}
+                                    keyboardYOffset={169}
+                                />
+                            </View>
+                        </View>
+                        <Buddon 
+                            label="Add Section"
+                            style={[{alignSelf: 'flex-end', width: 120, marginTop: 25, height: 35, padding: 6}]}
+                            onPress={this.submitForm}
                         />
                     </View>
-                    <View style={{flex: 1}}>
-                        {/* <NumberField
-                            value={}
-                        /> */}
-                    </View>
+                    <SafeAreaView style={{paddingHorizontal: 10, top: -52, flex: 1}}>
+                        <Text style={styles.subheader}>Time Signature</Text>
+                        <ScrollView 
+                            style={{flexDirection: 'row', margin: 0, padding: 0}}
+                            horizontal={true}
+                            showsHorizontalScrollIndicator={false}
+                        >
+                            {timeSigView}
+                        </ScrollView>
+                        <Text style={[styles.subheader, {marginTop: 9}]}>Section Type</Text>
+                        <ScrollView 
+                            style={{flexDirection: 'row', margin: 0, padding: 0}}
+                            horizontal={true}
+                            showsHorizontalScrollIndicator={false}
+                        >
+                            {sectTypeView}
+                        </ScrollView>
+                    </SafeAreaView>
                 </View>
-                <Buddon 
-                    style={[styles.centerSelf, {width: 100, marginTop: 15, height: 35, padding: 6}]}
-                    label="Add Loop"
-                    onPress={this.submitForm}
-                />
             </View>
         )
     }
 }
 
-
-
 function AddButtons(props: {showSectionForm: ()=>void, showLoopForm: ()=>void}) {
     return (
         <View>
-            {/* Add Section Button */}
-            <Buddon
-                style={[styles.buttonSize, {width: 140, padding: 12, marginVertical: 10}]}
-                label='Add Section'
-                onPress={props.showSectionForm}
-            />
-            {/* Add Loop Button */}
-            <Buddon
-                style={[styles.buttonSize, {width: 140, padding: 12}]}
-                label='Add Loop'
-                onPress={props.showLoopForm}
-            />
+            <Text style={[styles.title, styles.centerSelf, {marginTop: 20}]}>Add Sections Menu</Text>
+            <View style={[styles.horzLine, {borderWidth: 2}]}></View>
+            <View style={{flexDirection: 'row', marginTop: 0}}>
+                {/* Add Section Button */}
+                <Buddon
+                    style={[styles.buttonSize, {padding: 12, margin: 20, marginRight: 10, flex: 1}]}
+                    label='Add Section'
+                    onPress={props.showSectionForm}
+                />
+                {/* Add Loop Button */}
+                <Buddon
+                    style={[styles.buttonSize, {padding: 12, margin: 20, marginLeft: 10, flex: 1}]}
+                    label='Add Loop'
+                    onPress={props.showLoopForm}
+                />
+            </View>
         </View>
+        
+    );
+}
+
+function TimeSigButton(props: {timeSig: string, setTimeSig: (ts: string)=>void, selectedTimeSig?: string, key: React.Key}) {
+    var isSelected = props.timeSig == props.selectedTimeSig;
+    return (
+        <TouchableOpacity
+            onPress={()=>{props.setTimeSig(props.timeSig)}}
+            style={{flex: 1, backgroundColor: colorTheme[(isSelected)?'t_white':'t_dark'], margin: 2, padding: 7, borderRadius: 3}} 
+        >
+            <Text style={{color: colorTheme[(isSelected)?'t_dark':'t_white']}}>{props.timeSig}</Text>
+        </TouchableOpacity>
+    );
+}
+function SectionTypeButton(props: {type: SectionType, setType: (st: SectionType)=>void, selectedType?: SectionType, key: React.Key}) {
+    var isSelected = props.type == props.selectedType;
+    var color = SectionColor[props.type];
+    if(isSelected)
+        color = colorTheme['t_white'];
+    return (
+        <TouchableOpacity 
+            onPress={()=>{props.setType(props.type)}}
+            style={{flex: 1, backgroundColor: color, margin: 2, padding: 7, borderRadius: 3}} 
+        >
+            <Text style={{color: colorTheme[(isSelected)?'t_dark':'t_white']}}>{props.type}</Text>
+        </TouchableOpacity>
     );
 }
