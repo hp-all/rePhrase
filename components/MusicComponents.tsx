@@ -68,6 +68,7 @@ export class TrackPlayerController {
 	songLen: number; 	songPos = 0; 		songFrac = 0;
 	doLoop = false;		loopStart = 10250; 	loopEnd = 14000; 	selectedLoop: Loop;
 	sectionStart = 0; 	sectionEnd = 1;
+	measureMaker: MeasureMaker;
 
 	viewPos = 0; isMoving: boolean;
 
@@ -81,6 +82,8 @@ export class TrackPlayerController {
 		this.selectedLoop = Loop.NullLoop();
 		this.sectionStart = track.getSection(0).getStart();
 		this.sectionEnd = track.getSection(0).getEndTime();
+
+		this.measureMaker = new MeasureMaker(track, "large");
 	}
 
 	setTrack = (track: Track) => {
@@ -162,6 +165,11 @@ export class TrackPlayerController {
 	}
 	getSectionIndex = (milli: number) => {
 		return this.track.getSectionFromMilli(milli);
+	}
+	addSection = (s: SectionSkelly) => {
+		this.track.addSection(s.sectionName, s.type, s.start, s.end, true, s.tempo, s.timeSig);
+		console.log("Resetting the measure maker");
+		this.measureMaker.reset();
 	}
 	snapMilli = (milli: number, specificity: number) => {
 		if(specificity == -2)

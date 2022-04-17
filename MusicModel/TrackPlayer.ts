@@ -3,7 +3,7 @@ import { Source } from "./Track";
 import SongSection, { SectionType } from "./SongSection";
 import Loop from "./Loop";
 import { Audio } from 'expo-av';
-var Sound = require('react-native-sound');
+// var Sound = require('react-native-sound');
 
 export default class TrackyPlayer {
     currentTrack?: Track;
