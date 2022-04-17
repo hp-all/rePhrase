@@ -19,7 +19,7 @@ import { backendURLPrefix } from '../../DatabaseWrappers/DatabaseRequest';
 
 export default function FriendRequestScreen ({navigation}: any) {
 	// hooks that are used to change the state of the login parameters
-    /*
+    
     const [isLoading, setLoading] = React.useState(true); // set as loading first
     const accept = (friend: FriendProfile) => {
         console.log("Accepting req");
@@ -64,7 +64,7 @@ export default function FriendRequestScreen ({navigation}: any) {
         });
         setLoading(false);
     }
-
+    /*
     React.useEffect(()=> {
         if(thisAppUser.uid < 0) {
             setLoading(false);

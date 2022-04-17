@@ -21,6 +21,8 @@ import {
 	getAllSongs,
 	setSelectedSong,
 	addSongToPlaylist,
+	getSongByID,
+	getSelectedSong,
 } from '../../DatabaseWrappers/SongStuff';
 import { UploadMP3, UploadMP3Popup } from './UploadMP3';
 import { RootTabScreenProps } from '../../types';
@@ -35,7 +37,7 @@ export default function MusicLibraryScreen({navigation, route}: any) {
   	return (
 		<View style={[styles.container, styles.darkbg, {}]}>
 			<Text style={styles.title}>{title}</Text>
-			<PlaylistView navigateToSectionScreen={(song: SongListItem)=>{navigation.navigate("AssignSection")}}/>
+			<PlaylistView navigateToSectionScreen={(song: SongListItem)=>{navigation.navigate("AssignSection", {song: song})}}/>
 		<StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
 		</View>
   	);
@@ -111,6 +113,7 @@ class PlaylistView extends React.Component<PVP, PVS> {
 				console.log(err);
 			});
 		}
+		console.log(type);
 		this.setState({listTypeShowing: type});
 	}
 	
@@ -135,9 +138,11 @@ class PlaylistView extends React.Component<PVP, PVS> {
 
 		// set local variable selectedSongID to selected song
 		setSelectedSong(song.track_id);
-
+		getSongByID(song.track_id).then(()=>{
+			if (this.props.navigateToSectionScreen) this.props.navigateToSectionScreen(song);
+		});
+		
 		// navigate to the AssignSection screen
-		if (this.props.navigateToSectionScreen) this.props.navigateToSectionScreen(song);
 	}
 	
 	showAddToPlaylist = (song: SongListItem) => {
@@ -150,6 +155,7 @@ class PlaylistView extends React.Component<PVP, PVS> {
 
 	}
 	addSongToPlaylist = (p: string | Playlist) => {
+		console.log(p);
 		if(p instanceof Playlist && this.songToAdd) {
 			this.setState({isLoading: true})
 			console.log("Adding " + this.songToAdd.name + " to playlist " + p.name);
@@ -158,6 +164,7 @@ class PlaylistView extends React.Component<PVP, PVS> {
 			})
 		}
 		this.setList(SongListTypes.None);
+		this.setState({addToPlaylistPopup: false})
 	}
 
 	render() {

@@ -8,10 +8,13 @@ import { backendURLPrefix } from './DatabaseRequest';
 // adding variable to keep track of what song the user has selected
 // in the application
 let selectedSongID: string = "";
-
+let selectedTrackInfo= {title: "", artist_name: "", album: "", duration: 0, mp3_url: ""}
 // accessor method to change the value of the selected song id
 export function setSelectedSong(id: string) {
     selectedSongID = id;
+}
+export function getSelectedTrackInfo() {
+    return selectedTrackInfo;
 }
 
 // accessor method to retrieve the value of the selected song id
@@ -19,6 +22,20 @@ export function getSelectedSong() {
     return selectedSongID;
 }
 
+
+export function getSongByID(trackID: string) {
+    return axios.get(backendURLPrefix + `track/${trackID}`)
+        .then(res => { 
+            console.log('Successfully loaded data!');
+            selectedTrackInfo = res.data[0];
+            console.log("Set track to song: " + selectedTrackInfo.title);
+            // create selected track once track metadata is loaded
+
+        }, err => {
+            console.log(err);
+            console.log("Could not load song " + trackID);
+    });
+}
 export function getAllSongs() {
     // get all song metadata from mysql database
     // returns Promise

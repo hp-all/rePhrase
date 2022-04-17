@@ -45,6 +45,8 @@ export default class TrackyPlayer {
                     console.log("Setting new distinct Track");
 
                     // create new MP3Player with  
+                    if(this.mediaPlayer)
+                        this.mediaPlayer.unload();
                     this.mediaPlayer = new MP3Player(track.uri, this.statusUpdate);
                     //Loads track in its construction based on track.uri
                 }
@@ -330,7 +332,7 @@ MP3Player.prototype.setQueuedLoopEnd = async function setQueuedLoopEnd(timestamp
     }
 }
 MP3Player.prototype.setUpdateIntervalMilli = async function setUpdateIntervalMilli(milli: number) {await this.track.setProgressUpdateIntervalAsync(milli);}
-MP3Player.prototype.unload = async function unload() {this.track.unloadAsync();}
+MP3Player.prototype.unload = async function unload() {console.log("Unloading"); this.track.unloadAsync();}
 MP3Player.prototype.getStatus = function getStatus() {
     return {
         isPlaying: this.isPlaying,

@@ -15,7 +15,7 @@ import TrackyPlayer from '../../MusicModel/TrackPlayer';
 
 import ButtonMenu from './ButtonMenu';
 import AddMenu from './AddMenu';
-import { getSelectedSong } from '../../DatabaseWrappers/SongStuff';
+import { getSelectedSong, getSelectedTrackInfo } from '../../DatabaseWrappers/SongStuff';
 import axios from 'axios';
 import { Audio } from 'expo-av';
 import { backendURLPrefix } from '../../DatabaseWrappers/DatabaseRequest';
@@ -29,54 +29,13 @@ const thumbOffX = -30;
 const thumbOffY = -300;
 
 
-export default function AssignSectionScreen() {
+export default function AssignSectionScreen({navigation, route}: any) {
 	console.log("---------- Start Assign Section Screen -----");
-	console.log(getSelectedSong());
+	if(route.params)
+		console.log(route.params.song.name);
 
-	var [trackInfo, setTrackInfo] = React.useState(
-		{ 
-			title: "", 
-			artist_name: "",
-			album: "",
-			duration: 0,
-			mp3_url: ""
-		}
-	); // set as loading first
-
-	// fetching metadata and mp3 data for selected song
-	React.useEffect(() => {
-		axios.get(backendURLPrefix + `track/${getSelectedSong()}`)
-			.then(res => { 
-				console.log('Successfully loaded data!');
-				setTrackInfo(res.data[0]);
-
-				// create selected track once track metadata is loaded
-
-			}, err => {
-				console.log(err);
-				console.log("Could not load song " + getSelectedSong());
-			});
-	}, []);
-	// fetch track and then set to track
-
-
-	// var selectedTrack = new Track(Source.MP3, frootSongSource, 
-	// 		{name: "Froot Song (ft. Jazz)", artist: "Test Track", album: "from SoundCloud", length: 203000}
-	// 	);
-
-	/*
-	selectedTrack.addSection("First Song", SectionType.A, 0, 98000, true, 120);
-	selectedTrack.addSection("Solo", SectionType.Verse, 56000, 80000, true, 120);
-	selectedTrack.addSection("Second Song", SectionType.B, 98000, 1000000, true, 70, "4:4", true);
-
-	selectedTrack.addLoop("small boy", 10000, 14000);
-	selectedTrack.addLoop("solo snip", 56000, 68000);
-	*/
-
-
-	// var trackController: TrackPlayerController = new TrackPlayerController();
-
-	// console.log(isLoading);
+	var trackInfo = getSelectedTrackInfo();
+	console.log("Loading in : " + trackInfo.title);
 	if (trackInfo.title == "") {
 		return (
 			<View style={[styles.container, styles.darkbg]}>
@@ -94,6 +53,7 @@ export default function AssignSectionScreen() {
 				length: trackInfo.duration*1000
 			}
 		);
+		console.log("Ab to pass in track: " + selectedTrack.name);
 
 		return (
 			<View style={[styles.container, styles.darkbg]}>
@@ -132,6 +92,9 @@ class TrackAssignView extends React.Component<tavP, tavS>{
 		this.popupHeight= 150;
 		this.popupSelectedOption= "";
 
+		// If an audio.sound exists already, clear it
+		if(this.state)
+			console.log(this.state.trackPlayer)
 		//Passed to Track Player so it can modify the state of the song
 		this.updateStatus = (s:any) => {
 			if(this.state) {
@@ -149,8 +112,9 @@ class TrackAssignView extends React.Component<tavP, tavS>{
 			}
 		};
 
-		//Initializes the state variables for the View
 		var trackPlayer = new TrackyPlayer(this.updateStatus);
+		//Initializes the state variables for the View
+		console.log("In constructor");
 		this.state = {
 			trackPlayer: trackPlayer,
 			trackPlayerController: new TrackPlayerController(this.props.track, trackPlayer),
@@ -163,6 +127,9 @@ class TrackAssignView extends React.Component<tavP, tavS>{
 			reRenderThing: false,
 			showPopup: false,
 		}
+
+		console.log("Track name in big: " + this.state.trackPlayerController.track.name);
+		
 
 		var callback = (value: any) => {this.setState({toolTransitionYVal: value.y})};    
 		this.state.animateTool.setValue({x: 0, y: 0});
@@ -268,10 +235,12 @@ class TrackAssignView extends React.Component<tavP, tavS>{
 		}).start();
 	}
 	redo = () => {
+		console.log("Redoing");
 		this.changeLog.redo();
 		this.updateTrack()
 	}
 	undo = () => {
+		console.log("Undoing");
 		this.changeLog.undo();
 		this.updateTrack()
 	}
@@ -373,11 +342,12 @@ class TrackAssignView extends React.Component<tavP, tavS>{
 	}
 	addLoop = (l: LoopSkelly) => {
 		this.state.trackPlayerController.track.addLoop(l.loopName, l.start, l.end);
+		this.addTrackChange();
 	}
 	addSection = (s: SectionSkelly) => {
-		console.log("Adding Section");
 		this.state.trackPlayerController.addSection(s);
-		console.log("Added Section: " + this.state.trackPlayerController.track.sectionCount());
+		this.addTrackChange();
+		console.log(this.state.trackPlayerController.track.name);
 	}
 
 	render() {
@@ -392,6 +362,9 @@ class TrackAssignView extends React.Component<tavP, tavS>{
 				/>
 			);
 		}
+		if(this.props.track != this.state.trackPlayerController.track) {
+			this.state.trackPlayerController.setTrack(this.props.track);
+		}
 		return (
 			<Animated.View style={[styles.container, {backgroundColor: colorTheme['t_dark'], top: this.state.toolTransitionYVal, width: '100%', height: '100%'}]}>
 				{/* Options */}
@@ -402,6 +375,7 @@ class TrackAssignView extends React.Component<tavP, tavS>{
 					showLines= {!this.state.simpleView} toggleLines= {this.toggleSimpleView}
 					editBlock= {this.state.editMode}
 					showToolComponent= {this.showAddMenu}
+
 				/>
 				{/* Track View */}
 				<BorsView 
