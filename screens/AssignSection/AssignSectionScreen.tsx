@@ -32,7 +32,6 @@ export default function AssignSectionScreen() {
 	console.log("---------- Start Assign Section Screen -----");
 	console.log(getSelectedSong());
 
-
 	var [trackInfo, setTrackInfo] = React.useState(
 		{ 
 			title: "", 
@@ -58,29 +57,25 @@ export default function AssignSectionScreen() {
 
 			}, err => {
 				console.log(err);
+
 			});
 	}, []);
 
-	if (trackInfo.title != "") {
-
-	}
-
-	
 
 	// fetch track and then set to track
 
 
-	// var frootSongTrack = new Track(Source.MP3, frootSongSource, 
+	// var selectedTrack = new Track(Source.MP3, frootSongSource, 
 	// 		{name: "Froot Song (ft. Jazz)", artist: "Test Track", album: "from SoundCloud", length: 203000}
 	// 	);
 
 	/*
-	frootSongTrack.addSection("First Song", SectionType.A, 0, 98000, true, 120);
-	frootSongTrack.addSection("Solo", SectionType.Verse, 56000, 80000, true, 120);
-	frootSongTrack.addSection("Second Song", SectionType.B, 98000, 1000000, true, 70, "4:4", true);
+	selectedTrack.addSection("First Song", SectionType.A, 0, 98000, true, 120);
+	selectedTrack.addSection("Solo", SectionType.Verse, 56000, 80000, true, 120);
+	selectedTrack.addSection("Second Song", SectionType.B, 98000, 1000000, true, 70, "4:4", true);
 
-	frootSongTrack.addLoop("small boy", 10000, 14000);
-	frootSongTrack.addLoop("solo snip", 56000, 68000);
+	selectedTrack.addLoop("small boy", 10000, 14000);
+	selectedTrack.addLoop("solo snip", 56000, 68000);
 	*/
 
 
@@ -386,8 +381,8 @@ class TrackAssignView extends React.Component<tavP, tavS>{
 	}
 	addSection = (s: SectionSkelly) => {
 		console.log("Adding Section");
-		var isSnapped = s.type == SectionType.IDK;
-		this.state.trackPlayerController.track.addSection(s.sectionName, s.type, s.start, s.end, isSnapped, s.tempo, s.timeSig);
+		this.state.trackPlayerController.addSection(s);
+		console.log("Added Section: " + this.state.trackPlayerController.track.sectionCount());
 	}
 
 	render() {
@@ -473,7 +468,7 @@ export class BorsView extends React.Component<bvP, bvS> {
 			scrollOffset: 0,
 		};
 		this.editMode = this.props.editMode;
-		this.measureMaker = new MeasureMaker(this.props.trackPlayerController.track, this.props.size);
+		this.measureMaker = this.props.trackPlayerController.measureMaker;
 	}
 	componentDidMount() {
 		this.measureMaker.recompute();

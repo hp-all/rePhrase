@@ -6,6 +6,7 @@ import axios from "axios";
 // adding variable to keep track of what song the user has selected
 // in the application
 let selectedSongID: string = "";
+let urlPrefix = "https://rephrase-cs4750.herokuapp.com/";
 
 // accessor method to change the value of the selected song id
 export function setSelectedSong(id: string) {
@@ -17,24 +18,11 @@ export function getSelectedSong() {
     return selectedSongID;
 }
 
-
-export function getSongMP3Data(songname: string) {
-    // Get a song from SQL here
-    // set param to either the name, or the sid, or idk man
-
-    var Data = {
-        songname: songname,
-    }
-    // MYSQLRequest("_________.php", Data).then((Response)=>{
-
-    // });
-    
-}
-
 export function getAllSongs() {
     // get all song metadata from mysql database
     // returns Promise
-    return axios.get("http://localhost:3001/tracks");
+    console.log("Getting all songs");
+    return axios.get(urlPrefix + "tracks");
 }
 
 export function searchForSongs(searchterm: string) {

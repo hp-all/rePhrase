@@ -226,6 +226,5 @@ export const appStyles = StyleSheet.create({
 		borderWidth: 2,
 		...topBorderRadius(4),
 		width: '100%', 
-		padding: 20,
 	},
 });
