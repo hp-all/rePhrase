@@ -37,6 +37,7 @@ export class ChangeLog {
         this.statePointer++;
         this.changes.splice(this.statePointer, changesBeyond, state);
         this.changeCount = this.changeCount+1 - changesBeyond;
+		console.log(this.statePointer);
 	}
 	undo() {
         if(this.changeCount > 0 && this.statePointer > 0) {
@@ -56,6 +57,11 @@ export class ChangeLog {
     count() {
         return this.changeCount;
     }
+	clearList(){
+		this.changes = [];
+		this.statePointer = -1;
+		this.changeCount = 0;
+	}
     at = (i: number) => {
         return this.changes[i];
     }
@@ -94,6 +100,10 @@ export class TrackPlayerController {
 		this.sectionStart = track.getSection(0).getStart();
 		this.sectionEnd = track.getSection(0).getEndTime();
 		this.trackPlayer.setTrack(track);
+		this.measureMaker.reset();
+	}
+	makeUpdateToTrack = (json: any) => {
+		this.track.setJSON(json);
 		this.measureMaker.reset();
 	}
 	setState = (s: any) => {
