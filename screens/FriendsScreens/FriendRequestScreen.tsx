@@ -15,11 +15,49 @@ import { Platform, ScrollView, TouchableOpacity, TouchableOpacityBase } from 're
 import { Spacer } from '../../components/MusicComponents';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ViewUsersFriends } from './FriendsScreen';
+import { backendURLPrefix } from '../../DatabaseWrappers/DatabaseRequest';
 
 export default function FriendRequestScreen ({navigation}: any) {
 	// hooks that are used to change the state of the login parameters
 
     const [isLoading, setLoading] = React.useState(true); // set as loading first
+    const accept = (friend: FriendProfile) => {
+        setLoading(true); // IDK If it needs to go back to loading state?
+        Axios.post(backendURLPrefix + 'acceptRequest', {
+            UID1: thisAppUser.uid, // the app user UID
+            UID2: friend.uid, // the UID of the friend who sent the request
+        }).then((response)=>{
+            // thisAppUser.friends[i].setUsername(response.data.Username);
+        });
+        Axios.post(backendURLPrefix + 'updateFriendship', {
+            UID1: friend.uid, // the UID of the friend who sent the request
+            UID2: thisAppUser.uid, // the app user UID
+        }).then((response)=>{
+            // thisAppUser.friends[i].setUsername(response.data.Username);
+        });
+        setLoading(false);
+
+    }
+    const reject = (friend: FriendProfile) => {
+        setLoading(true); // IDK If it needs to go back to loading state?
+        Axios.post(backendURLPrefix + 'deletePendingRequest', {
+            UID1: friend.uid, // the UID of the friend who sent the request
+            UID2: thisAppUser.uid, // the app user UID
+        }).then((response)=>{
+            // thisAppUser.friends[i].setUsername(response.data.Username);
+        });
+        setLoading(false);
+    }
+    const sendReq = (friend: FriendProfile) => {
+        setLoading(true); // IDK If it needs to go back to loading state?
+        Axios.post(backendURLPrefix + 'sendRequest', {
+            UID1: thisAppUser.uid, // the app user UID
+            UID2: friend.uid, // the UID of the friend who sent the request
+        }).then((response)=>{
+            // thisAppUser.friends[i].setUsername(response.data.Username);
+        });
+        setLoading(false);
+    }
 
     React.useEffect(()=> {
         if(thisAppUser.uid < 0) {
@@ -27,14 +65,14 @@ export default function FriendRequestScreen ({navigation}: any) {
             return;
         }
         for (var i = 0; i < thisAppUser.friends.length; i++){
-            Axios.post('https://rephrase-cs4750.herokuapp.com/getUsername', {
+            Axios.post(backendURLPrefix + 'getUsername', {
                 UID: thisAppUser.friends[i] // the current UID
             }).then((response)=>{
                 // thisAppUser.friends[i].setUsername(response.data.Username);
             });
         }
         setLoading(false); // usernames have been collected and ready to render
-    }, []); // only gets called once since empty param
+    }, [isLoading]); // only gets called once since empty param
 
     if (isLoading){
         return (
@@ -59,30 +97,11 @@ export default function FriendRequestScreen ({navigation}: any) {
             </View>
             <ViewUsersFriends
                 friends={thisAppUser.friendRequests}
-                onFriendSelect={(friend: FriendProfile)=>{
-                    // TODO FUNCTION to accept friend request
-
-
-                }}
+                onAccept={accept}
+                onReject={reject}
+                onReturnReq={sendReq}
             />       
 		<StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
 		</View>
 	)
-}
-
-/** FriendView: creates the view for a friend's profile
- * 
- * @param props friend: the friend profile to display, selectfriend, the function to go the the friend's page
- * @returns a view for a specific friend
- */
- function RequestView(props: {friend: FriendProfile, onSelect?: (friend: FriendProfile)=>void, key: React.Key}) {
-    console.log(props.key);
-    return (
-        <TouchableOpacity
-            onPress={()=>{props.onSelect && props.onSelect(props.friend)}}
-            style={{backgroundColor: colorTheme['t_light'], flex: 1, margin: 10, padding: 20, borderRadius: 5}}
-        >
-            <Text style={styles.header}>{props.friend.username}</Text>
-        </TouchableOpacity>
-    )
 }

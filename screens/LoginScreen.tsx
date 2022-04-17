@@ -24,16 +24,20 @@ export default function Login ({navigation}: any) {
 
 	/** Login with "admin" profile that contains dummy data simply for quickly viewing the app */
 	const deleteThisLogin = () => {
-		thisAppUser.copy(new UserProfile(-1, "Admin", "AdminP_word"));
-		thisAppUser.friends = [
-			// new FriendProfile(-2, "Friend 1"), 
-			// new FriendProfile(-3, "Friend 2"), 
-			// new FriendProfile(-4, "Friend 3"),
-			// new FriendProfile(-5, "Friend 4"),
-			// new FriendProfile(-6, "Friend 5"),
-			// new FriendProfile(-7, "Friend 6"),
-		]
-		navigation.navigate("Root");
+		Axios.post(backendURLPrefix + 'login', {
+			Username: "Brandon",
+			Password: "123"
+		}).then((response) => {
+			if (response.data.message == "Success"){
+				thisAppUser.copy(new UserProfile(response.data.UID, Username, Password));
+ 				setLoginStatus(response.data.UID); // login is successful
+				navigation.navigate("Root");
+				// want to navigate to the users page from here
+				console.log(LoginStatus);
+			} else {
+				setLoginStatus(response.data.message);
+			}
+		})
 	}
 
 	/** Connects to the MySQL Database to check the login information, then navigate to the app */

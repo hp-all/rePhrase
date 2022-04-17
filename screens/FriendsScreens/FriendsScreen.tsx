@@ -3,7 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 import * as React from 'react';
 // Theme and Styles
 import { Text, View } from '../../components/Themed';
-import { appStyles as styles, blockColors, colorTheme, SectionColor} from '../../components/AppStyles';
+import { appStyles as styles, blockColors, colorTheme, leftBorderRadius, rightBorderRadius, SectionColor} from '../../components/AppStyles';
 import Axios from "axios"
 
 // Components
@@ -40,7 +40,7 @@ export default function FriendsScreen ({navigation}: any) {
                 friendUsers.push(response.data);
             });
         }
-        console.log(friendUsers);
+        console.log("Friend Users: " + friendUsers);
         setLoading(false); // usernames have been collected and ready to render
     }, []); // only gets called once since empty param
 
@@ -92,6 +92,10 @@ export function ViewUsersFriends(props: {friends: FriendProfile[], onFriendSelec
             friendsViews.push(<FriendView 
                 friend={props.friends[i]} 
                 onSelect={props.onFriendSelect}
+                onAccept={props.onAccept}
+                onReject={props.onReject}
+                onReturnReq={props.onReturnReq}
+
                 key={i}
             />)
         }
@@ -116,14 +120,21 @@ export function ViewUsersFriends(props: {friends: FriendProfile[], onFriendSelec
  * @param props friend: the friend profile to display, selectfriend, the function to go the the friend's page
  * @returns a view for a specific friend
  */
-function FriendView(props: {friend: FriendProfile, onSelect?: (friend: FriendProfile)=>void, key: React.Key, children?: any}) {
-    console.log(props.key);
+function FriendView(props: {friend: FriendProfile, onSelect?: (friend: FriendProfile)=>void, key: React.Key, onAccept?: (friend: FriendProfile)=>void, onReject?: (friend: FriendProfile)=>void, onReturnReq?: (friend: FriendProfile)=>void}) {
+    
+    var reqButtons = null;
+    if(props.onAccept && props.onReject && props.onReturnReq) {
+        console.log("Req button!");
+        reqButtons = (<FriendRequestView friend={props.friend} onAccept={props.onAccept} onReject={props.onReject} onReturnReq={props.onReturnReq}/>)
+    }
+
     return (
         <TouchableOpacity
             onPress={()=>{props.onSelect && props.onSelect(props.friend)}}
-            style={{backgroundColor: colorTheme['t_light'], flex: 1, margin: 10, padding: 20, borderRadius: 5}}
+            style={[{backgroundColor: colorTheme['t_light'], flex: 1, margin: 10, padding: 20, borderRadius: 5}, reqButtons && styles.rowContainer]}
         >
-            <Text style={styles.header}>{props.friend.username}</Text>
+            <Text style={[styles.header, reqButtons && {flex: 1}]}>{props.friend.username}</Text>
+            {reqButtons}
         </TouchableOpacity>
     )
 }
@@ -131,40 +142,44 @@ function FriendView(props: {friend: FriendProfile, onSelect?: (friend: FriendPro
 /** Friend Request Buttons: creates a view for Friend Request Buttons
  * 
  */
-function FriendRequestButtons(props: {friend: FriendProfile, onAccept?: (friend: FriendProfile)=>void, onReject?: (friend: FriendProfile)=>void, onReturnReq?: (friend: FriendProfile)=>void}) {
-    const [hasAccepted, setAccept] = React.useState(true); // set as loading first
+function FriendRequestView(props: {friend: FriendProfile, onAccept: (friend: FriendProfile)=>void, onReject: (friend: FriendProfile)=>void, onReturnReq: (friend: FriendProfile)=>void}) {
+    const [hasAccepted, setAccept] = React.useState(false); // set as loading first
     const accept = () => {
         setAccept(true);
         if(props.onAccept)
             props.onAccept(props.friend);
     }
-    const reject = () => {
-        if(props.onReject)
-            props.onReject(props.friend);
-    }
     const chooseButtons = (
         <View style={{flexDirection: 'row'}}>
             <Buddon
-                style={{backgroundColor: blockColors['green_med'], flex: 1}}
+                style={{backgroundColor: blockColors['green_med'], flex: 1, ...rightBorderRadius(0), padding: 8}}
                 label='Accept'
                 onPress={accept}
+                isSelected={true}
             />
-            <View style={styles.vertLine}/>
+            <View style={[styles.vertLine, {marginHorizontal: 0}]}/>
             <Buddon
-                style={{backgroundColor: blockColors['red_med'], flex: 1}}
+                style={{backgroundColor: blockColors['red_med'], flex: 1, ...leftBorderRadius(0), padding: 8}}
                 label='Reject'
-                onPress={reject}
+                onPress={()=>props.onReject(props.friend)}
+                isSelected={true}
             />
         </View>
     )
     const sendReqButton = (
         <View>
-
+            <Buddon
+                style={{padding: 5}}
+                label = "Send Request"
+                altbg={'t_med'}
+                onPress={()=>props.onReturnReq(props.friend)}
+                isSelected={true}
+            />
         </View>
     )
 
     return (
-        <View>
+        <View style={{flex: 1}}>
             {(hasAccepted) ? sendReqButton:chooseButtons}
         </View>
     );
