@@ -73,14 +73,11 @@ export function SongGroupButton(props: {name: string, onPress: (playlist?: Playl
 	);
 }
 
-function SongButton(props: {key: number, song: SongListItem, onPress: (song: SongListItem)=>void, hideBar ?: boolean}) {
+function SongButton(props: {key: React.Key, song: SongListItem, onPress: (song: SongListItem)=>void, hideBar ?: boolean}) {
     var song = props.song;
     var bar = (props.hideBar) ? null: (<View style={[styles.horzLine, {flexShrink: 1}]}/>);
     return (
-        <TouchableOpacity
-            key = {props.key}
-            onPress = {()=>{props.onPress(song)}}
-        >
+        <TouchableOpacity onPress = {()=>{props.onPress(song)}}>
             {bar}
             <View style={[styles.rowContainer, {flexBasis: 40, alignItems: 'flex-end', marginBottom: 10}]}>
                 <Text style={[styles.header, {flex: 1.1, color: colorTheme['t_dark']}]}>{song.name}</Text>
