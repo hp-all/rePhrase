@@ -9,6 +9,7 @@ import { Spacer } from '../components/MusicComponents';
 
 import Axios from 'axios';
 import { NavigationHelpersContext } from '@react-navigation/native';
+import { backendURLPrefix } from '../DatabaseWrappers/DatabaseRequest';
 
 
 export default function ProfileInfoScreen({navigation}: any) {  
@@ -21,7 +22,7 @@ export default function ProfileInfoScreen({navigation}: any) {
     const [tempFriends, setTempFriends] = React.useState([]);
 
     const loadFriends = () => {
-        Axios.get('https://rephrase-cs4750.herokuapp.com/getUsername/'+thisAppUser.uid)
+        Axios.get(backendURLPrefix + 'getUsername/'+thisAppUser.uid)
         .then((response)=> {
             for (var i = 0; i < response.data.length; i++){
                 thisAppUser.friends[i] = new FriendProfile(response.data[i]["UserID"], response.data[i]["Username"]);
@@ -33,15 +34,14 @@ export default function ProfileInfoScreen({navigation}: any) {
     }
 
     const friendRequests = () => {
-        Axios.get('https://rephrase-cs4750.herokuapp.com/pendingRequests/'+thisAppUser.uid)
+        Axios.get(backendURLPrefix + 'pendingRequests/'+thisAppUser.uid)
         .then((response)=> {
             for (var i = 0; i < response.data.length; i++){
                 thisAppUser.friendRequests[i] = new FriendProfile(response.data[i]["UserID"], response.data[i]["Username"]);
             }           
         }).finally(() => {
-            navigation.navigate("FriendViews");
-        })
-        navigation.navigate("FriendViews", {screen: 'FriendRequests'});
+            navigation.navigate("FriendViews", {screen: 'FriendRequests'});
+        });
     }
 
     if (isLoading){

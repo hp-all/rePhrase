@@ -41,7 +41,6 @@ export default function Login ({navigation}: any) {
 				alert(response.data.message);
 			}
 		})
-		navigation.navigate("Root");
 	}
 
 	/** Connects to the MySQL Database to check the login information, then navigate to the app */
