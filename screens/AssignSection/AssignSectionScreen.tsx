@@ -18,6 +18,7 @@ import AddMenu from './AddMenu';
 import { getSelectedSong } from '../../DatabaseWrappers/SongStuff';
 import axios from 'axios';
 import { Audio } from 'expo-av';
+import { backendURLPrefix } from '../../DatabaseWrappers/DatabaseRequest';
 
 const frootSongSource = require('../../assets/soundFiles/lofi_fruits_jazz.mp3');
 const windowWidth = Layout.window.width;
@@ -44,7 +45,7 @@ export default function AssignSectionScreen() {
 
 	// fetching metadata and mp3 data for selected song
 	React.useEffect(() => {
-		axios.get(`http://localhost:3001/track/${getSelectedSong()}`)
+		axios.get(backendURLPrefix + `track/${getSelectedSong()}`)
 			.then(res => { 
 				console.log('Successfully loaded data!');
 				setTrackInfo(res.data[0]);
@@ -57,7 +58,7 @@ export default function AssignSectionScreen() {
 
 			}, err => {
 				console.log(err);
-
+				console.log("Could not load song " + getSelectedSong());
 			});
 	}, []);
 

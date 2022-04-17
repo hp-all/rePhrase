@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { thisAppUser } from './Profiles';
 import axios from "axios";
+import { backendURLPrefix } from './DatabaseRequest';
 
 
 // adding variable to keep track of what song the user has selected
 // in the application
 let selectedSongID: string = "";
-let urlPrefix = "https://rephrase-cs4750.herokuapp.com/";
 
 // accessor method to change the value of the selected song id
 export function setSelectedSong(id: string) {
@@ -22,7 +22,7 @@ export function getAllSongs() {
     // get all song metadata from mysql database
     // returns Promise
     console.log("Getting all songs");
-    return axios.get(urlPrefix + "tracks");
+    return axios.get(backendURLPrefix + "tracks");
 }
 
 export function searchForSongs(searchterm: string) {
