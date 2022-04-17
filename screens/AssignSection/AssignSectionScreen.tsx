@@ -58,26 +58,6 @@ export default function AssignSectionScreen() {
 			});
 	}, []);
 	
-	// fetch track and then set to track
-
-
-	// var selectedTrack = new Track(Source.MP3, frootSongSource, 
-	// 		{name: "Froot Song (ft. Jazz)", artist: "Test Track", album: "from SoundCloud", length: 203000}
-	// 	);
-
-	/*
-	selectedTrack.addSection("First Song", SectionType.A, 0, 98000, true, 120);
-	selectedTrack.addSection("Solo", SectionType.Verse, 56000, 80000, true, 120);
-	selectedTrack.addSection("Second Song", SectionType.B, 98000, 1000000, true, 70, "4:4", true);
-
-	selectedTrack.addLoop("small boy", 10000, 14000);
-	selectedTrack.addLoop("solo snip", 56000, 68000);
-	*/
-
-
-	// var trackController: TrackPlayerController = new TrackPlayerController();
-
-	// console.log(isLoading);
 	if (trackInfo.title == "") {
 		return (
 			<View style={[styles.container, styles.darkbg]}>
@@ -164,6 +144,8 @@ class TrackAssignView extends React.Component<tavP, tavS>{
 			reRenderThing: false,
 			showPopup: false,
 		}
+
+		console.log("Track name: " + this.state.trackPlayerController.track.name);
 
 		var callback = (value: any) => {this.setState({toolTransitionYVal: value.y})};    
 		this.state.animateTool.setValue({x: 0, y: 0});
@@ -269,10 +251,12 @@ class TrackAssignView extends React.Component<tavP, tavS>{
 		}).start();
 	}
 	redo = () => {
+		console.log("Redoing");
 		this.changeLog.redo();
 		this.updateTrack()
 	}
 	undo = () => {
+		console.log("Undoing");
 		this.changeLog.undo();
 		this.updateTrack()
 	}
@@ -374,11 +358,11 @@ class TrackAssignView extends React.Component<tavP, tavS>{
 	}
 	addLoop = (l: LoopSkelly) => {
 		this.state.trackPlayerController.track.addLoop(l.loopName, l.start, l.end);
+		this.addTrackChange();
 	}
 	addSection = (s: SectionSkelly) => {
-		console.log("Adding Section");
 		this.state.trackPlayerController.addSection(s);
-		console.log("Added Section: " + this.state.trackPlayerController.track.sectionCount());
+		this.addTrackChange();
 	}
 
 	render() {
@@ -403,6 +387,7 @@ class TrackAssignView extends React.Component<tavP, tavS>{
 					showLines= {!this.state.simpleView} toggleLines= {this.toggleSimpleView}
 					editBlock= {this.state.editMode}
 					showToolComponent= {this.showAddMenu}
+
 				/>
 				{/* Track View */}
 				<BorsView 

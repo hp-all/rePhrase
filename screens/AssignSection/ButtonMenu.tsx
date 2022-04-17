@@ -15,6 +15,8 @@ export default function ButtonMenu(props:
 		showLines: boolean, toggleLines: ()=>void,
 		editBlock: string,
 		showToolComponent: () => void,
+		undo?: ()=>void,
+		redo?: ()=>void,
 	}) {
 	var { trackPlayerController } = props;
 	var loopOptions= [...props.trackPlayerController.track.getLoopNames(), 'none'];
@@ -54,7 +56,7 @@ export default function ButtonMenu(props:
 					<Buddon
 						label='undo'
 						icon='undo'
-						onPress={()=>{}}
+						onPress={()=>{props.undo && props.undo()}}
 						isSelected= {false}
                         style={{...rightBorderRadius(0), ...leftBorderRadius(5), height: undoredoHeight, flex: 1}}
 						bg= {'t_white'}
@@ -63,7 +65,7 @@ export default function ButtonMenu(props:
 					<Buddon
 						label='redo'
 						icon='redo'
-						onPress={()=>{}}
+						onPress={()=>{props.redo && props.redo()}}
 						isSelected= {false}
                         style={{...rightBorderRadius(5), ...leftBorderRadius(0), height: undoredoHeight, flex: 1}}
 						bg= {'t_white'}

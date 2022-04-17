@@ -26,16 +26,21 @@ export default function Login ({navigation}: any) {
 
 	/** Login with "admin" profile that contains dummy data simply for quickly viewing the app */
 	const deleteThisLogin = () => {
-		thisAppUser.copy(new UserProfile(-1, "Admin", "AdminP_word", ""));
-		thisAppUser.friends = [
-			// new FriendProfile(-2, "Friend 1"), 
-			// new FriendProfile(-3, "Friend 2"), 
-			// new FriendProfile(-4, "Friend 3"),
-			// new FriendProfile(-5, "Friend 4"),
-			// new FriendProfile(-6, "Friend 5"),
-			// new FriendProfile(-7, "Friend 6"),
-
-		]
+		var u = "Brandon";
+		var p = "123"
+		Axios.post(backendURLPrefix + 'login', {
+			Username: u,
+			Password: p
+		}).then((response) => {
+			if (response.data["message"] == "Success"){
+				thisAppUser.copy(new UserProfile(response.data["UID"], u, p, response.data["Hash"]));
+				console.log(thisAppUser);
+				navigation.navigate("Root");
+			} else {
+				//setLoginStatus(response.data.message);
+				alert(response.data.message);
+			}
+		})
 		navigation.navigate("Root");
 	}
 
