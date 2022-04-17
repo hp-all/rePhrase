@@ -84,6 +84,7 @@ export class TrackPlayerController {
 		this.sectionEnd = track.getSection(0).getEndTime();
 
 		this.measureMaker = new MeasureMaker(track, "large");
+		this.measureMaker.reset();
 	}
 
 	setTrack = (track: Track) => {

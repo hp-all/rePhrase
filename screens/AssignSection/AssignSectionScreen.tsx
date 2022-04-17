@@ -15,7 +15,7 @@ import TrackyPlayer from '../../MusicModel/TrackPlayer';
 
 import ButtonMenu from './ButtonMenu';
 import AddMenu from './AddMenu';
-import { getSelectedSong } from '../../DatabaseWrappers/SongStuff';
+import { getSelectedSong, getSelectedTrackInfo } from '../../DatabaseWrappers/SongStuff';
 import axios from 'axios';
 import { Audio } from 'expo-av';
 import { backendURLPrefix } from '../../DatabaseWrappers/DatabaseRequest';
@@ -29,35 +29,12 @@ const thumbOffX = -30;
 const thumbOffY = -300;
 
 
-export default function AssignSectionScreen() {
+export default function AssignSectionScreen({navigation, route}: any) {
 	console.log("---------- Start Assign Section Screen -----");
-	console.log(getSelectedSong());
+	console.log(route.params.song.name);
 
-	var [trackInfo, setTrackInfo] = React.useState(
-		{ 
-			title: "", 
-			artist_name: "",
-			album: "",
-			duration: 0,
-			mp3_url: ""
-		}
-	); // set as loading first
-
-	// fetching metadata and mp3 data for selected song
-	React.useEffect(() => {
-		axios.get(backendURLPrefix + `track/${getSelectedSong()}`)
-			.then(res => { 
-				console.log('Successfully loaded data!');
-				setTrackInfo(res.data[0]);
-
-				// create selected track once track metadata is loaded
-
-			}, err => {
-				console.log(err);
-				console.log("Could not load song " + getSelectedSong());
-			});
-	}, []);
-	
+	var trackInfo = getSelectedTrackInfo();
+	console.log("Loading in : " + trackInfo.title);
 	if (trackInfo.title == "") {
 		return (
 			<View style={[styles.container, styles.darkbg]}>
@@ -146,6 +123,7 @@ class TrackAssignView extends React.Component<tavP, tavS>{
 		}
 
 		console.log("Track name: " + this.state.trackPlayerController.track.name);
+		
 
 		var callback = (value: any) => {this.setState({toolTransitionYVal: value.y})};    
 		this.state.animateTool.setValue({x: 0, y: 0});
