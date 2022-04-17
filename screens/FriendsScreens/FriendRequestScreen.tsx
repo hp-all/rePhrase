@@ -30,7 +30,7 @@ export default function FriendRequestScreen ({navigation}: any) {
             Axios.post('https://rephrase-cs4750.herokuapp.com/getUsername', {
                 UID: thisAppUser.friends[i] // the current UID
             }).then((response)=>{
-                thisAppUser.friends[i].setUsername(response.data.Username);
+                // thisAppUser.friends[i].setUsername(response.data.Username);
             });
         }
         setLoading(false); // usernames have been collected and ready to render
