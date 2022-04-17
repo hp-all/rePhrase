@@ -10,7 +10,6 @@ import Axios from "axios"
 import { Buddon } from '../../components/Buddons';
 import { FormInputError, FormField, TextField } from '../../components/Form';
 import UserProfile, { FriendProfile, thisAppUser } from '../../DatabaseWrappers/Profiles';
-import axios from 'axios';
 import { Platform, ScrollView, TouchableOpacity, TouchableOpacityBase } from 'react-native';
 import { Spacer } from '../../components/MusicComponents';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -22,7 +21,7 @@ export default function FriendsScreen ({navigation}: any) {
         thisAppUser.friends = [];
         navigation.goBack();
     }
-
+    
     const [isLoading, setLoading] = React.useState(true); // set as loading first
     var friendUsers: string[] = [];
 

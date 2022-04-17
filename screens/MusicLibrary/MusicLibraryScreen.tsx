@@ -40,9 +40,14 @@ export default function MusicLibraryScreen({navigation, route}: any) {
 }
 
 type PVP = {navigateToSectionScreen?: (song: SongListItem)=>void}
-type PVS = {listTypeShowing: SongListTypes, showMP3Popup: boolean}
+type PVS = {
+	listTypeShowing: SongListTypes, 
+	showMP3Popup: boolean,
+	isLoading: boolean
+}
 
 class PlaylistView extends React.Component<PVP, PVS> {
+
 	visibleSongList: Playlist[] | Playlist = new Playlist("");
 	searchPhrase: string = "";
 
@@ -51,6 +56,7 @@ class PlaylistView extends React.Component<PVP, PVS> {
 		this.state = {
 			listTypeShowing: SongListTypes.None,
 			showMP3Popup: false,
+			isLoading: false,
 		}
 	}
 
@@ -62,7 +68,22 @@ class PlaylistView extends React.Component<PVP, PVS> {
 	setList = (type: SongListTypes, playlist: Playlist|undefined = undefined) => {
 		var uid = 0;
 		if(type == SongListTypes.Search) {
-			this.visibleSongList = searchForSongs(this.searchPhrase);
+			console.log('Searching for songs!');
+			// fetch filtered version of all songs from database based on search parameter searchPhrase
+			// set isLoading to true while beginning request
+			this.setState({isLoading: true});
+			searchForSongs(this.searchPhrase).then(res => {
+				console.log('in song search');
+				// store results in playlist
+				var songs = new Playlist("Search Results");
+				songs.setSongsFromJSON(res.data);
+				this.visibleSongList = songs;
+
+				// set isLoading to false once request is finished
+				this.setState({isLoading: false});
+			}, err => {
+				console.log(err);
+			});
 		} else if(type == SongListTypes.Specific && playlist) {
 			this.visibleSongList = playlist;
 		} else if(type == SongListTypes.Albums) {
@@ -74,15 +95,22 @@ class PlaylistView extends React.Component<PVP, PVS> {
 		} else if(type == SongListTypes.AllSongs) {
 			// fetch all songs from data base and create "playlist" so they can be viewed in 
 			// PlaylistView
+			// set isLoading to true while beginning request
+			this.setState({isLoading: true});
+
+			// fetch all songs
 			getAllSongs().then(res => {
 				var allSongs = new Playlist("All Songs");
 				console.log(res.data);
 				allSongs.setSongsFromJSON(res.data);
 				this.visibleSongList = allSongs;
+
+				// set isLoading to false once data has been retrieved
+				this.setState({isLoading: false});
+				
 			}, err => {
 				console.log(err);
 			});
-			// this.visibleSongList = getAllFromPlaylists(uid);
 		}
 		this.setState({listTypeShowing: type});
 	}
@@ -118,6 +146,15 @@ class PlaylistView extends React.Component<PVP, PVS> {
 		var songListView: JSX.Element | null = null;
 		var popupView: JSX.Element | null = null;
 
+		// display Loading ... view if component is still fetching data
+		if (this.state.isLoading) {
+			return (
+				<View>
+					<Text>Loading ...</Text>
+				</View>
+			)
+		}
+
 		var listTitle: string = "";
 		if(listTypeShowing == SongListTypes.Specific && this.visibleSongList instanceof Playlist) {
 			listTitle = this.visibleSongList.name;
@@ -149,12 +186,19 @@ class PlaylistView extends React.Component<PVP, PVS> {
 }
 
 function MainOptionList(props: {listListener: (type: SongListTypes, search: string | undefined)=>void}) {
+	
+	// hook to handle changes to text input text
+	var [searchText, onChangeSearchText] = React.useState("search");
+	
 	return (
 		<View style= {{backgroundColor: colorTheme['gray'], flexShrink: 1, padding: 20, borderRadius: 8}}>
 			<TextInput 
 				style={[styles.textInput, {width: '100%'}]}
-				placeholder= "search"
-				onEndEditing={(e)=>{props.listListener(SongListTypes.Search, e.nativeEvent.text)}}
+				placeholder={searchText}
+				onChangeText={onChangeSearchText}
+				onSubmitEditing={(e)=> {
+					props.listListener(SongListTypes.Search, e.nativeEvent.text);
+				}}
 				selectTextOnFocus= {true}
 				clearButtonMode= 'always'
 			/>
