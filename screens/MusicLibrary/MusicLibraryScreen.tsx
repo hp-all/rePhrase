@@ -40,9 +40,14 @@ export default function MusicLibraryScreen({navigation, route}: any) {
 }
 
 type PVP = {navigateToSectionScreen?: (song: SongListItem)=>void}
-type PVS = {listTypeShowing: SongListTypes, showMP3Popup: boolean}
+type PVS = {
+	listTypeShowing: SongListTypes, 
+	showMP3Popup: boolean,
+	isLoading: boolean
+}
 
 class PlaylistView extends React.Component<PVP, PVS> {
+
 	visibleSongList: Playlist[] | Playlist = new Playlist("");
 	searchPhrase: string = "";
 
@@ -51,6 +56,7 @@ class PlaylistView extends React.Component<PVP, PVS> {
 		this.state = {
 			listTypeShowing: SongListTypes.None,
 			showMP3Popup: false,
+			isLoading: false,
 		}
 	}
 
@@ -74,15 +80,21 @@ class PlaylistView extends React.Component<PVP, PVS> {
 		} else if(type == SongListTypes.AllSongs) {
 			// fetch all songs from data base and create "playlist" so they can be viewed in 
 			// PlaylistView
+			// set isLoading to true while beginning request
+			this.setState({isLoading: true});
+
+			// fetch all songs
 			getAllSongs().then(res => {
 				var allSongs = new Playlist("All Songs");
 				allSongs.setSongsFromJSON(res.data);
 				this.visibleSongList = allSongs;
+
+				// set isLoading to false once data has been retrieved
+				this.setState({isLoading: false});
 				
 			}, err => {
 				console.log(err);
 			});
-			// this.visibleSongList = getAllFromPlaylists(uid);
 		}
 		this.setState({listTypeShowing: type});
 	}
@@ -117,6 +129,15 @@ class PlaylistView extends React.Component<PVP, PVS> {
 		var listTypeShowing = this.state.listTypeShowing;
 		var songListView: JSX.Element | null = null;
 		var popupView: JSX.Element | null = null;
+
+		// display Loading ... view if component is still fetching data
+		if (this.state.isLoading) {
+			return (
+				<View>
+					<Text>Loading ...</Text>
+				</View>
+			)
+		}
 
 		var listTitle: string = "";
 		if(listTypeShowing == SongListTypes.Specific && this.visibleSongList instanceof Playlist) {
