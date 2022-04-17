@@ -152,7 +152,7 @@ export class Playlist {
 
     setSongsFromJSON(json: any) {
         // converts JSON data from GET /tracks response into a list of SongListItem
-        this.songs = json.map((d: { artist_name: string, album: string, duration: number, interest: number, mp3_url: string, title: string, track_id: number }) => {
+        this.songs = json.map((d: { artist_name: string, album: string, duration: number, interest: number, mp3_url: string, title: string, track_id: string }) => {
             return new SongListItem(d.track_id, d.title, d.album, d.artist_name);
         });
     }
