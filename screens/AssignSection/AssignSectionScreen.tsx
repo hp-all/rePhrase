@@ -249,7 +249,6 @@ class TrackAssignView extends React.Component<tavP, tavS>{
 
 	// Saves the current state of the track, sections and loops to the Database!
 	save = () => {
-		console.log("Save");
 		saveSectionsToDatabase(thisAppUser.uid, this.state.trackPlayerController.track.track_id, this.state.trackPlayerController.getSectionJSONs());
 		saveLoopsToDatabase(thisAppUser.uid, this.state.trackPlayerController.track.track_id, this.state.trackPlayerController.getSectionJSONs());
 	}

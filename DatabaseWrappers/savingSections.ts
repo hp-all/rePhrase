@@ -11,14 +11,14 @@ export function getTrackSections(user_id: number, track_id: string) {
 
 }
 
-export function saveSectionsToDatabase(user_id: number, track_id: string, sections: any[]) {
+export function saveSectionsToDatabase(user_id: number, track_id: string, sections: any[]) {    
     Axios.post(backendURLPrefix + 'sections/save', {
         user_id: user_id, // the app user UID
         track_id: track_id, // the UID of the friend who sent the request
         sections: sections,
     }).then((response)=>{
-        // thisAppUser.friends[i].setUsername(response.data.Username);
     });
+    
 }
 export function saveLoopsToDatabase(user_id: number, track_id: string, loops: any[]) {
     Axios.post(backendURLPrefix + 'loops/save', {
@@ -26,6 +26,5 @@ export function saveLoopsToDatabase(user_id: number, track_id: string, loops: an
         track_id: track_id, // the UID of the friend who sent the request
         loops: loops,
     }).then((response)=>{
-        // thisAppUser.friends[i].setUsername(response.data.Username);
     });
 }
