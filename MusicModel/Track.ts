@@ -11,6 +11,7 @@ export default class Track {
     album: string = "";
     timeLen: number = 240000;
     uri: string;
+    track_id: string;
 
     //User Created App Data
     defaultTempo: number;
@@ -20,7 +21,8 @@ export default class Track {
     loopCount: number = 0;
     loopList: Loop[] = [];
 
-    constructor(mediaSource: Source, uri: string, sourceData: any, defaultTempo: number = 120, defaultTimeSig: string = "4:4") {
+    constructor(track_id: string, mediaSource: Source, uri: string, sourceData: any, defaultTempo: number = 120, defaultTimeSig: string = "4:4") {
+        this.track_id = track_id
         this.mediaSource = mediaSource;
         this.uri = uri;
         this.mediaData = sourceData;
@@ -404,7 +406,7 @@ export default class Track {
     }
 
     copy() {
-        var copyTrack = new Track(this.mediaSource, this.uri, this.mediaData);
+        var copyTrack = new Track(this.track_id, this.mediaSource, this.uri, this.mediaData);
         copyTrack.setLength(this.getLength());
         copyTrack.setDefaultTimeSig(this.defaultTimeSig);
         copyTrack.setDefaultTempo(this.defaultTempo);
@@ -466,8 +468,8 @@ export default class Track {
         return track;
     }
 
-    static createTrack(sourceType: Source, uri: string, sourceData: any) {
-        return new Track(sourceType, uri, sourceData);
+    static createTrack(track_id: string, sourceType: Source, uri: string, sourceData: any) {
+        return new Track(track_id, sourceType, uri, sourceData);
     }
     static splitSection(sects: SongSection[], index: number, timestamp: number) {
         

@@ -15,6 +15,7 @@ export default function ButtonMenu(props:
 		showLines: boolean, toggleLines: ()=>void,
 		editBlock: string,
 		showToolComponent: () => void,
+		save?: ()=>void,
 		undo?: ()=>void,
 		redo?: ()=>void,
 	}) {
@@ -69,6 +70,12 @@ export default function ButtonMenu(props:
 						isSelected= {false}
                         style={{...rightBorderRadius(5), ...leftBorderRadius(0), height: undoredoHeight, flex: 1}}
 						bg= {'t_white'}
+					/>
+					<Buddon
+						label='Save'
+						onPress={()=>{props.save && props.save()}}
+						isSelected= {true}
+                        style={{...rightBorderRadius(0), ...leftBorderRadius(5), height: undoredoHeight, flex: 1}}
 					/>
                 </ButtonGroup>
 			</View>

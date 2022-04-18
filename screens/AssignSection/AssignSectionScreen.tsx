@@ -12,7 +12,6 @@ import SongSection, { SectionType } from '../../MusicModel/SongSection';
 import Track, { Source } from '../../MusicModel/Track';
 import Loop from '../../MusicModel/Loop';
 import TrackyPlayer from '../../MusicModel/TrackPlayer';
-import { thisAppUser } from '../../DatabaseWrappers/Profiles';
 
 import ButtonMenu from './ButtonMenu';
 import AddMenu from './AddMenu';
@@ -20,6 +19,8 @@ import { getSelectedSong, getSelectedTrackInfo } from '../../DatabaseWrappers/So
 import axios from 'axios';
 import { Audio } from 'expo-av';
 import { backendURLPrefix } from '../../DatabaseWrappers/DatabaseRequest';
+import { saveLoopsToDatabase, saveSectionsToDatabase } from '../../DatabaseWrappers/savingSections';
+import { thisAppUser } from '../../DatabaseWrappers/Profiles';
 
 const frootSongSource = require('../../assets/soundFiles/lofi_fruits_jazz.mp3');
 const windowWidth = Layout.window.width;
@@ -45,6 +46,7 @@ export default function AssignSectionScreen({navigation, route}: any) {
 		);
 	} else {
 		var selectedTrack = new Track(
+			trackInfo.track_id,
 			Source.MP3, 
 			trackInfo.mp3_url, 
 			{ 
@@ -58,7 +60,7 @@ export default function AssignSectionScreen({navigation, route}: any) {
 
 		return (
 			<View style={[styles.container, styles.darkbg]}>
-				<Text style={styles.title}>{selectedTrack.name}</Text>
+				<Text style={styles.title} numberOfLines={1}>{selectedTrack.name}</Text>
 				<TrackAssignView track={selectedTrack}/>
 			<StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
 			</View>
@@ -93,9 +95,6 @@ class TrackAssignView extends React.Component<tavP, tavS>{
 		this.popupHeight= 150;
 		this.popupSelectedOption= "";
 
-		// If an audio.sound exists already, clear it
-		if(this.state)
-			console.log(this.state.trackPlayer)
 		//Passed to Track Player so it can modify the state of the song
 		this.updateStatus = (s:any) => {
 			if(this.state) {
@@ -115,7 +114,6 @@ class TrackAssignView extends React.Component<tavP, tavS>{
 
 		var trackPlayer = new TrackyPlayer(this.updateStatus);
 		//Initializes the state variables for the View
-		console.log("In constructor");
 		this.state = {
 			trackPlayer: trackPlayer,
 			trackPlayerController: new TrackPlayerController(this.props.track, trackPlayer),
@@ -129,9 +127,12 @@ class TrackAssignView extends React.Component<tavP, tavS>{
 			showPopup: false,
 		}
 
-		console.log("Track name in big: " + this.state.trackPlayerController.track.name);
-		
-
+		// Call to initialize the track views and states
+		if(this.props.track && this.props.track.name != "") {
+			this.changeLog.addChange(this.props.track.getJSON());
+			this.state.trackPlayerController.makeUpdateToTrack(this.changeLog.getCurrentState());
+		}
+		// Set the animation values for the add menu raising and lowering
 		var callback = (value: any) => {this.setState({toolTransitionYVal: value.y})};    
 		this.state.animateTool.setValue({x: 0, y: 0});
 		this.state.animateTool.addListener(callback);
@@ -163,8 +164,9 @@ class TrackAssignView extends React.Component<tavP, tavS>{
 		});
 	}
 	borsMouseListener = (isEndTouch: boolean, pos: number) => {
+		console.log(pos);
 		if(this.state.highlightState != 'not') {
-			if(this.state.highlight.min == null) {
+			if(this.state.highlight.min == undefined) {
 				this.setState({
 					highlight: {min: pos},
 					highlightState: 'start',
@@ -245,11 +247,19 @@ class TrackAssignView extends React.Component<tavP, tavS>{
 		this.changeLog.undo();
 		this.updateTrack()
 	}
+
+	// Saves the current state of the track, sections and loops to the Database!
+	save = () => {
+		saveSectionsToDatabase(thisAppUser.uid, this.state.trackPlayerController.track.track_id, this.state.trackPlayerController.getSectionJSONs());
+		saveLoopsToDatabase(thisAppUser.uid, this.state.trackPlayerController.track.track_id, this.state.trackPlayerController.getSectionJSONs());
+	}
 	addTrackChange = () => {
 		this.changeLog.addChange(this.props.track.getJSON());
 	}
 	updateTrack = () => {
 		this.props.track.setJSON(this.changeLog.getCurrentState());
+		this.state.trackPlayerController.makeUpdateToTrack(this.changeLog.getCurrentState());
+		this.state.trackPlayerController.restart();
 	}
 
 	// Popup
@@ -364,7 +374,13 @@ class TrackAssignView extends React.Component<tavP, tavS>{
 			);
 		}
 		if(this.props.track != this.state.trackPlayerController.track) {
+			console.log("Track: " + this.props.track.name);
 			this.state.trackPlayerController.setTrack(this.props.track);
+			this.changeLog.clearList();
+			console.log(this.props.track.getJSON());
+			this.changeLog.addChange(this.props.track.getJSON());
+			console.log(this.changeLog.getCurrentState());
+			this.state.trackPlayerController.makeUpdateToTrack(this.changeLog.getCurrentState());
 		}
 		return (
 			<Animated.View style={[styles.container, {backgroundColor: colorTheme['t_dark'], top: this.state.toolTransitionYVal, width: '100%', height: '100%'}]}>
@@ -376,7 +392,9 @@ class TrackAssignView extends React.Component<tavP, tavS>{
 					showLines= {!this.state.simpleView} toggleLines= {this.toggleSimpleView}
 					editBlock= {this.state.editMode}
 					showToolComponent= {this.showAddMenu}
-
+					undo={this.undo}
+					redo={this.redo}
+					save={this.save}
 				/>
 				{/* Track View */}
 				<BorsView 
@@ -388,7 +406,7 @@ class TrackAssignView extends React.Component<tavP, tavS>{
 					highlightRegion = {this.state.highlight}
 					drawSimple = {this.state.simpleView}
 					snapSpecificity = {this.state.snapSpecificity}
-					yTouchOffset = {this.state.toolTransitionYVal}
+					yTouchOffset = {this.state.toolTransitionYVal? -215:0}
 					mouseListener = {this.borsMouseListener}
 				/>
 				{/* Tool Component */}
@@ -450,6 +468,7 @@ export class BorsView extends React.Component<bvP, bvS> {
 		})
 		
 		// console.log("(" + (gestureState.moveX+thumbOffX) + "," + (gestureState.moveY+thumbOffY) +  ") to (" + x  + ", " + y + ")"); 7.2578
+		// CONSTRAIN AND OFFSETS HERE
 		var milli = this.measureMaker.mapCoordToMilli({
 					x: gestureState.moveX+thumbOffX, 
 					y: gestureState.moveY+thumbOffY + this.state.scrollOffset - this.props.yTouchOffset

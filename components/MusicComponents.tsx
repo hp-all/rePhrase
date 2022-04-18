@@ -37,6 +37,7 @@ export class ChangeLog {
         this.statePointer++;
         this.changes.splice(this.statePointer, changesBeyond, state);
         this.changeCount = this.changeCount+1 - changesBeyond;
+		console.log(this.statePointer);
 	}
 	undo() {
         if(this.changeCount > 0 && this.statePointer > 0) {
@@ -56,6 +57,11 @@ export class ChangeLog {
     count() {
         return this.changeCount;
     }
+	clearList(){
+		this.changes = [];
+		this.statePointer = -1;
+		this.changeCount = 0;
+	}
     at = (i: number) => {
         return this.changes[i];
     }
@@ -94,6 +100,10 @@ export class TrackPlayerController {
 		this.sectionStart = track.getSection(0).getStart();
 		this.sectionEnd = track.getSection(0).getEndTime();
 		this.trackPlayer.setTrack(track);
+		this.measureMaker.reset();
+	}
+	makeUpdateToTrack = (json: any) => {
+		this.track.setJSON(json);
 		this.measureMaker.reset();
 	}
 	setState = (s: any) => {
@@ -184,7 +194,7 @@ export class TrackPlayerController {
 		return this.track.getSnappedMilli(milli, specificity);
 	}
 
-	// TODO BRANDON JSON Getters
+	// JSON Getters for the Sections array
 	getSectionJSONs = () => {
 		var sections = this.track.sectionList;
 		var sectJSONs = [];
@@ -193,16 +203,16 @@ export class TrackPlayerController {
 			// MAYBE?
 			sectJSONs.push(sections[i].getJSON());
 		}
+		return sectJSONs;
 	}
 	// TODO BRANDON JSON Getters
 	getLoopJSONs = () => {
-		var sections = this.track.sectionList;
-		var sectJSONs = [];
-		for(var i = 0; i<sections.length; i++) {
-
-			// MAYBE?
-			sectJSONs.push(sections[i].getJSON());
+		var loops = this.track.loopList;
+		var loopJSONs = [];
+		for(var i = 0; i<loops.length; i++) {
+			loopJSONs.push(loops[i].getJSON());
 		}
+		return loopJSONs;
 	}
 
 }
