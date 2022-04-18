@@ -23,28 +23,6 @@ export default function Login ({navigation}: any) {
 	//const [LoginStatus, setLoginStatus] = React.useState("");
 	const [passwordVisible, setVisibility] = React.useState(true);
 
-
-	/** Login with "admin" profile that contains dummy data simply for quickly viewing the app */
-	/*
-	const deleteThisLogin = () => {
-		var u = "Brandon";
-		var p = "123"
-		Axios.post(backendURLPrefix + 'login', {
-			Username: u,
-			Password: p
-		}).then((response) => {
-			if (response.data["message"] == "Success"){
-				thisAppUser.copy(new UserProfile(response.data["UID"], u, p, response.data["Hash"]));
-				console.log(thisAppUser);
-				navigation.navigate("Root");
-			} else {
-				//setLoginStatus(response.data.message);
-				alert(response.data.message);
-			}
-		})
-	}
-	*/
-
 	/** Connects to the MySQL Database to check the login information, then navigate to the app */
 	const login = () => {
 		Axios.post(backendURLPrefix + 'login', {
@@ -89,11 +67,6 @@ export default function Login ({navigation}: any) {
 				style={[styles.submitBuddon, {margin: 15}]}
 				label = "Login"
 				onPress={login}
-			/>
-			<Buddon
-				style={[styles.submitBuddon, {margin: 15, backgroundColor: colorTheme['t_white']}]}
-				label = "Delete This"
-				onPress={() => console.log("delete this!")}
 			/>
 			<Buddon
 				style={[styles.submitBuddon, {margin: 15, backgroundColor: colorTheme['t_white']}]}

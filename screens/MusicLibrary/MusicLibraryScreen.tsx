@@ -23,6 +23,7 @@ import {
 	addSongToPlaylist,
 	getSongByID,
 	getSelectedSong,
+	addPlaylist,
 } from '../../DatabaseWrappers/SongStuff';
 import { UploadMP3, UploadMP3Popup } from './UploadMP3';
 import { RootTabScreenProps } from '../../types';
@@ -145,6 +146,9 @@ class PlaylistView extends React.Component<PVP, PVS> {
 		// navigate to the AssignSection screen
 	}
 	
+	addPlaylist = (pname: string) => {
+		addPlaylist(pname);
+	}
 	showAddToPlaylist = (song: SongListItem) => {
 		console.log("Adding song: " + song); 
 		this.songToAdd = song; 
@@ -190,13 +194,25 @@ class PlaylistView extends React.Component<PVP, PVS> {
 
 		if(listTypeShowing != SongListTypes.None) {
 			// Main Song List View
-			songListView = (<SongGroup 
-				title = {listTitle} 
-				songList = {this.visibleSongList} 
-				listListener = {this.subListListener} 
-				songListener={this.songClickListener}
-				addSong= {(song)=>this.showAddToPlaylist(song)}
-			/>)
+			if(listTypeShowing == SongListTypes.Playlists) {
+				console.log("PLaylist is showing dog");
+				songListView = (<SongGroup 
+					title = {listTitle} 
+					songList = {this.visibleSongList} 
+					listListener = {this.subListListener} 
+					songListener={this.songClickListener}
+					addSong= {(song)=>this.showAddToPlaylist(song)}
+					addPlaylist= {(pname)=>{this.addPlaylist(pname)}}
+				/>)
+			} else {
+				songListView = (<SongGroup 
+					title = {listTitle} 
+					songList = {this.visibleSongList} 
+					listListener = {this.subListListener} 
+					songListener={this.songClickListener}
+					addSong= {(song)=>this.showAddToPlaylist(song)}
+				/>)
+			}
 		} else {
 			songListView = (
 				<View>
