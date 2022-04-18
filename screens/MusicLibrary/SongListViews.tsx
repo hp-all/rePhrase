@@ -1,6 +1,6 @@
 // React and Expo Stuff
 import * as React from 'react';
-import { TextInput, TouchableOpacity } from 'react-native';
+import { SafeAreaView, ScrollView, TextInput, TouchableOpacity } from 'react-native';
 
 
 // Themes and Styles
@@ -71,9 +71,11 @@ export function SongGroup (props: {title: string, songList: Playlist | Playlist[
                 <View style={styles.spacer}/>
                 
             </View>
-            <View style={[{padding: 20, backgroundColor: colorTheme['lightgray'], borderRadius: 8}]}>
-                {items}
-            </View>
+            <SafeAreaView style={[{padding: 20, backgroundColor: colorTheme['lightgray'], borderRadius: 8}]}>
+                <ScrollView style={{padding: 20}}>
+                    {items}
+                </ScrollView>
+            </SafeAreaView>
             {addPlaylistButton}
 		</View>
 	)
