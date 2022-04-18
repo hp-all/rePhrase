@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { thisAppUser } from './Profiles';
-import Axios from "axios";
+import axios from "axios";
 import { backendURLPrefix } from './DatabaseRequest';
 
 
@@ -23,7 +23,7 @@ export function getSelectedSong() {
 
 
 export function getSongByID(trackID: string) {
-    return Axios.get(backendURLPrefix + `track/${trackID}`)
+    return axios.get(backendURLPrefix + `track/${trackID}`)
         .then(res => { 
             console.log('Successfully loaded data!');
             selectedTrackInfo = res.data[0];
@@ -38,15 +38,20 @@ export function getSongByID(trackID: string) {
 export function getAllSongs() {
     // get all song metadata from mysql database
     // returns Promise
-    console.log("Getting all songs");
-    return Axios.get(backendURLPrefix + "tracks");
+    return ( 
+        axios.get(backendURLPrefix + "tracks", {
+            headers: {
+                "x-access-token": thisAppUser.token,
+            }
+        })
+    );
 }
 
 export function searchForSongs(searchterm: string) {
     // Search for songs based on a searchterm here
     // Return a list of SongListItems
 
-    return Axios.get(backendURLPrefix + `tracks/search/${searchterm}`);
+    return axios.get(backendURLPrefix + `tracks/search/${searchterm}`);
 }
 
 export function getUsersPlaylists(userID: number) {
@@ -115,7 +120,7 @@ export function getAllFromPlaylists(userID: number) {
 
 export function addSongToPlaylist(playlistID: number, trackID: string) {
     console.log("Adding track " + trackID + ", to playlist " + playlistID);
-    return Axios.post(backendURLPrefix + "playlists/track/add", {
+    return axios.post(backendURLPrefix + "playlists/track/add", {
         playlist_id: playlistID,
         track_id: trackID,
     });
