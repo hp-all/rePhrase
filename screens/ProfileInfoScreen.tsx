@@ -22,7 +22,8 @@ export default function ProfileInfoScreen({navigation}: any) {
     const [tempFriends, setTempFriends] = React.useState([]);
 
     const loadFriends = () => {
-        axios.get(backendURLPrefix + 'getUsername/'+thisAppUser.uid, {
+
+        axios.get(backendURLPrefix + 'friends/' + thisAppUser.uid, {
             headers: {
                 "x-access-token": thisAppUser.token,
             }
@@ -56,7 +57,7 @@ export default function ProfileInfoScreen({navigation}: any) {
             <View>
                 <Text>Loading...</Text>
             </View>
-        )
+        );
     }
 
     return (
