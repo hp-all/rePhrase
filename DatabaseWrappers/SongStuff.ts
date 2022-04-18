@@ -124,9 +124,13 @@ export function addSongToPlaylist(playlistID: number, trackID: string) {
         track_id: trackID,
     });
 }
-export function addPlaylist(playlistID: number) {
+export function addPlaylist(playlist_name: string) {
     var userID = thisAppUser.uid;
-
+    console.log("Adding playlist " + playlist_name);
+    return axios.post(backendURLPrefix + "playlist/add", {
+        playlist_name: playlist_name,
+        UID: userID,
+    });
 }
 
 export class SongListItem {

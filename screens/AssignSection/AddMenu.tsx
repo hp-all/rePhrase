@@ -23,7 +23,8 @@ type tcP = {
     hide: ()=>void, 
     selectedArea: Bounds, setSelectedArea?: (a: Bounds)=>void, style?: any, 
     createLoop?: (loop: LoopSkelly)=>void,
-    createSection?: (section: SectionSkelly)=>void
+    createSection?: (section: SectionSkelly)=>void,
+    defaultVals: {tempo: number, timeSig: string},
 };
 type tcS = {buttonShowing: AddButtonTypes};
 export default class AddMenu extends React.Component<tcP, tcS> {
@@ -57,6 +58,7 @@ export default class AddMenu extends React.Component<tcP, tcS> {
                         hide={this.hideButtonForm} 
                         selectedArea={this.props.selectedArea}
                         createSection={this.props.createSection}
+                        defaultVals={this.props.defaultVals}
                     />)
                 break;
             default:
@@ -167,6 +169,7 @@ type sfP = {
     hide: (allTheWay?: boolean)=>void, 
     selectedArea: Bounds, 
     createSection?: (sect: SectionSkelly)=>void,
+    defaultVals: {tempo: number, timeSig: string},
     // setSelectedArea?: (a: Bounds)=>void, 
 };
 /** Add Section Form: Used in the Add Menu View
@@ -198,8 +201,8 @@ class AddSectionForm extends React.Component<sfP, {showError: boolean, tempo: nu
             end = this.props.selectedArea.max;
         this.state = {
             showError: false,
-            tempo: 120,
-            timeSig: "4:4",
+            tempo: this.props.defaultVals.tempo,
+            timeSig: this.props.defaultVals.timeSig,
             type: SectionType.IDK,
         }
 

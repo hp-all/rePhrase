@@ -417,6 +417,7 @@ class TrackAssignView extends React.Component<tavP, tavS>{
 					setSelectedArea={this.setHighlight}
 					createLoop={l=>{this.addLoop(l)}}
 					createSection={s=>{this.addSection(s)}}
+					defaultVals= {{tempo: this.state.trackPlayerController.track.defaultTempo, timeSig: this.state.trackPlayerController.track.defaultTimeSig}}
 				/>
 				{popup}
 			</Animated.View>

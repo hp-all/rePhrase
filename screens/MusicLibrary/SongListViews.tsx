@@ -1,6 +1,6 @@
 // React and Expo Stuff
 import * as React from 'react';
-import { TouchableOpacity } from 'react-native';
+import { SafeAreaView, ScrollView, TextInput, TouchableOpacity } from 'react-native';
 
 
 // Themes and Styles
@@ -11,8 +11,12 @@ import { appStyles as styles, colorTheme } from '../../components/AppStyles';
 import { SongListItem, Playlist, getUsersPlaylists, getAllFromPlaylists, searchForSongs, getSongsByAlbumFromPlaylists, getSongsByArtistFromPlaylists, addSongToPlaylist } from '../../DatabaseWrappers/SongStuff';
 import { Buddon } from '../../components/Buddons';
 
-export function SongGroup (props: {title: string, songList: Playlist | Playlist[], listListener: (p: any)=>void, songListener: (song: SongListItem)=>void, addSong?: (song: SongListItem)=>void}) {
-	var items = []; 
+export function SongGroup (props: {title: string, songList: Playlist | Playlist[], listListener: (p: any)=>void, songListener: (song: SongListItem)=>void, addSong?: (song: SongListItem)=>void, addPlaylist?: (pname: string)=>void}) {
+	
+    const [showPlaylistAdd, setShowPlaylistAdd] = React.useState(false); // set as loading first
+    const [playlistName, setPlaylistName] = React.useState(""); // set as loading first
+    
+    var items = []; 
 	if(props.songList instanceof Playlist) {
 		for(var i = 0; i<props.songList.songs.length; i++) {
             var song = props.songList.songs[i];
@@ -24,7 +28,35 @@ export function SongGroup (props: {title: string, songList: Playlist | Playlist[
 			items.push( <SongGroupButton name= {category.name} color= {colorTheme['t_dark']} playlist= {category} onPress= {props.listListener} hideBar = {i == 0} key= {i}/> );
 		}
 	}
-
+    var addPlaylistButton = null;
+    if(props.addPlaylist) {
+        console.log("Creating Add Playlist " + showPlaylistAdd);
+        if(!showPlaylistAdd) {
+            addPlaylistButton = (
+                <Buddon
+                    label="Add Playlist"
+                    style={{margin: 20, width: "40%", alignSelf: 'center', padding: 8}}
+                    onPress={()=>setShowPlaylistAdd(true)}
+                />
+            )
+        } else {
+            addPlaylistButton = (
+                <View>
+                    <TextInput
+                        style={{height: 25, marginVertical: 40, marginBottom: 20, backgroundColor: 'white', width: "40%", alignSelf: 'center'}}
+                        value={playlistName}
+                        placeholder={playlistName}
+                        onChangeText={text=>setPlaylistName(text)}
+                    />
+                    <Buddon
+                        label = "Submit"
+                        onPress={()=>{props.addPlaylist && props.addPlaylist(playlistName)}}
+                        style={styles.submitBuddon}
+                    />
+                </View>
+            )
+        }
+    }
 	return (
 		<View style= {[{backgroundColor: colorTheme['gray'], borderRadius: 8, flex: 1}]}>
             <View style={[styles.transparentbg, {flexDirection: 'row'}]} >
@@ -39,9 +71,12 @@ export function SongGroup (props: {title: string, songList: Playlist | Playlist[
                 <View style={styles.spacer}/>
                 
             </View>
-            <View style={[{padding: 20, backgroundColor: colorTheme['lightgray'], borderRadius: 8}]}>
-                {items}
-            </View>
+            <SafeAreaView style={[{padding: 20, backgroundColor: colorTheme['lightgray'], borderRadius: 8}]}>
+                <ScrollView style={{padding: 20}}>
+                    {items}
+                </ScrollView>
+            </SafeAreaView>
+            {addPlaylistButton}
 		</View>
 	)
 }
