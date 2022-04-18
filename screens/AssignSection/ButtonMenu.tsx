@@ -53,7 +53,6 @@ export default function ButtonMenu(props:
 				</ButtonGroup>
 				<View style={[styles.container, styles.transparentbg]}/>
 				<ButtonGroup style={{flex: 1, paddingBottom: 10, paddingTop: 5}}>
-					<View style={{flex:0.5, backgroundColor: 'transparent'}}/>
 					<Buddon
 						label='undo'
 						icon='undo'
@@ -71,13 +70,13 @@ export default function ButtonMenu(props:
                         style={{...rightBorderRadius(5), ...leftBorderRadius(0), height: undoredoHeight, flex: 1}}
 						bg= {'t_white'}
 					/>
-					<Buddon
-						label='Save'
-						onPress={()=>{props.save && props.save()}}
-						isSelected= {true}
-                        style={{...rightBorderRadius(0), ...leftBorderRadius(5), height: undoredoHeight, flex: 1}}
-					/>
                 </ButtonGroup>
+				<Buddon
+					label='Save'
+					onPress={()=>{props.save && props.save()}}
+					isSelected= {true}
+					style={{...rightBorderRadius(0), ...leftBorderRadius(5), marginLeft: 5, marginTop: 10, padding: 8, flex: 0.5}}
+				/>
 			</View>
 			<View style={[styles.rowContainer, styles.transparentbg, {marginTop: 15}]}>
 				<Spacer flex={0.8}/>

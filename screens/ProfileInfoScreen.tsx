@@ -7,7 +7,7 @@ import { Buddon } from '../components/Buddons';
 import { FriendProfile, thisAppUser } from '../DatabaseWrappers/Profiles';
 import { Spacer } from '../components/MusicComponents';
 
-import Axios from 'axios';
+import axios from 'axios';
 import { NavigationHelpersContext } from '@react-navigation/native';
 import { backendURLPrefix } from '../DatabaseWrappers/DatabaseRequest';
 
@@ -22,7 +22,8 @@ export default function ProfileInfoScreen({navigation}: any) {
     const [tempFriends, setTempFriends] = React.useState([]);
 
     const loadFriends = () => {
-        Axios.get(backendURLPrefix + 'friends/' + thisAppUser.uid, {
+
+        axios.get(backendURLPrefix + 'friends/' + thisAppUser.uid, {
             headers: {
                 "x-access-token": thisAppUser.token,
             }
@@ -38,12 +39,11 @@ export default function ProfileInfoScreen({navigation}: any) {
     }
 
     const friendRequests = () => {
-        Axios.get(backendURLPrefix + 'pendingRequests/' + thisAppUser.uid, {
+        axios.get(backendURLPrefix + 'pendingRequests/'+thisAppUser.uid, {
             headers: {
                 "x-access-token": thisAppUser.token,
             }
-        })
-        .then((response)=> {
+        }).then((response)=> {
             for (var i = 0; i < response.data.length; i++){
                 thisAppUser.friendRequests[i] = new FriendProfile(response.data[i]["UserID"], response.data[i]["Username"]);
             }           

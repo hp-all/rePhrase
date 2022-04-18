@@ -23,8 +23,9 @@ export function getSelectedSong() {
 
 
 export function getSongByID(trackID: string) {
-    return axios.get(backendURLPrefix + `track/${trackID}`)
-        .then(res => { 
+    return axios.get(backendURLPrefix + `track/${trackID}`, {
+        headers: {"x-access-token": thisAppUser.token,}
+    }).then(res => { 
             console.log('Successfully loaded data!');
             selectedTrackInfo = res.data[0];
             console.log("Set track to song: " + selectedTrackInfo.title);
@@ -38,20 +39,18 @@ export function getSongByID(trackID: string) {
 export function getAllSongs() {
     // get all song metadata from mysql database
     // returns Promise
-    return ( 
-        axios.get(backendURLPrefix + "tracks", {
-            headers: {
-                "x-access-token": thisAppUser.token,
-            }
-        })
-    );
+    return axios.get(backendURLPrefix + "tracks", {
+        headers: {"x-access-token": thisAppUser.token,}
+    });
 }
 
 export function searchForSongs(searchterm: string) {
     // Search for songs based on a searchterm here
     // Return a list of SongListItems
 
-    return axios.get(backendURLPrefix + `tracks/search/${searchterm}`);
+    return axios.get(backendURLPrefix + `tracks/search/${searchterm}`, {
+        headers: {"x-access-token": thisAppUser.token,}
+    });
 }
 
 export function getUsersPlaylists(userID: number) {
