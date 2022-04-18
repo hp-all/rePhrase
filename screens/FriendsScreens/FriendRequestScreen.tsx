@@ -4,7 +4,7 @@ import * as React from 'react';
 // Theme and Styles
 import { Text, View } from '../../components/Themed';
 import { appStyles as styles, colorTheme} from '../../components/AppStyles';
-import Axios from "axios"
+import Axios from "axios";
 
 // Components
 import { Buddon } from '../../components/Buddons';
@@ -23,8 +23,6 @@ export default function FriendRequestScreen ({navigation}: any) {
     const [isLoading, setLoading] = React.useState(false); // set as loading first
 
     const accept = (friend: FriendProfile) => {
-        console.log("Accepting req");
-
         // set loading to true
         setLoading(true); 
 
@@ -33,16 +31,14 @@ export default function FriendRequestScreen ({navigation}: any) {
             UID1: thisAppUser.uid, // the app user UID
             UID2: friend.uid, // the UID of the friend who sent the request
         }).then((response)=>{
-            // TODO: remove friend request from this app users set of friend requests
-
-            // update the friendship for the person who sent the request
-            Axios.post(backendURLPrefix + 'updateFriendship', {
-                UID1: friend.uid, // the UID of the friend who sent the request
-                UID2: thisAppUser.uid, // the app user UID
-            }).then((response)=>{
-                // thisAppUser.friends[i].setUsername(response.data.Username);
-                console.log(response.data.message);
-            });
+            // remove friend from friend requests
+            var remainingFriendRequests = []
+            for (let i = 0; i < thisAppUser.friendRequests.length; i += 1) {
+                if (thisAppUser.friendRequests[i].uid != friend.uid) {
+                    remainingFriendRequests.push(thisAppUser.friendRequests[i]);
+                }
+            }
+            thisAppUser.friendRequests = remainingFriendRequests;
         }).finally(() => {
             setLoading(false);
         });
@@ -52,14 +48,18 @@ export default function FriendRequestScreen ({navigation}: any) {
         console.log("Rejecting req");
         setLoading(true);
 
-        Axios.post(backendURLPrefix + 'deletePendingRequest', {
+        Axios.post(backendURLPrefix + 'rejectRequest', {
             UID1: friend.uid, // the UID of the friend who sent the request
             UID2: thisAppUser.uid, // the app user UID
         }).then((response) => {
             // TODO: remove this request from the thisAppUser's list of friendRequests
-            
-            // thisAppUser.friends[i].setUsername(response.data.Username);
-            console.log(response.data.message);
+            var remainingFriendRequests = []
+            for (let i = 0; i < thisAppUser.friendRequests.length; i += 1) {
+                if (thisAppUser.friendRequests[i].uid != friend.uid) {
+                    remainingFriendRequests.push(thisAppUser.friendRequests[i]);
+                }
+            }
+            thisAppUser.friendRequests = remainingFriendRequests;
         }).finally(() => {
             setLoading(false);
         });
