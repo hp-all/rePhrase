@@ -52,8 +52,8 @@ export default function Login ({navigation}: any) {
 			Password: Password
 		}).then((response) => {
 			if (response.data["message"] == "Success"){
+				thisAppUser.token = response.data["token"];
 				thisAppUser.copy(new UserProfile(response.data["UID"], Username, Password, response.data["Hash"]));
-				console.log(thisAppUser);
 				navigation.navigate("Root");
 			} else {
 				//setLoginStatus(response.data.message);

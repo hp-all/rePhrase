@@ -34,7 +34,9 @@ export default function SignUp ({navigation}: any) {
                     Password: Password
                 }).then((response) => {
                     if (response.data["message"] == "Successfully Registered"){
-                        setRegisterStatus(response.data["message"]); //register successful
+                        navigation.navigate("Login");
+                        // setRegisterStatus(response.data["message"]); //register successful
+                        // thisAppUser.token = response.data["token"];
                     } else {
                         setRegisterStatus(response.data.message);
                     }
@@ -49,17 +51,17 @@ export default function SignUp ({navigation}: any) {
         }
 	}
 
-    React.useEffect(() => {
-        if(RegisterStatus == "Successfully Registered"){
-            Axios.post("https://rephrase-cs4750.herokuapp.com/getUID", {
-                Username: Username
-            }).then((response) => {
-                console.log(response.data.UID);
-                thisAppUser.copy(new UserProfile(response.data.UID, Username, Password, response.data["Hash"]));
-                navigation.navigate("Root");
-            })
-        }
-    }, [RegisterStatus]);
+    // React.useEffect(() => {
+    //     if(RegisterStatus == "Successfully Registered"){
+    //         Axios.post("https://rephrase-cs4750.herokuapp.com/getUID", {
+    //             Username: Username
+    //         }).then((response) => {
+    //             console.log(response.data.UID);
+    //             thisAppUser.copy(new UserProfile(response.data.UID, Username, Password, response.data["Hash"]));
+    //             navigation.navigate("Root");
+    //         })
+    //     }
+    // }, [RegisterStatus]);
 
 	// TODO: need to put a view in here that displays that the error message if they didn't login correctly
 	return (
