@@ -1,10 +1,14 @@
 ![rePhrase](https://github.com/hp-all/rePhrase/blob/main/assets/images/logos/title.png?raw=true)
 
-Music Learning App for Databases CS 4750
 
 # RePhrase: A Music Learning App
-Part of this project is intended for Databases CS 4750
-Uses React Native and MySQL
+Uses React Native, connected to backend with Node JS and MySQL
+
+# About
+Createed by Henry Alcaine, Brandon Brnich, and Chase Dawson
+Currently contains a library of open source songs for users to use and listen to.
+  Future plans involve using a Spotify API to stream and listen to music using a Spotify Account.
+
 
 # Installing and Running
 ### Install
