@@ -2,6 +2,8 @@
 
 
 # RePhrase: A Music Learning App
+A Mobile App that makes it easier for musicians to listen and learn how to play their favorite songs. Allows users to mark the important parts of a song and easily loop through them so they can focus on practicing on their instrument rather than scrubbing through a YouTube video.
+
 Uses React Native, connected to backend with Node JS and MySQL
 
 # About
